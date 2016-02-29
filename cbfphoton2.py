@@ -31,45 +31,44 @@ class photonCIF(dict):
 
 
 	def analyseOneLoop(self,fields, start_idx):		#fabio/cbfimage.py
-			"""Processes one loop in the data extraction of the CIF file
-	        @param fields: list of all the words contained in the cif file
-	        @type fields: list
-	        @param start_idx: the starting index corresponding to the "loop_" key
-	        @type start_idx: integer
-	        @return: the list of loop dictionaries, the length of the data
-	            extracted from the fields and the list of all the keys of the loop.
-	        @rtype: tuple
-	        """
-	    	
-	    	loop = []
-	        keys = []
-	        i = start_idx + 1
-	        finished = False
-	        while not finished:
-	        	if fields[i][0] == "_":
-	        		keys.append(fields[i])
-	        		i += 1
-	        	else:
-	        		finished = True
-	        data = []
-	        while True:
-	        	if i >= len(fields):
-	        		break
-	        	elif len(fields[i]) == 0:
-	        		break
-	        	elif fields[i][0] == "_":
-	        		break
-	        	elif fields[i] in ("loop_", "stop_", "global_", "data_", "save_"):
-	        		break
-	        	else:
-	        		data.append(fields[i])
-	        		i += 1
+		"""Processes one loop in the data extraction of the CIF file
+	    @param fields: list of all the words contained in the cif file
+	    @type fields: list
+	    @param start_idx: the starting index corresponding to the "loop_" key
+		@type start_idx: integer
+		@return: the list of loop dictionaries, the length of the data
+			extracted from the fields and the list of all the keys of the loop.
+		@rtype: tuple
+		"""
+		loop = []
+		keys = []
+		i = start_idx + 1
+		finished = False
+		while not finished:
+			if fields[i][0] == "_":
+				keys.append(fields[i])
+				i += 1
+			else:
+				finished = True
+		data = []
+		while True:
+			if i >= len(fields):
+				break
+			elif len(fields[i]) == 0:
+				break
+			elif fields[i][0] == "_":
+				break
+			elif fields[i] in ("loop_", "stop_", "global_", "data_", "save_"):
+				break
+			else:
+				data.append(fields[i])
+				i += 1
 	
 		for k in range(len(data)) :
 			element = {}
 			row = data[k].split(" ")
 			while row[0] == '' :
-			del row[0]
+				del row[0]
 			#l = 0
 			for l,key in enumerate(keys) :		# TODO: what if len(row) > len(keys)
 				if l < len(row):
@@ -90,14 +89,14 @@ class photonCIF(dict):
 	#                k += 1
 	#            loop.append(element)
 	
-	 #       else:
-	 #           for i in range(len(data) / len(keys)):
-	 #               element = {}
-	 #               for j in keys:
-	 #                   element[j] = data[k]
-	 #                   k += 1
-	 #               loop.append(element)"""
-	 		return loop, 1 + len(keys) + len(data), keys
+	#       else:
+	#           for i in range(len(data) / len(keys)):
+	#               element = {}
+	#               for j in keys:
+	#                   element[j] = data[k]
+	#                   k += 1
+	#               loop.append(element)"""
+		return loop, 1 + len(keys) + len(data), keys
 	
 		
 	def GetHeader(self,frame):
@@ -118,10 +117,9 @@ class photonCIF(dict):
 	#	print fields
 	
 	#	Parts of _parseCIF from fabio/cbfimage.py
-		
-	        loopidx = []
-	        looplen = []
-	        loop = []
+		loopidx = []
+		looplen = []
+		loop = []
 	
 		for idx, field in enumerate(fields):
 			if field.lower() == "loop_":
@@ -131,13 +129,12 @@ class photonCIF(dict):
 					loopone, length, keys = self.analyseOneLoop(fields, i)
 					loop.append([keys, loopone])
 					looplen.append(length)
-	
-	            for i in range(len(loopidx) - 1, -1, -1):	# omit loops from fields
-	            	f1 = fields[:loopidx[i]] + fields[loopidx[i] + looplen[i]:]
-	            	fields = f1	
-
-	        self["loop_"] = loop
-	
+				
+				for i in range(len(loopidx) - 1, -1, -1):	# omit loops from fields
+					f1 = fields[:loopidx[i]] + fields[loopidx[i] + looplen[i]:]
+					fields = f1
+			self["loop_"] = loop
+				
 		for i in range(len(fields) - 1):
 			row = fields[i].split(' ')
 			if len(row) == 0:
@@ -162,11 +159,15 @@ class photonCIF(dict):
 	#	print looplen
 	#	print fields
 #		return header
+
+def Test():
+	hd = photonCIF('photon.cbf')
+	print hd
 	
 if __name__ == "__main__":
 	import sys,re
 
-	hd = GetHeader(sys.argv[1])
+	Test()
 #	print hd 
 #	print hd['_diffrn_radiation_wavelength.wavelength']
 #	print hd['_diffrn_measurement_axis.axis_id']
