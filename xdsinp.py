@@ -1,7 +1,7 @@
 import cbfphoton2,re,os,sys,glob
 
 MINIMAL_KEY= ['JOB', 'NAME_TEMPLATE_OF_DATA_FRAMES', 'DATA_RANGE', 'SPOT_RANGE', 'ORGX', 'ORGY', 'OSCILLATION_RANGE', 'X-RAY_WAVELENGTH', 'DETECTOR_DISTANCE', 'SPACE_GROUP_NUMBER', 'UNIT_CELL_CONSTANTS']
-
+MULTIPARAM = ['EXCLUDE_RESOLUTION_RANGE','SPOT_RANGE']
 class XDSINP(dict):
 	"""
 	Class for working with single XDS.INP
@@ -58,13 +58,15 @@ class XDSINP(dict):
 		Get parametr _param as a string in format of XDS.INP row
 
 		@param _param: Parametr name as in XDS.INP
-		@type  _param: string
+		@type  _param: list of string
 
 		@return type: string
 		"""	
 
-		try :
-			param = _param + '= ' + self[_param]
+		try :			
+			param = []
+			for par in self[_param]:
+				param.append(_param + '= ' + par)
 		except KeyError:
 			param = None
 			raise KeyError('Parametr ' + _param + 'not found')
@@ -75,13 +77,20 @@ class XDSINP(dict):
 		SGet parametr _param as a string in format of XDS.INP row
 
 		@param _param: Parametr with value as row in XDS.INP
-		@type  _param: string
+		@type  _param: list of string
 		"""
-		par = _param.split("=")
+		par = _param[0].split("=")
 		key = par[0].strip(' \r\n\t')
-		value = par[1].strip(' \r\n\t')
-		if not key[0] == '!':
-			self[key] = value
+		if _param[0] not in MULTIPARAM and len(_param) > 1:
+			raise IOError('Only one occurance of parameter ' + key + 'allowed')
+			exit(1)
+		for row in _param:
+			par = row.split("=")
+			key = par[0].strip(' \r\n\t')
+			value = par[1].strip(' \r\n\t')
+			if not key[0] == '!':
+				self[key] = value
+				
 
 	def setXDSINP(self,path,strFrame):
 		fheader = cbfphoton2.photonCIF(strFrame)
@@ -90,14 +99,13 @@ class XDSINP(dict):
 		scan = self.dataset.geometry['SCAN']
 		#QX= TODO
 		#QY= TODO
-
-	    self['JOB'] = 'XYCORR INIT COLSPOT IDXREF DEFPIX INTEGRATE CORRECT'
-	    self['ORGX'] = str(ORGX)
-	    self['ORGY'] = str(ORGY)
-	    self['DETECTOR_DISTANCE'] = self.dataset.geometry['DISTANCE']
-	    self['OSCILLATION_RANGE'] = self.dataset.geometry['OSCILATION']
-	    self['X-RAY_WAVELENGTH'] = fheader['_diffrn_radiation_wavelength.wavelength']
-	    self['NAME_TEMPLATE_OF_DATA_FRAMES'] = self.dataset.template
+		self['JOB'] = 'XYCORR INIT COLSPOT IDXREF DEFPIX INTEGRATE CORRECT'
+		self['ORGX'] = str(ORGX)
+		self['ORGY'] = str(ORGY)
+		self['DETECTOR_DISTANCE'] = self.dataset.geometry['DISTANCE']
+		self['OSCILLATION_RANGE'] = self.dataset.geometry['OSCILATION']
+		self['X-RAY_WAVELENGTH'] = fheader['_diffrn_radiation_wavelength.wavelength']
+		self['NAME_TEMPLATE_OF_DATA_FRAMES'] = self.dataset.template
 #       	self['REFERENCE_DATA_SET'] = ''
 		self['DATA_RANGE'] = '1 ' + str(data_range)
 		self['SPOT_RANGE'] = '1 ' + str(int(data_range/2))

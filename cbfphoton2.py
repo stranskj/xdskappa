@@ -40,7 +40,8 @@ class photonCIF(dict):
 	            extracted from the fields and the list of all the keys of the loop.
 	        @rtype: tuple
 	        """
-	        loop = []
+	    	
+	    	loop = []
 	        keys = []
 	        i = start_idx + 1
 	        finished = False
