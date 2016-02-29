@@ -15,10 +15,10 @@ class XDataset():
 		"""
 		self.template = _strTemplate
 		frame = self.GetFrameName(_intFrame)
-		self.frange = len(glob.glob(self.template.split("?")[0]))
+		self.frange = len(glob.glob(self.template.split("?")[0] + "*.cbf"))
 		self.fheader = cbfphoton2.photonCIF(frame)
 		self.geometry = {}
-		self.geometry = self.SetGeometry
+		self.SetGeometry()
 		self.detector = {}
 		self.SetDetector()
 
@@ -44,9 +44,11 @@ class XDataset():
 			if "_diffrn_scan_axis.displacement_increment" in loop[0]:
 				for ax in loop[1]:
 					axis[ax['_diffrn_scan_axis.axis_id']]= ax
+			
 				break
-
-			return axis
+		return axis
+			
+		#raise KeyError('No axis information found in image header')
 		
 	def TwothetaVector(self,twotheta=None):
 		"""
@@ -63,7 +65,7 @@ class XDataset():
 			self['TWOTHETA']['ANGLE'] = twotheta
 		
 		#TODO dependent on twotheta axis vector
-		detectorX = "{:.5f}".format(math.cos(float(twotheta))) + " 0 " + "{:.5f}".format(math.sin(float(twotheta)))
+		detectorX = "{:.5f}".format(math.cos(math.radians(float(twotheta)))) + " 0 " + "{:.5f}".format(math.sin(math.radians(float(twotheta))))
 		detectorY = '0 1 0'
 		
 		return detectorX, detectorY
@@ -80,12 +82,12 @@ class XDataset():
 		if ORGX:
 			self.geometry['ORGX'] = str(ORGX)
 		else:
-			self.geometry['ORGX'] = str(int(self.fheader(['X-Binary-Size-Fastest-Dimension'])/2))
+			self.geometry['ORGX'] = str(int(int(self.fheader['X-Binary-Size-Fastest-Dimension'])/2))
 			
 		if ORGY:
 			self.geometry['ORGY'] = str(ORGY)
 		else:
-			self.geometry['ORGY'] = str(int(self.fheader(['X-Binary-Size-Second-Dimension'])/2))	
+			self.geometry['ORGY'] = str(int(int(self.fheader['X-Binary-Size-Second-Dimension'])/2))	
 	
 	def SetPixelSize(self,QX=None,QY=None):
 		"""
@@ -123,13 +125,19 @@ class XDataset():
 		
 
 	def SetGeometry(self):
-		axes = self.GetAxes()
+		try:
+			axes = self.GetAxes()
+		except KeyError as e:
+			print e
+			exit(1)
+			
 		self.geometry['DISTANCE'] = axes['DX']['_diffrn_scan_axis.displacement_start']
 		self.geometry['SCAN'] = self.fheader['_diffrn_measurement_axis.axis_id']
-		self.geometry['OSCILATION'] = axes[self.geometry['scan']]['_diffrn_scan_axis.angle_increment']
+		self.geometry['OSCILATION'] = axes[self.geometry['SCAN']]['_diffrn_scan_axis.angle_increment']
 		self.geometry['OMEGA'] = {}
 		self.geometry['CHI'] = {}
 		self.geometry['PHI'] = {}
+		self.geometry['TWOTHETA'] = {}
 		self.geometry['OMEGA']['VECTOR'] = '0 -1 0' 	#TODO get from CBF? 
 		self.geometry['OMEGA']['ANGLE'] = axes['OMEGA']['_diffrn_scan_axis.angle_start']	
 		self.geometry['PHI']['VECTOR'] = '0 -1 0' #TODO, now irelevant for omega scans
@@ -144,18 +152,25 @@ class XDataset():
 def Test():
 	datset = XDataset('test/photon_????.cbf',1)
 	
-	print "Data range: " + datset.frange
+	print "Data range: " + str(datset.frange)
 	print "Template: " + datset.template
 	print "Frame example: " + datset.GetFrameName(5)
 	print "Frame example: " + datset.GetFrameName(10)
 	
 	print "Geometry:"
-	for key, value in datset.geometry:
-		print key + ": " + value
+	for key in datset.geometry:
+		if type(datset.geometry[key]).__name__ == 'str':
+			print key + ": " + datset.geometry[key]
+		elif type(datset.geometry[key]).__name__ == 'dict':	
+			for subkey in datset.geometry[key]:
+				print key + ":" + subkey + ": " + datset.geometry[key][subkey]
+		else:
+			print key + ": type " + type(datset.geometry[key]).__name__
+			
 		
 	print "Detector:"
-	for key, value in datset.detector:
-		print key + ": " + value	
+	for key in datset.detector:
+		print key + ": " + datset.detector[key]	
 			
 	 
 if __name__ == "__main__":

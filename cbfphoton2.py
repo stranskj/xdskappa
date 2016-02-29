@@ -124,15 +124,16 @@ class photonCIF(dict):
 		for idx, field in enumerate(fields):
 			if field.lower() == "loop_":
 				loopidx.append(idx)
-			if loopidx:
-				for i in loopidx:
-					loopone, length, keys = self.analyseOneLoop(fields, i)
-					loop.append([keys, loopone])
-					looplen.append(length)
+		if loopidx:
+			for i in loopidx:
+				loopone, length, keys = self.analyseOneLoop(fields, i)
+				loop.append([keys, loopone])
+				looplen.append(length)
 				
-				for i in range(len(loopidx) - 1, -1, -1):	# omit loops from fields
-					f1 = fields[:loopidx[i]] + fields[loopidx[i] + looplen[i]:]
-					fields = f1
+			for i in range(len(loopidx) - 1, -1, -1):	# omit loops from fields
+				f1 = fields[:loopidx[i]] + fields[loopidx[i] + looplen[i]:]
+				fields = f1
+			
 			self["loop_"] = loop
 				
 		for i in range(len(fields) - 1):
@@ -143,9 +144,9 @@ class photonCIF(dict):
 				row.append("?")
 			if len(row) > 2:
 				par = ''
-			for j in range(1,len(row)-1,1):
-				par = par + row[j]
-			row[1] = par
+				for j in range(1,len(row)-1,1):
+					par = par + row[j]
+					row[1] = par
 			self[row[0]] = row[1]
 		
 		# process binary part (get header)
@@ -163,6 +164,8 @@ class photonCIF(dict):
 def Test():
 	hd = photonCIF('photon.cbf')
 	print hd
+	print hd['_diffrn_radiation_wavelength.wavelength']
+	print hd['_diffrn_measurement_axis.axis_id']
 	
 if __name__ == "__main__":
 	import sys,re

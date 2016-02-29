@@ -205,3 +205,10 @@ class XDSINP(dict):
 #         	        fxds.close
 # 	        return
 
+def Test():
+	
+	inp = XDSINP('test')
+
+if __name__ == "__main__":
+	Test()
+	exit(0)
