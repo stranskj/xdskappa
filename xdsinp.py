@@ -1,11 +1,14 @@
 import cbfphoton2,re,os,sys,glob
+import xdataset #import XDataset
 
 MINIMAL_KEY= ['JOB', 'NAME_TEMPLATE_OF_DATA_FRAMES', 'DATA_RANGE', 'SPOT_RANGE', 'ORGX', 'ORGY', 'OSCILLATION_RANGE', 'X-RAY_WAVELENGTH', 'DETECTOR_DISTANCE', 'SPACE_GROUP_NUMBER', 'UNIT_CELL_CONSTANTS']
-MULTIPARAM = ['EXCLUDE_RESOLUTION_RANGE','SPOT_RANGE']
+MULTIPARAM = ['EXCLUDE_RESOLUTION_RANGE', 'SPOT_RANGE', 'UNTRUSTED_RECTANGLE', 'UNTRUSTED_ELLIPSE', 'UNTRUSTED_QUADRILATERAL']
 class XDSINP(dict):
 	"""
 	Class for working with single XDS.INP
 	"""
+	path = str()
+	dataset = cbfphoton2.photonCIF()
 	def __init__(self, _strPath, _Dataset=None):
 		"""
 		Constructor
@@ -15,12 +18,13 @@ class XDSINP(dict):
 		@param _Dataset: Dataset related to the XDS.INP
 		@type  _Dataset: Dataset object
 		"""
-		self = {}
+		dict.__init__(self)
 		self.path = _strPath + "/XDS.INP"
 		self.dataset = _Dataset
 
-		if os.path.isfile(self.path):
-			self.read()
+#		if os.path.isfile(self.path):
+#			self.read()
+	
 
 	def read(self):
 		"""
@@ -31,7 +35,14 @@ class XDSINP(dict):
 			return
 		fin = open(self.path,'r')
 		for line in fin.read().split('\n'):
-			self.SetParam(line)
+			noncomment = line.split('!')[0]
+			#parcount = noncoment.count('=')
+			row = re.split("([_\-'A-Z]+=)",noncomment)
+			for i in range(len(row) - 1):
+				if '=' in row[i]:
+					self.SetParam(row[i]+row[i+1])
+				
+			#self.SetParam(line)
 
 		return
 
@@ -42,14 +53,17 @@ class XDSINP(dict):
 		fout = open(self.path, 'w')
 		try:
 			for key in MINIMAL_KEY:
-				fout.write(self.GetParam(key) + '\n')
+				fout.write(self.GetParam(key)) # + '\n'
+				 
 		except KeyError as err:
-			print err +' in ' + self.path
+			print 'Missing key in' + self.path
+			print err #+' in ' + self.path
 			exit(1)
 
-		for key,param in self:
+		for key in self:
+			#print key
 			if key not in MINIMAL_KEY:
-				fout.write(self.GetParam(key) + '\n')
+				fout.write(self.GetParam(key))
 				
 		return
 
@@ -64,76 +78,83 @@ class XDSINP(dict):
 		"""	
 
 		try :			
-			param = []
+			param = ''
 			for par in self[_param]:
-				param.append(_param + '= ' + par)
+			#	for val in par:
+				param += _param + '= ' + par + '\n'
 		except KeyError:
 			param = None
-			raise KeyError('Parametr ' + _param + 'not found')
+			raise KeyError('Parametr ' + _param + ' not found')
 		return param 
 
 	def SetParam(self,_param):
 		"""
-		SGet parametr _param as a string in format of XDS.INP row
+		Set parametr value to self dictionary
 
 		@param _param: Parametr with value as row in XDS.INP
-		@type  _param: list of string
+		@type  _param: string
 		"""
-		par = _param[0].split("=")
-		key = par[0].strip(' \r\n\t')
-		if _param[0] not in MULTIPARAM and len(_param) > 1:
-			raise IOError('Only one occurance of parameter ' + key + 'allowed')
-			exit(1)
-		for row in _param:
-			par = row.split("=")
-			key = par[0].strip(' \r\n\t')
-			value = par[1].strip(' \r\n\t')
-			if not key[0] == '!':
-				self[key] = value
-				
+		row = _param.split('=')
+		key = row[0].strip(' \r\n\t')
+		value = row[1].strip(' \r\n\t')
+		
+		if key not in self or key not in MULTIPARAM:
+			self[key] = []
+		
+		self[key].append(value)
+		
+	#def SetKey(self,key,value):	
+# 	def RemoveParam(self,key):
+# 		"""
+# 		Removes key from self.__dict__
+# 		"""
+# 		del self[key]			
 
-	def setXDSINP(self,path,strFrame):
-		fheader = cbfphoton2.photonCIF(strFrame)
+	def setXDSINP(self):
+		if self.dataset == None:
+			raise IOError('No dataset set')
+		
+		fheader = self.dataset.fheader
 #	        axis = GetAxis(fheader)
 		data_range = self.dataset.frange
 		scan = self.dataset.geometry['SCAN']
 		#QX= TODO
 		#QY= TODO
-		self['JOB'] = 'XYCORR INIT COLSPOT IDXREF DEFPIX INTEGRATE CORRECT'
-		self['ORGX'] = str(ORGX)
-		self['ORGY'] = str(ORGY)
-		self['DETECTOR_DISTANCE'] = self.dataset.geometry['DISTANCE']
-		self['OSCILLATION_RANGE'] = self.dataset.geometry['OSCILATION']
-		self['X-RAY_WAVELENGTH'] = fheader['_diffrn_radiation_wavelength.wavelength']
-		self['NAME_TEMPLATE_OF_DATA_FRAMES'] = self.dataset.template
-#       	self['REFERENCE_DATA_SET'] = ''
-		self['DATA_RANGE'] = '1 ' + str(data_range)
-		self['SPOT_RANGE'] = '1 ' + str(int(data_range/2))
-		self['SPACE_GROUP_NUMBER'] = '0'
-		self['UNIT_CELL_CONSTANTS'] = '70 80 90 90 90 90'
-		self['INCLUDE_RESOLUTION_RANGE'] = '50 0'
-		self["FRIEDEL'S_LAW"] = 'FALSE'
-		self['STRICT_ABSORPTION_CORRECTION'] = 'TRUE'
-		self['TRUSTED_REGION'] = '0.0 1.2'
-		self['VALUE_RANGE_FOR_TRUSTED_DETECTOR_PIXELS'] = '6000. 30000.'
-		self['STRONG_PIXEL'] = '4'
-		self['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = '4'
-		self['REFINE(IDXREF)'] = 'CELL BEAM ORIENTATION AXIS ! DISTANCE POSITION'
-		self['REFINE(INTEGRATE)'] = 'DISTANCE POSITION BEAM ORIENTATION ! AXIS CELL'
-		self['DETECTOR'] = 'PILATUS'
-		self['MINIMUM_VALID_PIXEL_VALUE'] = '0'
-		self['OVERLOAD'] = fheader['_array_intensities.overload']
-		self['SENSOR_THICKNESS'] = 0
-		self['NX'] = fheader['X-Binary-Size-Fastest-Dimension']
-		self['NY'] = fheader['X-Binary-Size-Second-Dimension']
-		self['QX'] = QX
-		self['QY'] = QY
-		self['ROTATION_AXIS'] = self.dataset.geometry[scan]['VECTOR']
-		self['DIRECTION_OF_DETECTOR_X-AXIS'] = self.dataset.geometry['X-DETECTOR']
-		self['DIRECTION_OF_DETECTOR_Y-AXIS'] = self.dataset.geometry['X-DETECTOR']
-		self['INCIDENT_BEAM_DIRECTION'] = '0 0 1'
-		self['FRACTION_OF_POLARIZATION'] = '0.98' #TODO: test fheader['_diffrn_radiation_wavelength.polarizn_source_ratio']
-		self['POLARIZATION_PLANE_NORMAL'] = '0 1 0'
+		self['JOB'] = ['XYCORR INIT COLSPOT IDXREF DEFPIX INTEGRATE CORRECT']
+		self['ORGX'] = [self.dataset.geometry['ORGX']]
+		self['ORGY'] = [self.dataset.geometry['ORGY']]
+		self['DETECTOR_DISTANCE'] = [self.dataset.geometry['DISTANCE']]
+		self['OSCILLATION_RANGE'] = [self.dataset.geometry['OSCILATION']]
+		self['X-RAY_WAVELENGTH'] = [fheader['_diffrn_radiation_wavelength.wavelength']]
+		self['NAME_TEMPLATE_OF_DATA_FRAMES'] = [self.dataset.template]
+#       	self['REFERENCE_DATA_SET'] = ['']
+		self['DATA_RANGE'] = ['1 ' + str(data_range)]
+		self['SPOT_RANGE'] = ['1 ' + str(int(data_range/2))]
+		self['SPACE_GROUP_NUMBER'] = ['0']
+		self['UNIT_CELL_CONSTANTS'] = ['70 80 90 90 90 90']
+		self['INCLUDE_RESOLUTION_RANGE'] = ['50 0']
+		self["FRIEDEL'S_LAW"] = ['FALSE']
+		self['STRICT_ABSORPTION_CORRECTION'] = ['TRUE']
+		self['TRUSTED_REGION'] = ['0.0 1.2']
+		self['VALUE_RANGE_FOR_TRUSTED_DETECTOR_PIXELS'] = ['6000. 30000.']
+		self['STRONG_PIXEL'] = ['4']
+		self['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = ['4']
+		self['REFINE(IDXREF)'] = ['CELL BEAM ORIENTATION AXIS ! DISTANCE POSITION']
+		self['REFINE(INTEGRATE)'] = ['DISTANCE POSITION BEAM ORIENTATION ! AXIS CELL']
+		self['DETECTOR'] = [self.dataset.detector['Name']]
+		self['MINIMUM_VALID_PIXEL_VALUE'] = ['0']
+		self['OVERLOAD'] = [fheader['_array_intensities.overload']]
+		self['SENSOR_THICKNESS'] = ['0']
+		self['NX'] = [self.dataset.detector['Pixel_Count_X']]
+		self['NY'] = [self.dataset.detector['Pixel_Count_Y']]
+		self['QX'] = [self.dataset.detector['Pixel_Size_X']]
+		self['QY'] = [self.dataset.detector['Pixel_Size_Y']]
+		self['ROTATION_AXIS'] = [self.dataset.geometry[scan]['VECTOR']]
+		self['DIRECTION_OF_DETECTOR_X-AXIS'] = [self.dataset.geometry['X-DETECTOR']]
+		self['DIRECTION_OF_DETECTOR_Y-AXIS'] = [self.dataset.geometry['Y-DETECTOR']]
+		self['INCIDENT_BEAM_DIRECTION'] = ['0 0 1']
+		self['FRACTION_OF_POLARIZATION'] = ['0.98']#TODO: test fheader['_diffrn_radiation_wavelength.polarizn_source_ratio']
+		self['POLARIZATION_PLANE_NORMAL'] = ['0 1 0']
 
 
 # 	def MakeXDSINP(self,path):
@@ -207,8 +228,29 @@ class XDSINP(dict):
 
 def Test():
 	
+	dts = xdataset.XDataset('test/photon_????.cbf')
+	inp = XDSINP('test',dts)
+	inp.setXDSINP()
+	#inp.read()
+	for key in inp:
+		for val in inp[key]:
+			print key + ": " + val 
+			
+	inp.path = 'test/XDS2.INP'
+	#for key in inp:
+	#	print key
+	inp.write()
+	
+def Test2():
 	inp = XDSINP('test')
-
+	inp.read()
+	for key in inp:
+		for val in inp[key]:
+			print key + ": " + inp[key]
+			
+	inp.path = 'test/XDS2.INP'
+	inp.write()
+	
 if __name__ == "__main__":
 	Test()
 	exit(0)
