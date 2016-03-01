@@ -1,4 +1,5 @@
 #!/bin/python
+import xdsinp
 VERSION = '0.1 (25th Feb 2016)'
 LIST_SEPARATOR = '/t'
 # XDS.INP defaults
@@ -31,8 +32,56 @@ def ReadDatasetListFile(inData):
 	fin.close()	
 	return DatasetsDict,names
 
+def MakeXDSParam(inParList):
+	"""
+	Parse input from prameters modifing XDS.INP
+	"""
+	outParList = []
+	i = -1
+	while inParList:
+		if inParList[0].find("=") > -1:
+			outParList.append(inParList[0])
+			i += 1
+		else :
+			outParList[i] += " " + inParList[0]
+		del inParList[0]
+	return outParList
+
+def ReadXDSParamFile(inFile):
+	"""
+	Parse input file with prameters for modifing XDS.INP
+	"""
+	if not os.path.isfile(inFile):
+		raise IOError('File not found: ' + inFile)
+		return
+	fin = open(inFile,'r')
+	outParList = []
+	for line in fin:
+		outParList.append(line)
+	
+	return outParList
+		
 def PrepareXDSINP(inData,Datasets,Names):
 	print "Processing..."
+	mod_list = []
+	
+	if inData.XDSParameterFile:
+		mod_list += ReadXDSParamFile(inData.XDSParameterFile)
+		
+	if inData.XDSParameter:
+		mod_list += MakeXDSParam(inData.XDSParameter)		
+	
+	inp = xdsinp.XDSINP('test')	#funguje
+	inp.path = 'test/XDS2.INP'
+	
+	fout= open('test/XDS2.INP','w')
+	for line in mod_list:
+		fout.write(line)
+	fout.close()	
+	
+	inp.read()
+	inp.write()
+
 	return
 
 def GetDatasets(inData):
