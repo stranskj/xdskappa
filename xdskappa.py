@@ -65,8 +65,35 @@ def RunXDS(Paths):
 			print 'Finished.'
 		log.close()
 		
-#def Scale(Paths):
-		
+def Scale(Paths, Outname):
+	try:
+		os.mkdir('scale')
+	except:
+		print "Directory already exists: scale"
+	
+	xscaleinp = open('scale/XSCALE.INP','w')
+	
+	xscaleinp.write('OUTPUT_FILE= '+ Outname + '\n')
+	for path in Paths:
+		if os.path.isfile(path + '/XDS_ASCII.HKL'):
+			xscaleinp.write('   INPUT_FILE= ../' + path + '/XDS_ASCII.HKL\n')
+		else:
+			print 'XDS_ASCII.HKL not available in ' + path
+			print 'Excluding from scaling'
+	
+	xscaleinp.close()
+	
+	print 'Scaling with xscla_par...'
+	xscale = subprocess.Popen('xscale_par', cwd= 'scale', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	xscale.wait()
+	
+	fout = open('scale/XSCALE.LP')
+	if '!!! ERROR !!!' in fout:
+		print 'Error in scaling. Please read: scale/XSCALE.LP'
+	else:
+		print 'Scaled. Output written in: scale/' + Outname
+	
+	
 
 def ReadDatasetListFile(inData):
 	"""
@@ -219,6 +246,8 @@ def ParseInput():
 	parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input data")
 	parser.add_argument('--dataset-file', dest='DatasetListFile', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory path/template_????.cbf')
 	
+	parser.add_argument('-o','--output-file', dest='OutputScale', metavar= 'FILE', default='scaled.ahkl', help='File name for output from scaling.')
+	
 	parser.add_argument('--min-dataset', dest='minData', default=2, metavar='NUM', type=int, help="Minimal number of frames to be concidered as dataset.")
 	
 	parser.add_argument('-p','--parameter', dest='XDSParameter', nargs='+', metavar='PAR= VALUE', help='Modification to all XDS.INP. Parameters format as defined for XDS.INP. Overrides parameters from --parameter-file.')
@@ -258,6 +287,8 @@ def main():
 	RunXDS(names)
 	
 	PrintISa(names)
+	
+	Scale(names, in_data.OutputScale)
 	
 	
 
