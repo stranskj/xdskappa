@@ -1,12 +1,72 @@
 #!/bin/python
 from xdsinp	import XDSINP
-from _imaging import path
+#from _imaging import path
 from xdataset import XDataset
 VERSION = '0.1 (25th Feb 2016)'
 LIST_SEPARATOR = '\t'
 # XDS.INP defaults
-ORGX= 495
-ORGY= 501
+#ORGX= 495
+#ORGY= 501
+
+def getISa(path):
+	corlp = path
+	if os.path.isfile(corlp) == False :
+		raise IOError(path + "/CORRECT.LP is not available. Problem with data processing?")
+		return 'N/A'
+	fcor = open(corlp,'r')
+	
+	line = fcor.readline()
+	while line.split() != ['a', 'b', 'ISa'] :
+		line = fcor.readline()
+
+	line = fcor.readline().split()
+	return line[2]
+
+def PrintISa(Paths):
+	print 'ISa for individual datasets:'
+	print '\tISa\tDataset'
+	for set in Paths:
+		try:
+			isa = getISa(set + '/CORRECT.LP')
+		except IOError:
+			isa = 'N/A'
+		
+		print '\t' + isa + '\t' + set
+	return
+
+def RunXDS(Paths):
+	for path in Paths:
+		print "Processing " + path + ":"
+		if not os.path.isfile(path+'/XDS.INP'):
+			print "File not found: "+path+'/XDS.INP'
+			continue
+		
+		log = open(path + '/xds.log','w')
+		xds = subprocess.Popen(['xds_par'],cwd= path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		
+		for line in xds.stdout:
+			log.write(line)
+			if '***** COLSPOT *****' in line:
+				print 'Finding strong reflections...'
+			
+			if '***** IDXREF *****' in line:
+				print 'Indexing...'
+				
+			if '***** INTEGRATE *****' in line:
+				print 'Integrating...'
+		
+		xds.wait()
+		log.close()
+				
+		log = open(path + '/xds.log','r')
+		if '!!! ERROR !!!' in log.read():
+			print "An error during data procesing using XDS. Check IDXREF.LP, INTEGRATE.LP, other *.LP or xds.log files fo further details."
+		else:
+			print 'Finished.'
+		log.close()
+		
+#def Scale(Paths):
+		
 
 def ReadDatasetListFile(inData):
 	"""
@@ -37,6 +97,9 @@ def ReadDatasetListFile(inData):
 def MakeXDSParam(inParList):
 	"""
 	Parse input from prameters modifing XDS.INP
+	
+	@param inParList: Parameters from input -p or --parameter
+	@type inParList: list of string
 	"""
 	outParList = []
 	i = -1
@@ -52,6 +115,9 @@ def MakeXDSParam(inParList):
 def ReadXDSParamFile(inFile):
 	"""
 	Parse input file with prameters for modifing XDS.INP
+	
+	@param inFile: File with XDS.INP-like parameters
+	@type inFile: file
 	"""
 	if not os.path.isfile(inFile):
 		raise IOError('File not found: ' + inFile)
@@ -64,6 +130,16 @@ def ReadXDSParamFile(inFile):
 	return outParList
 		
 def PrepareXDSINP(inData,Datasets,Names):
+	"""
+	Makes working dirs and XDS.INP for all choosen datasets
+	
+	@param inData: Parsed input
+	@type inData: Namespace
+	@param Datasets: Datasets list
+	@type Datasets: dict
+	@param Names: List of keys in Datasets (ordered)
+	@type Names: list
+	"""
 	print "Processing..."
 	mod_list = []
 	
@@ -102,23 +178,8 @@ def PrepareXDSINP(inData,Datasets,Names):
 		
 		for parm in mod_list:
 			inp.SetParam(parm)
-		
-		
-		inp.write()
-		
 				
-	
-# 	inp = xdsinp.XDSINP('test')	#funguje
-# 	inp.path = 'test/XDS2.INP'
-# 	
-# 	fout= open('test/XDS2.INP','w')
-# 	for line in mod_list:
-# 		fout.write(line)
-# 	fout.close()	
-# 	
-# 	inp.read()
-# 	inp.write()
-
+		inp.write()
 	return
 
 def GetDatasets(inData):
@@ -193,6 +254,12 @@ def main():
 		print datasets[d]
 		
 	PrepareXDSINP(in_data,datasets,names)
+	
+	RunXDS(names)
+	
+	PrintISa(names)
+	
+	
 
 if __name__ == "__main__":
 	import sys
