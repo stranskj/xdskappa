@@ -1,7 +1,9 @@
 #!/bin/python
-import xdsinp
+from xdsinp	import XDSINP
+from _imaging import path
+from xdataset import XDataset
 VERSION = '0.1 (25th Feb 2016)'
-LIST_SEPARATOR = '/t'
+LIST_SEPARATOR = '\t'
 # XDS.INP defaults
 ORGX= 495
 ORGY= 501
@@ -69,18 +71,53 @@ def PrepareXDSINP(inData,Datasets,Names):
 		mod_list += ReadXDSParamFile(inData.XDSParameterFile)
 		
 	if inData.XDSParameter:
-		mod_list += MakeXDSParam(inData.XDSParameter)		
+		mod_list += MakeXDSParam(inData.XDSParameter)
 	
-	inp = xdsinp.XDSINP('test')	#funguje
-	inp.path = 'test/XDS2.INP'
+	if inData.ReferenceData:		#if global reference dataset entered as -p REFERENCE_DATASET= data/XDS_ASCII.HKL, overwritten later in XDS.INP setting
+		refdataset = inData.ReferenceData
+	else:
+		refdataset = Names[0]
+		
+	for path in Names:
+		try:
+			os.mkdir(path)
+		except:
+			print "Directory already exists: "+ path
+		
+		
+		
+		dts = XDataset(Datasets[path])		# gives template relative to running director to find frames	
+		inp = XDSINP(path,dts)
+		inp.SetDefaults()		#read in geometry from frame header etc.
+		#inp.read()
+		
+		if Datasets[path][0] == "/":		# setup templates path relativ to XDS.INP directory
+			template = Datasets[path]
+		else:
+			template = '../' + Datasets[path]
+		inp.SetParam('NAME_TEMPLATE_OF_DATA_FRAMES= ' + template)
+		
+		if not path == refdataset:
+			inp.SetParam("REFERENCE_DATA_SET= ../" + refdataset + "/XDS_ASCII.HKL")
+		
+		for parm in mod_list:
+			inp.SetParam(parm)
+		
+		
+		inp.write()
+		
+				
 	
-	fout= open('test/XDS2.INP','w')
-	for line in mod_list:
-		fout.write(line)
-	fout.close()	
-	
-	inp.read()
-	inp.write()
+# 	inp = xdsinp.XDSINP('test')	#funguje
+# 	inp.path = 'test/XDS2.INP'
+# 	
+# 	fout= open('test/XDS2.INP','w')
+# 	for line in mod_list:
+# 		fout.write(line)
+# 	fout.close()	
+# 	
+# 	inp.read()
+# 	inp.write()
 
 	return
 
@@ -89,13 +126,14 @@ def GetDatasets(inData):
 	Datasets = []
 	firstframe = re.compile("[_-][0]+[1].cbf")
 	for datapath in inData.dataPath :
+		#TODO: dereference '~'; bash apparently does it by default
 		try:
 			leadingFrames = [fi for fi in os.listdir(datapath) if firstframe.search(fi)] #get first frame of each dataset
 		except os.error:
 			print "Cannot access: " + datapath + " No such directory"
 			exit(1)
 
-		for setname in leadingFrames :
+		for setname in leadingFrames :		
 			prefix = firstframe.split(setname)[0] + "_"		#dataset prefix without last 
 			if len(glob.glob(datapath + "/" + prefix + "*.cbf")) >= inData.minData :  # more than 1 frame = dataset
 				digits = len(setname) - len(prefix) - 4		#number of ? in template name

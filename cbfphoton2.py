@@ -109,7 +109,7 @@ class photonCIF(dict):
 		
 #		header = {}
 	
-		frame_split = frame_file.read().split('--CIF-BINARY-FORMAT-SECTION--')
+		frame_split = frame_file.read().split('--CIF-BINARY-FORMAT-SECTION-')		#last '-' omitted to pervent empty first line later in binary processing
 		frame_header = frame_split[0]
 		frame_binary = frame_split[1]
 		eolc = GetEolChar(frame_header)
@@ -152,10 +152,14 @@ class photonCIF(dict):
 		# process binary part (get header)
 		binary = frame_binary.split(eolc)
 		for row in binary :
-			if len(row) > 1:
+			if len(row) > 0:
 				if re.match('[a-zA-Z_]',row[0]) :
 					row_split = row.split(': ')
 					self[row_split[0]] = row_split[1]
+				else:
+					pass
+			else:
+				break		#binary header should end with empty line (it does at least for Photon2, Feb 2016)
 	#	print loop
 	#	print looplen
 	#	print fields
