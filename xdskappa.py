@@ -425,8 +425,11 @@ def main():
 		
 	PrepareXDSINP(in_data,datasets,names)
 	
-	RunXDS(names)
+	if in_data.ReferenceData:
+		names.insert(0, names.pop(names.index(in_data.ReferenceData)))
 	
+	RunXDS(names)
+		
 	PrintISa(names)
 	
 	Scale(names, in_data.OutputScale)
