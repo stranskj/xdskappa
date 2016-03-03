@@ -27,7 +27,7 @@ def GetStatistics(inFile, outFile):
 		row = tab[i].split()
 		
 		res = row[0]
-		multiplicity = "{:.2f}".format(float(row[2]) / float(row[3]))
+		multiplicity = "{:.2f}".format(float(row[1]) / float(row[2]))
 		Rfac = row[5].strip('%')
 		Rmeas = row[9].strip('%')
 		completness = row[4].strip('%')
@@ -52,6 +52,7 @@ def ShowStatistics(Names,Scale=None):
 	plt = open('gnuplot.plt','w')
 	
 	plt.write('\
+set terminal x11 size 1920,1080 \n \
 set xlabel "Resolution [A]"\n \
 set multiplot layout 3,3 \n \
 set nokey \n \
@@ -59,6 +60,7 @@ set title "Completness"\n \
 set ylabel "%"\n \
 set yrange [0:100] \n \
 set xrange [*:*] reverse \n \
+#set logscale x \n \
 plot ')
 	for data in Names:
 		plt.write("'" + data + "/statistics.out' using 1:5 with lines, ")
@@ -265,17 +267,18 @@ def MakeXDSParam(inParList):
 	Parse input from prameters modifing XDS.INP
 	
 	@param inParList: Parameters from input -p or --parameter
-	@type inParList: list of string
+	@type inParList: list of list of string
 	"""
 	outParList = []
 	i = -1
-	while inParList:
-		if inParList[0].find("=") > -1:
-			outParList.append(inParList[0])
-			i += 1
-		else :
-			outParList[i] += " " + inParList[0]
-		del inParList[0]
+	for par in inParList:
+		while par:
+			if par[0].find("=") > -1:
+				outParList.append(par[0])
+				i += 1
+			else :
+				outParList[i] += " " + par[0]
+			del par[0]
 	return outParList
 
 def ReadXDSParamFile(inFile):
@@ -391,7 +394,7 @@ def ParseInput():
 	
 	parser.add_argument('--min-dataset', dest='minData', default=2, metavar='NUM', type=int, help="Minimal number of frames to be concidered as dataset.")
 	
-	parser.add_argument('-p','--parameter', dest='XDSParameter', nargs='+', metavar='PAR= VALUE', help='Modification to all XDS.INP. Parameters format as defined for XDS.INP. Overrides parameters from --parameter-file.')
+	parser.add_argument('-p','--parameter', dest='XDSParameter', nargs='+', action='append', metavar='PAR= VALUE', help='Modification to all XDS.INP. Parameters format as defined for XDS.INP. Overrides parameters from --parameter-file.')
 	parser.add_argument('--parameter-file', dest='XDSParameterFile', metavar='FILE', help='File with list of parameters to modify XDS.INP. Parameters format as defined for XDS.INP')
 	
 	parser.add_argument('-r','--reference-dataset', dest='ReferenceData', metavar='DATASET', help='Reference dataset from working list, named by subdirectory. The first one used by default. For external reference dataset use: -p REFERENCE_DATASET= path/data/XDS_ASCII.HKL')
@@ -407,7 +410,7 @@ def ParseInput():
 def main():
 	
 	in_data = ParseInput()
-	print in_data
+#	print in_data
 
 	if len(in_data.dataPath) > 0:
 		datasets,names = GetDatasets(in_data)
