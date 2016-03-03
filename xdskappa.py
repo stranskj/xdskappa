@@ -161,6 +161,7 @@ def getISa(path):
 		line = fcor.readline()
 
 	line = fcor.readline().split()
+	fcor.close()
 	return line[2]
 
 def PrintISa(Paths):
@@ -176,6 +177,10 @@ def PrintISa(Paths):
 	return
 
 def RunXDS(Paths):
+	if spawn.find_executable('xds_par') == None:
+		print "ERROR: Cannot find XDS executable."
+		exit(1)
+		
 	for path in Paths:
 		print "Processing " + path + ":"
 		if not os.path.isfile(path+'/XDS.INP'):
@@ -205,6 +210,7 @@ def RunXDS(Paths):
 		else:
 			print 'Finished.'
 		log.close()
+	return	
 		
 def Scale(Paths, Outname):
 	try:
@@ -295,7 +301,7 @@ def ReadXDSParamFile(inFile):
 	outParList = []
 	for line in fin:
 		outParList.append(line.strip('\r\n\t '))
-	
+	fin.close()
 	return outParList
 		
 def PrepareXDSINP(inData,Datasets,Names):
@@ -380,6 +386,7 @@ def GetDatasets(inData):
 	fdatasets = open('datasets.list','w')
 	for key in names:
 		fdatasets.write(key + LIST_SEPARATOR + DatasetsDict[key] + "\n")
+	fdatasets.close()	
 	return DatasetsDict,names
 
 def ParseInput():
@@ -408,6 +415,10 @@ def ParseInput():
 	return parser.parse_args()
 
 def main():
+	print ""
+	print "\txdskappa " + VERSION
+	print "\tAuthor: Jan Stransky"
+	print "\t========================"
 	
 	in_data = ParseInput()
 #	print in_data
