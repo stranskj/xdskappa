@@ -2,11 +2,150 @@
 from xdsinp	import XDSINP
 #from _imaging import path
 from xdataset import XDataset
-VERSION = '0.1 (25th Feb 2016)'
+VERSION = '0.1 (3rd Mar 2016)'
 LIST_SEPARATOR = '\t'
 # XDS.INP defaults
 #ORGX= 495
 #ORGY= 501
+
+def GetStatistics(inFile, outFile):
+	if os.path.isfile(inFile) == False :
+		raise IOError(inFile + " is not available. Problem with data processing?")
+		return 
+	fin = open(inFile,'r')
+	
+	
+	# get last table + some appendix in rows
+	tab = fin.read().split('SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE >= -3.0 A')[-1].split('\n')
+	fin.close()
+	
+	fout = open(outFile,'w')
+	fout.write('# Legend for columns\n')
+	fout.write('# Resol.\tMultipl.\tRmerge\tRmeas\tComplet.\tI/sig\tCC1/2\tAnoCC\tSigAno\n')
+	i = 4 # first row with numbers
+	while not 'total' in tab[i]:
+		row = tab[i].split()
+		
+		res = row[0]
+		multiplicity = "{:.2f}".format(float(row[2]) / float(row[3]))
+		Rfac = row[5].strip('%')
+		Rmeas = row[9].strip('%')
+		completness = row[4].strip('%')
+		Isig = row[8]
+		CC = row[10].strip('*')
+		AnoCC = row[11].strip('*')
+		SigAno = row[12]
+		
+		fout.write(res+'\t'+multiplicity+'\t'+Rfac+'\t'+Rmeas+'\t'+completness+'\t'+Isig+'\t'+CC+'\t'+AnoCC+'\t'+SigAno+'\n')
+		i += 1
+	fout.close()
+	
+def ShowStatistics(Names,Scale=None):
+	for data in Names:
+		if os.path.isfile(data+'/CORRECT.LP'):
+			GetStatistics(data+'/CORRECT.LP', data+'/statistics.out')
+	
+	if os.path.isfile(Scale+'/XSCALE.LP'):
+			GetStatistics(Scale+'/XSCALE.LP', Scale+'/statistics.out')
+	
+	Names.append(Scale)		
+	plt = open('gnuplot.plt','w')
+	
+	plt.write('\
+set xlabel "Resolution [A]"\n \
+set multiplot layout 3,3 \n \
+set nokey \n \
+set title "Completness"\n \
+set ylabel "%"\n \
+set yrange [0:100] \n \
+set xrange [*:*] reverse \n \
+plot ')
+	for data in Names:
+		plt.write("'" + data + "/statistics.out' using 1:5 with lines, ")
+	plt.write('\n')
+	
+	plt.write(' \
+set title "Rmerge"\n \
+plot ')
+	for data in Names:
+		plt.write("'" + data + "/statistics.out' using 1:3 with lines, ")
+	plt.write('\n')
+	
+	plt.write(' \
+set title "Rmeas"\n \
+plot ')
+	for data in Names:
+		plt.write("'" + data + "/statistics.out' using 1:4 with lines, ")
+	plt.write('\n')
+		
+	plt.write(' \
+set title "CC(1/2)"\n \
+plot ')
+	for data in Names:
+		plt.write("'" + data + "/statistics.out' using 1:7 with lines, ")
+	plt.write('\n')
+
+	plt.write(' \
+set title "Redundancy"\n \
+set ylabel "" \n \
+set yrange [ 0:* ] \n \
+plot ')
+	for data in Names:
+		plt.write("'" + data + "/statistics.out' using 1:2 with lines, ")
+	plt.write('\n')
+	
+	plt.write(' \
+set title "I/sig(I)"\n \
+set ylabel "" \n \
+set yrange [ 0:* ] \n \
+plot ')
+	for data in Names:
+		plt.write("'" + data + "/statistics.out' using 1:6 with lines, ")
+	plt.write('\n')
+	
+	plt.write(' \
+set title "Anomalous I/sig(I)"\n \
+set ylabel "" \n \
+set yrange [ 0:* ] \n \
+plot ')
+	for data in Names:
+		plt.write("'" + data + "/statistics.out' using 1:9 with lines, ")
+	plt.write('\n')
+		
+	plt.write(' \
+set title "Anomalous CC"\n \
+set ylabel "%" \n \
+set yrange [ *:* ] \n \
+plot ')
+	for data in Names:
+		plt.write("'" + data + "/statistics.out' using 1:8 with lines, ")
+	plt.write('\n')
+	
+	plt.write(' \
+#unset multiplot \n \
+set title "Legend"\n \
+set ylabel "" \n \
+set yrange [ 1000:1100 ] \n \
+set xlabel "" \n \
+set key #center \n \
+set tics textcolor rgb "white" \n \
+unset border \n \
+unset ytics \n \
+unset xtics \n \
+plot ')
+	for data in Names:
+		plt.write("'" + data + "/statistics.out' using 1:2 with lines title '"+data +"', ")
+	plt.write('\n')
+	
+	plt.write('unset multiplot \n')
+	
+	plt.close()
+	
+	if spawn.find_executable('gnuplot') == None:
+		print "Gnuplot not found in $PATH. You can plot results using statistic.out in subdirectories"
+	arg = 'gnuplot -p gnuplot.plt'.split()
+	plot = subprocess.Popen(arg)
+	plot.wait()
 
 def getISa(path):
 	corlp = path
@@ -25,13 +164,13 @@ def getISa(path):
 def PrintISa(Paths):
 	print 'ISa for individual datasets:'
 	print '\tISa\tDataset'
-	for set in Paths:
+	for dataset in Paths:
 		try:
-			isa = getISa(set + '/CORRECT.LP')
+			isa = getISa(dataset + '/CORRECT.LP')
 		except IOError:
 			isa = 'N/A'
 		
-		print '\t' + isa + '\t' + set
+		print '\t' + isa + '\t' + dataset
 	return
 
 def RunXDS(Paths):
@@ -83,7 +222,7 @@ def Scale(Paths, Outname):
 	
 	xscaleinp.close()
 	
-	print 'Scaling with xscla_par...'
+	print 'Scaling with xscale_par...'
 	xscale = subprocess.Popen('xscale_par', cwd= 'scale', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	xscale.wait()
 	
@@ -117,7 +256,7 @@ def ReadDatasetListFile(inData):
 	for line in fin:
 		row = line.split(LIST_SEPARATOR)
 		names.append(row[0])
-		DatasetsDict[row[0]] = row[1]
+		DatasetsDict[row[0]] = row[1].strip('\n\r\t ')
 	fin.close()	
 	return DatasetsDict,names
 
@@ -152,7 +291,7 @@ def ReadXDSParamFile(inFile):
 	fin = open(inFile,'r')
 	outParList = []
 	for line in fin:
-		outParList.append(line)
+		outParList.append(line.strip('\r\n\t '))
 	
 	return outParList
 		
@@ -241,12 +380,14 @@ def GetDatasets(inData):
 	return DatasetsDict,names
 
 def ParseInput():
-	parser = argparse.ArgumentParser(description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently for omega scans on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par')
+	parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently for omega scans on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par')
 	
 	parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input data")
 	parser.add_argument('--dataset-file', dest='DatasetListFile', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory path/template_????.cbf')
 	
 	parser.add_argument('-o','--output-file', dest='OutputScale', metavar= 'FILE', default='scaled.ahkl', help='File name for output from scaling.')
+	
+	parser.add_argument('-g', dest='ShowGraphs', action='store_true', help='Show merging statistics in graphs in the end.')
 	
 	parser.add_argument('--min-dataset', dest='minData', default=2, metavar='NUM', type=int, help="Minimal number of frames to be concidered as dataset.")
 	
@@ -290,6 +431,8 @@ def main():
 	
 	Scale(names, in_data.OutputScale)
 	
+	if in_data.ShowGraphs:
+		ShowStatistics(names, 'scale')
 	
 
 if __name__ == "__main__":
