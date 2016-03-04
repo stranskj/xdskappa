@@ -40,6 +40,23 @@ def GetStatistics(inFile, outFile):
 		i += 1
 	fout.close()
 	
+def GetWinSize():
+	winsize = []
+	if spawn.find_executable('xrandr'):
+		getwinsize = subprocess.Popen('xrandr',stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		
+		for line in getwinsize.stdout:
+			if '*' in line:
+		#	lin = re.search('[0-9]+[x][0-9]+', line)
+				row = line.split()[0].split('x') #lin.string[lin.begin():lin.end()].split('x')
+				size = row[0],row[1]
+				winsize.append(size)
+		getwinsize.wait()
+	else:
+		size = 1920,1080
+		winsize.append(size)
+	return winsize
+	
 def ShowStatistics(Names,Scale=None):
 	for data in Names:
 		if os.path.isfile(data+'/CORRECT.LP'):
@@ -48,11 +65,15 @@ def ShowStatistics(Names,Scale=None):
 	if os.path.isfile(Scale+'/XSCALE.LP'):
 			GetStatistics(Scale+'/XSCALE.LP', Scale+'/statistics.out')
 	
+	winsize = GetWinSize()
+	
+#	winsize = ['1920','1080']
+	
 	Names.append(Scale)		
 	plt = open('gnuplot.plt','w')
 	
 	plt.write('\
-set terminal x11 size 1920,1080 \n \
+set terminal x11 size '+ winsize[0][0] +',' +winsize[0][1] +' \n \
 set xlabel "Resolution [A]"\n \
 set multiplot layout 3,3 \n \
 set nokey \n \
