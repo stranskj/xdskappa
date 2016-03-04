@@ -1,7 +1,7 @@
 #!/bin/python
-from xdsinp	import XDSINP
+#from xdsinp	import XDSINP
 #from _imaging import path
-from xdataset import XDataset
+#from xdataset import XDataset
 import common
 #VERSION = '0.1 (3rd Mar 2016)'
 #LIST_SEPARATOR = '\t'
@@ -477,8 +477,8 @@ def main():
 if __name__ == "__main__":
 	import sys
 	try:
-		import sys,os,subprocess,shlex,argparse,re,glob,math
-		from distutils import spawn
+		import argparse #sys,os,subprocess,shlex,,re,glob,math
+	#	from distutils import spawn
 	except Exception:
 		print "Your python is probably to old. At least version 2.7 is required."
 		print "Your version is: " +  sys.version
