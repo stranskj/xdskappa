@@ -485,4 +485,4 @@ if __name__ == "__main__":
 		sys.exit(1)
 
 	main()
-	exit(0)
+	sys.exit(0)

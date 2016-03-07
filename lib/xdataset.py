@@ -129,7 +129,7 @@ class XDataset():
 			axes = self.GetAxes()
 		except KeyError as e:
 			print e
-			exit(1)
+			sys.exit(1)
 			
 		self.geometry['DISTANCE'] = axes['DX']['_diffrn_scan_axis.displacement_start']
 		self.geometry['SCAN'] = self.fheader['_diffrn_measurement_axis.axis_id']
@@ -175,4 +175,4 @@ def Test():
 	 
 if __name__ == "__main__":
 	Test()
-	exit(0)
+	sys.exit(0)

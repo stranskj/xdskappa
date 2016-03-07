@@ -9,7 +9,7 @@ Set of common functions for xdskappa tools
 VERSION = '0.1 (3rd Mar 2016)'
 LIST_SEPARATOR = '\t'
 
-import os,math,subprocess,re,glob
+import os,math,subprocess,re,glob,sys
 from xdsinp import XDSINP
 from xdataset import XDataset
 from distutils import spawn
@@ -206,7 +206,7 @@ def PrintISa(Paths):
 def RunXDS(Paths):
     if spawn.find_executable('xds_par') == None:
         print "ERROR: Cannot find XDS executable."
-        exit(1)
+        sys.exit(1)
         
     for path in Paths:
         print "Processing " + path + ":"
@@ -283,7 +283,7 @@ def ReadDatasetListFile(inData):
     """
     if not os.path.isfile(inData):
         raise IOError('File not found: ' + inData)
-        exit(1)
+        sys.exit(1)
         
     fin = open(inData,'r')
     DatasetsDict = {}
@@ -394,7 +394,7 @@ def GetDatasets(inData):
             leadingFrames = [fi for fi in os.listdir(datapath) if firstframe.search(fi)] #get first frame of each dataset
         except os.error:
             print "Cannot access: " + datapath + " No such directory"
-            exit(1)
+            sys.exit(1)
 
         for setname in leadingFrames :        
             prefix = firstframe.split(setname)[0] + "_"        #dataset prefix without last 

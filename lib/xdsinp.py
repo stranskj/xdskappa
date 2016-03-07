@@ -60,7 +60,7 @@ class XDSINP(dict):
 		except KeyError as err:
 			print 'Missing requiered parameter in' + self.path
 			print err #+' in ' + self.path
-			exit(1)
+			sys.exit(1)
 
 		for key in self:
 			#print key
@@ -260,4 +260,4 @@ def Test2():
 	
 if __name__ == "__main__":
 	Test()
-	exit(0)
+	sys.exit(0)

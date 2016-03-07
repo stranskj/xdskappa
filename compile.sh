@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pyinstaller xdskappa.py --clean -y
+pyinstaller -p lib/ --clean -y bin/xdskappa.py bin/find.py
 
 cd dist
 tar czvf ../release/xdskappa.tar.gz xdskappa/*
