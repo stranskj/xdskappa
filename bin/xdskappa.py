@@ -415,7 +415,7 @@ def ParseInput():
 	parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently for omega scans on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par')
 	
 	parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input data")
-	parser.add_argument('--dataset-file', dest='DatasetListFile', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory path/template_????.cbf')
+	parser.add_argument('-d','--dataset-file', dest='DatasetListFile', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory path/template_????.cbf')
 	
 	parser.add_argument('-o','--output-file', dest='OutputScale', metavar= 'FILE', default='scaled.ahkl', help='File name for output from scaling.')
 	
