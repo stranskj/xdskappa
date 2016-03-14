@@ -56,7 +56,7 @@ class XDSINP(dict):
 		try:
 			for key in MINIMAL_KEY:
 				fout.write(self.GetParam(key)) # + '\n'
-				 
+				
 		except KeyError as err:
 			print 'Missing requiered parameter in' + self.path
 			print err #+' in ' + self.path
@@ -104,6 +104,23 @@ class XDSINP(dict):
 			self[key] = []
 		
 		self[key].append(value)
+		
+	def RemoveParam(self,_param):
+		"""
+		Set parametr value to self dictionary
+
+		@param _param: Parametr name as in XDS.INP
+		@type  _param: string
+		
+		@return bool: True if _param existed
+		"""
+		present = True
+		try:
+			self.pop(_param)
+		except KeyError:
+			present = False
+		
+		return present
 		
 	#def SetKey(self,key,value):	
 # 	def RemoveParam(self,key):

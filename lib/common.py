@@ -301,6 +301,9 @@ def MakeXDSParam(inParList):
     
     @param inParList: Parameters from input -p or --parameter
     @type inParList: list of list of string
+    
+    @return outParLitst: list of parameters as strings "PAR= VALUE1 VALUE2 ..."
+    @type   outParLitst: list of string 
     """
     outParList = []
     i = -1
@@ -330,6 +333,7 @@ def ReadXDSParamFile(inFile):
         outParList.append(line.strip('\r\n\t '))
     fin.close()
     return outParList
+
         
 def PrepareXDSINP(inData,Datasets,Names):
     """
@@ -343,18 +347,29 @@ def PrepareXDSINP(inData,Datasets,Names):
     @type Names: list
     """
     print "Processing..."
-    mod_list = []
     
+    
+    file_dict = XDSINP('temp')
     if inData.XDSParameterFile:
-        mod_list += ReadXDSParamFile(inData.XDSParameterFile)
+        #mod_list += ReadXDSParamFile(inData.XDSParameterFile)
+        file_dict.path = inData.XDSParameterFile
+        file_dict.read()
         
+    mod_list = []
+    par_dict = XDSINP('temp')    
     if inData.XDSParameter:
         mod_list += MakeXDSParam(inData.XDSParameter)
+    
+    for par in mod_list:
+        par_dict.SetParam(par)   
+         
     
     if inData.ReferenceData:        #if global reference dataset entered as -p REFERENCE_DATASET= data/XDS_ASCII.HKL, overwritten later in XDS.INP setting
         refdataset = inData.ReferenceData
     else:
         refdataset = Names[0]
+        
+    #Dictionary of modifications
         
     for path in Names:
         try:
@@ -378,8 +393,14 @@ def PrepareXDSINP(inData,Datasets,Names):
         if not path == refdataset:
             inp.SetParam("REFERENCE_DATA_SET= ../" + refdataset + "/XDS_ASCII.HKL")
         
-        for parm in mod_list:
-            inp.SetParam(parm)
+        for key in file_dict:
+            inp[key] = file_dict[key]
+            
+        for key in par_dict:
+            inp[key] = par_dict[key]    
+        # poor Multiparam support
+        #for parm in mod_list:
+        #    inp.SetParam(parm)
                 
         inp.write()
     return
