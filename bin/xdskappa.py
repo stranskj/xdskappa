@@ -64,21 +64,8 @@ def main():
 	common.RunXDS(names)
 	
 	if in_data.ForceXDS:
-		for path in names:
-			log = open(path + '/xds.log')
-			if 'YOU MAY CHOOSE TO CONTINUE DATA' in log.read():
-				inp = XDSINP(path)
-				inp.read()
-				inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
-				inp.write()
-				log.close()
-				
-				print "Attempting integration of: " + path
-				common.RunXDS([path])
-			else:
-				log.close()
+		common.ForceXDS(names)
 			
-		
 	common.PrintISa(names)
 	
 	common.Scale(names, in_data.OutputScale)
