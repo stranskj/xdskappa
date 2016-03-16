@@ -6,7 +6,7 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.1 (3rd Mar 2016)'
+VERSION = '0.1.2 (16th Mar 2016)'
 LIST_SEPARATOR = '\t'
 
 import os,math,subprocess,re,glob,sys
@@ -348,7 +348,7 @@ def PrepareXDSINP(inData,Datasets,Names):
     """
     print "Processing..."
     
-    
+    #TODO: nejak z funkcnit/prerozdelit kvuli toolum?
     file_dict = XDSINP('temp')
     if inData.XDSParameterFile:
         #mod_list += ReadXDSParamFile(inData.XDSParameterFile)
