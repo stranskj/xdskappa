@@ -9,7 +9,7 @@ Set of common functions for xdskappa tools
 VERSION = '0.1.2 (16th Mar 2016)'
 LIST_SEPARATOR = '\t'
 
-import os,math,subprocess,re,glob,sys
+import os,math,subprocess,re,glob,sys,shutil
 from xdsinp import XDSINP
 from xdataset import XDataset
 from distutils import spawn
@@ -243,17 +243,40 @@ def ForceXDS(paths):
     for path in paths:
         log = open(path + '/xds.log')
         if 'YOU MAY CHOOSE TO CONTINUE DATA' in log.read():
-            inp = XDSINP(path)
-            inp.read()
-            inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
-            inp.write()
-            log.close()
+            
             
             print "Attempting integration of: " + path
             RunXDS([path])
         else:
             log.close() 
-    return  
+    return 
+
+def OptimizeXDS(Paths,Optim): 
+    print 'Optimizing integration: ' #TODO: co optimalizuje
+    if Optim == None or len(Optim) == 0:
+        print 'Nothing to optimize.'
+        return False
+         
+    if 'ALL' in Optim:
+        Optim = ['BEAM','FIX','GEOMETRY']
+        
+    for path in Paths:
+        if 'FIX' in Optim:
+            inp = XDSINP(path)
+            inp.read()
+            inp.SetParam('REFINE(INTEGRATE)= ')
+            inp.write()
+            
+        if 'GEOMETRY' in Optim:
+            if os.path.isfile(path+'/GXPARM.XDS'):
+                shutil.copy(path+'/GXPARM.XDS', path+'/XPARM.XDS')                
+        
+        inp = XDSINP(path)
+        inp.read()
+        inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
+        inp.write()
+                    
+    return True
         
 def Scale(Paths, Outname):
     try:

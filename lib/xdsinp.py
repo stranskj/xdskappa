@@ -38,7 +38,7 @@ class XDSINP(dict):
 		for line in fin.read().split('\n'):
 			noncomment = line.split('!')[0]
 			#parcount = noncoment.count('=')
-			row = re.split("([_\-'A-Z]+=)",noncomment) #TODO: overit vsechny mozne specialni znaky
+			row = re.split("([_\-\(\)\.'A-Z]+=)",noncomment) #TODO: overit vsechny mozne specialni znaky
 			for i in range(len(row) - 1):
 				if '=' in row[i]:
 					self.SetParam(row[i]+row[i+1])
