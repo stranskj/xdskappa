@@ -42,7 +42,7 @@ def main():
 	print "\t========================"
 	
 	in_data = ParseInput()
-	print in_data
+	#print in_data
 
 	if len(in_data.dataPath) > 0:
 		datasets,names = common.GetDatasets(in_data)
