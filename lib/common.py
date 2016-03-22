@@ -251,21 +251,35 @@ def ForceXDS(paths):
             log.close() 
     return 
 
+#def BackupOpt(Paths):
+#    for path in Paths:
+        
+
 def OptimizeXDS(Paths,Optim): 
-    print 'Optimizing integration: ' #TODO: co optimalizuje
     if Optim == None or len(Optim) == 0:
         print 'Nothing to optimize.'
         return False
-         
+
     if 'ALL' in Optim:
-        Optim = ['BEAM','FIX','GEOMETRY']
+        Optim.extend(['BEAM','FIX','GEOMETRY'])
+        Optim.remove('ALL')   
         
+    opt = ''
+    for o in Optim:
+        if not o in ['BEAM','FIX','GEOMETRY', 'ALL']:
+            print 'Unknown parameter to optimize: ' + o
+        else :
+            opt += o + ' '
+    print 'Optimizing integration: ' + opt #TODO: co optimalizuje
+    
     for path in Paths:
+        inp = XDSINP(path)
+        inp.read()
         if 'FIX' in Optim:
-            inp = XDSINP(path)
-            inp.read()
+#           inp = XDSINP(path)
+#          inp.read()
             inp.SetParam('REFINE(INTEGRATE)= ')
-            inp.write()
+#           inp.write()
             
         if 'GEOMETRY' in Optim:
             if os.path.isfile(path+'/GXPARM.XDS'):
@@ -273,8 +287,8 @@ def OptimizeXDS(Paths,Optim):
                 
         if 'BEAM' in Optim:
             if os.path.isfile(path+'/INTEGRATE.LP'):
-                inp = XDSINP(path)
-                inp.read()
+#               inp = XDSINP(path)
+#              inp.read()
                 
                 intlp = open(path+'/INTEGRATE.LP')
                 
@@ -289,10 +303,10 @@ def OptimizeXDS(Paths,Optim):
                     inp.SetParam(line[2]+' '+line[3])    
                 
                 intlp.close()
-                inp.write()                        
+#               inp.write()                        
         
-        inp = XDSINP(path)  #TODO: otevrit, precist a zapsat jen jednou
-        inp.read()
+#        inp = XDSINP(path)  #TODO: otevrit, precist a zapsat jen jednou
+#        inp.read()
         inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
         inp.write()
                     
