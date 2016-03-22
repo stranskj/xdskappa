@@ -123,6 +123,38 @@ class XDataset():
 		self.detector['Pixel_Count_Y'] = self.fheader['X-Binary-Size-Second-Dimension']
 		self.detector['Name'] = 'PILATUS'		#TODO
 		
+	def PhiVector(self,angOmegaStr,angChiStr):
+		angOmega = math.radians(float(angOmegaStr))
+		angChi   = math.radians(float(angChiStr))
+		
+		vecPhi = [0]*3		
+		vecPhi[0] = math.sin(angChi)*math.cos(angOmega)
+		vecPhi[1] = math.cos(angChi) 
+		vecPhi[2] = math.sin(angChi)*math.sin(angOmega)
+		
+		vecPhiStr = ''
+		for i in range(3):
+			vecPhiStr += "{:.7f}".format(vecPhi[i]) + ' ' 
+		
+		return vecPhiStr.strip()
+	
+	def SetOscilation(self,axes,scan):
+		oscil = float(axes[scan]['_diffrn_scan_axis.angle_increment'])
+		#self.geometry['OSCILATION'] = axes[self.geometry['SCAN']]['_diffrn_scan_axis.angle_increment']
+		if oscil < 0:
+			oscil *= -1
+			ax = self.geometry[scan]['VECTOR'].split()
+			axCorr = ''
+			for i in range(3):
+				coord = -1*float(ax[i])
+				axCorr += "{:.7f}".format(coord) + ' '
+			axCorr.strip()
+		else:
+			axCorr = self.geometry[scan]['VECTOR']
+			
+		oscilStr = 	"{:.7f}".format(oscil)
+		
+		return oscilStr,axCorr		
 
 	def SetGeometry(self):
 		try:
@@ -133,24 +165,26 @@ class XDataset():
 			
 		self.geometry['DISTANCE'] = axes['DX']['_diffrn_scan_axis.displacement_start']
 		self.geometry['SCAN'] = self.fheader['_diffrn_measurement_axis.axis_id']
-		self.geometry['OSCILATION'] = axes[self.geometry['SCAN']]['_diffrn_scan_axis.angle_increment']
+		
 		self.geometry['OMEGA'] = {}
 		self.geometry['CHI'] = {}
 		self.geometry['PHI'] = {}
 		self.geometry['TWOTHETA'] = {}
 		self.geometry['OMEGA']['VECTOR'] = '0 -1 0' 	#TODO get from CBF? 
 		self.geometry['OMEGA']['ANGLE'] = axes['OMEGA']['_diffrn_scan_axis.angle_start']	
-		self.geometry['PHI']['VECTOR'] = '0 -1 0' #TODO, now irelevant for omega scans
+		#self.geometry['PHI']['VECTOR'] = '0.21 -1 -0.34' #TODO, now irelevant for omega scans
 		self.geometry['PHI']['ANGLE'] = axes['PHI']['_diffrn_scan_axis.angle_start']	#TODO, now irelevant for omega scans
 		self.geometry['CHI']['VECTOR'] = '0 -1 0' #TODO, now irelevant for omega scans
 		self.geometry['CHI']['ANGLE'] = axes['CHI']['_diffrn_scan_axis.angle_start']	#TODO, now irelevant for omega scans
 		self.geometry['TWOTHETA']['VECTOR'] = '0 -1 0'
 		self.geometry['TWOTHETA']['ANGLE'] = axes['TWOTHETA']['_diffrn_scan_axis.angle_start']
 		self.SetOrigin()
+		self.geometry['PHI']['VECTOR'] = self.PhiVector(self.geometry['OMEGA']['ANGLE'], self.geometry['CHI']['ANGLE'])
+		self.geometry['OSCILATION'],self.geometry[self.geometry['SCAN']]['VECTOR'] = self.SetOscilation(axes, self.geometry['SCAN'])
 		self.geometry['X-DETECTOR'],self.geometry['Y-DETECTOR'] = self.TwothetaVector(self.geometry['TWOTHETA']['ANGLE'])
 
 def Test():
-	datset = XDataset('test/photon_????.cbf',1)
+	datset = XDataset('test/photon2_????.cbf',1)
 	
 	print "Data range: " + str(datset.frange)
 	print "Template: " + datset.template

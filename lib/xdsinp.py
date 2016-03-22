@@ -251,30 +251,32 @@ class XDSINP(dict):
 # 	        return
 
 def Test():
-	
-	dts = xdataset.XDataset('test/photon_????.cbf')
+	print 'Test1'
+	dts = xdataset.XDataset('test/photon2_????.cbf')
 	inp = XDSINP('test',dts)
-	inp.setXDSINP()
+	inp.SetDefaults()
 	#inp.read()
 	for key in inp:
 		for val in inp[key]:
 			print key + ": " + val 
 			
-	inp.path = 'test/XDS2.INP'
+	inp.path = 'test/XDS3.INP'
 	#for key in inp:
 	#	print key
 	inp.write()
 	
 def Test2():
+	print 'Test2'
 	inp = XDSINP('test')
 	inp.read()
 	for key in inp:
 		for val in inp[key]:
-			print key + ": " + inp[key]
+			print key + ": " + val
 			
 	inp.path = 'test/XDS2.INP'
 	inp.write()
 	
 if __name__ == "__main__":
 	Test()
+	#Test2()
 	sys.exit(0)
