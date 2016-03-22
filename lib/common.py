@@ -251,9 +251,32 @@ def ForceXDS(paths):
             log.close() 
     return 
 
-#def BackupOpt(Paths):
-#    for path in Paths:
+def BackupOpt(Paths,bckname):
+    for path in Paths:
+        pathbck = path +'/'+ bckname
+        #try:
+        #    os.mkdir(pathbck)
+        #except:
+        #    print "Backup directory already exists, overwritting content: "+ pathbck 
         
+        if os.path.isdir(pathbck):
+            print 'Backup in '+pathbck+' exists, deleting...'
+            try:
+                shutil.rmtree(pathbck, ignore_errors=False, onerror=IOError)
+            except IOError:
+                print 'Nothing to remove'
+                
+        try:
+            #shutil.copytree(path, pathbck, symlinks=True)
+            os.mkdir(pathbck)
+            dircont = os.listdir(path)
+            for fi in dircont:
+                if os.path.isfile(path+'/'+fi):
+                    shutil.copy2(path+'/'+fi, pathbck+'/'+fi)
+                    
+        except Exception as e:
+            print e
+    return                    
 
 def OptimizeXDS(Paths,Optim): 
     if Optim == None or len(Optim) == 0:

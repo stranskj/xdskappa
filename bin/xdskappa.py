@@ -25,6 +25,7 @@ def ParseInput():
 	
 	parser.add_argument('-f', '--force', dest='ForceXDS', action='store_true', help='Force integration on unsuccesfull indexing.')
 	parser.add_argument('-opt','--optimize', dest='OptIntegration', nargs='?', action='append', const= 'ALL', metavar='ALL FIX BEAM GEOMETRY', help='Run XDS twice, with optimized parameters in second run. FIX - fix parameters in integration; BEAM - copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS to XPARM.XDS. One keyword per parameter occurance. When given without a value, ALL is presumed.')
+	parser.add_argument('--backup', dest='BackupOpt', nargs='?', const='backup', default=None, metavar='NAME', help='Backup datasets folders prior optimization to their subfolder ("backup" on empty value) . It will erase older backup of [NAME] if present. No backup by default.')
 	
 
 	# help on empty input
@@ -70,6 +71,9 @@ def main():
 	common.PrintISa(names)
 	
 	if in_data.OptIntegration != None:			#TODO: Nedelej pri neuspesne indexaci
+		if in_data.BackupOpt != None:
+			print 'Backing up previous run...'
+			common.BackupOpt(names, in_data.BackupOpt)
 		common.OptimizeXDS(names, in_data.OptIntegration)
 		common.RunXDS(names)
 		common.PrintISa(names)
