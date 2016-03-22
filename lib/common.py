@@ -6,7 +6,7 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.1.2 (16th Mar 2016)'
+VERSION = '0.1.2 (21st Mar 2016)'
 LIST_SEPARATOR = '\t'
 
 import os,math,subprocess,re,glob,sys,shutil
@@ -269,9 +269,29 @@ def OptimizeXDS(Paths,Optim):
             
         if 'GEOMETRY' in Optim:
             if os.path.isfile(path+'/GXPARM.XDS'):
-                shutil.copy(path+'/GXPARM.XDS', path+'/XPARM.XDS')                
+                shutil.copy(path+'/GXPARM.XDS', path+'/XPARM.XDS')
+                
+        if 'BEAM' in Optim:
+            if os.path.isfile(path+'/INTEGRATE.LP'):
+                inp = XDSINP(path)
+                inp.read()
+                
+                intlp = open(path+'/INTEGRATE.LP')
+                
+                #find SUGGESTED VALUES FOR INPUT PARAMETERS, accending two rows inp.SetParam()
+             
+                while not 'SUGGESTED VALUES FOR INPUT PARAMETERS' in intlp.readline():
+                    pass
+                    
+                for i in range(2):
+                    line = intlp.readline().split()
+                    inp.SetParam(line[0]+' '+line[1])
+                    inp.SetParam(line[2]+' '+line[3])    
+                
+                intlp.close()
+                inp.write()                        
         
-        inp = XDSINP(path)
+        inp = XDSINP(path)  #TODO: otevrit, precist a zapsat jen jednou
         inp.read()
         inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
         inp.write()

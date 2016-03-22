@@ -10,21 +10,21 @@ def ParseInput():
 	parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently for omega scans on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par')
 	
 	parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input frames")
-	parser.add_argument('-d','--dataset-file', dest='DatasetListFile', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory path/template_????.cbf')
+	parser.add_argument('-d','--dataset-file', dest='DatasetListFile', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf')
 	
-	parser.add_argument('-out','--output-file', dest='OutputScale', metavar= 'FILE', default='scaled.ahkl', help='File name for output from scaling.')
+	parser.add_argument('-out','--output-file', dest='OutputScale', metavar= 'FILE', default='scaled.HKL', help='File name for output from scaling.')
 	
 	parser.add_argument('-g', dest='ShowGraphs', action='store_true', help='Show merging statistics in graphs in the end.')
 	
 	parser.add_argument('--min-dataset', dest='minData', default=2, metavar='NUM', type=int, help="Minimal number of frames to be concidered as dataset.")
 	
-	parser.add_argument('-p','--parameter', dest='XDSParameter', nargs='+', action='append', metavar='PAR= VALUE', help='Modification to all XDS.INP. Parameters format as defined for XDS.INP. Overrides parameters from --parameter-file.')
-	parser.add_argument('--parameter-file', dest='XDSParameterFile', metavar='FILE', help='File with list of parameters to modify XDS.INP. Parameters format as defined for XDS.INP')
+	parser.add_argument('-p','--parameter', dest='XDSParameter', nargs='+', action='append', metavar='PAR= VALUE', help='Modification to all XDS.INP files. Parameters format as defined for XDS.INP. Overrides parameters from --parameter-file.')
+	parser.add_argument('--parameter-file', dest='XDSParameterFile', metavar='FILE', help='File with list of parameters to modify XDS.INP files. Parameters format as defined for XDS.INP')
 	
-	parser.add_argument('-r','--reference-dataset', dest='ReferenceData', metavar='DATASET', help='Reference dataset from working list, named by subdirectory. The first one used by default. For external reference dataset use: -p REFERENCE_DATASET= path/data/XDS_ASCII.HKL')
+	parser.add_argument('-r','--reference-dataset', dest='ReferenceData', metavar='DATASET', help='Name of reference dataset from working list. The first one used by default. For external reference dataset use: -p REFERENCE_DATASET= path/data/XDS_ASCII.HKL')
 	
 	parser.add_argument('-f', '--force', dest='ForceXDS', action='store_true', help='Force integration on unsuccesfull indexing.')
-	parser.add_argument('-opt','--optimize', dest='OptIntegration', nargs='?', action='append', const= 'ALL', metavar='ALL FIX BEAM GEOMETRY', help='Run XDS twice, with optimized parameters in second run. FIX - fix parameters in integration; BEAM - copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS to XPARM.XDS. One keyword per parameter occurance.')
+	parser.add_argument('-opt','--optimize', dest='OptIntegration', nargs='?', action='append', const= 'ALL', metavar='ALL FIX BEAM GEOMETRY', help='Run XDS twice, with optimized parameters in second run. FIX - fix parameters in integration; BEAM - copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS to XPARM.XDS. One keyword per parameter occurance. When given without a value, ALL is presumed.')
 	
 
 	# help on empty input
@@ -53,9 +53,9 @@ def main():
 	if in_data.DatasetListFile :
 		datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)
 	
-	print "Using datasets:"
+	print "Using datasets (name, path):"
 	for d in names :
-		print datasets[d]
+		print d + '\t' +datasets[d]
 		
 	common.PrepareXDSINP(in_data,datasets,names)
 	
@@ -69,7 +69,7 @@ def main():
 			
 	common.PrintISa(names)
 	
-	if in_data.OptIntegration != None:
+	if in_data.OptIntegration != None:			#TODO: Nedelej pri neuspesne indexaci
 		common.OptimizeXDS(names, in_data.OptIntegration)
 		common.RunXDS(names)
 		common.PrintISa(names)
