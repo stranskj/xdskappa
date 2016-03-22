@@ -6,7 +6,7 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.1.2 (21st Mar 2016)'
+VERSION = '0.2 (22nd Mar 2016)'
 LIST_SEPARATOR = '\t'
 
 import os,math,subprocess,re,glob,sys,shutil
@@ -555,6 +555,7 @@ def GetDatasets(inData):
         names.append(key)
     names.sort()
     fdatasets = open('datasets.list','w')
+    fdatasets.write('# Written by xdskappa ('+VERSION+').\n #Use # in line begining to disable dataset processing.\n# Dataset name\tFrame name template\n')
     for key in names:
         fdatasets.write(key + LIST_SEPARATOR + DatasetsDict[key] + "\n")
     fdatasets.close()    
