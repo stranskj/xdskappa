@@ -161,6 +161,7 @@ class XDSINP(dict):
 		self['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = ['4']
 		self['REFINE(IDXREF)'] = ['CELL BEAM ORIENTATION AXIS ! DISTANCE POSITION']
 		self['REFINE(INTEGRATE)'] = ['DISTANCE POSITION BEAM ORIENTATION ! AXIS CELL']
+		self['REFINE(CORRECT)'] = ['DISTANCE POSITION BEAM ORIENTATION AXIS CELL']
 		self['DETECTOR'] = [self.dataset.detector['Name']]
 		self['MINIMUM_VALID_PIXEL_VALUE'] = ['0']
 		self['OVERLOAD'] = [fheader['_array_intensities.overload']]

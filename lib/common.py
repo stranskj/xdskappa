@@ -15,6 +15,16 @@ from xdataset import XDataset
 from distutils import spawn
 
 def GetStatistics(inFile, outFile):
+    """
+    Generate data file to plot statistics vs. resolution
+    
+    @param inFile: Input file name (CORRECT.LP or XSCALE.LP)
+    @type  inFile: string
+    
+    @param outFile: Output file name
+    @type  outFile: string
+    """
+    
     if os.path.isfile(inFile) == False :
         raise IOError(inFile + " is not available. Problem with data processing?")
         return 
@@ -47,6 +57,12 @@ def GetStatistics(inFile, outFile):
     fout.close()
     
 def GetWinSize():
+    """
+    Get size of screens
+    
+    @return: size of screens
+    @type return: list of tuples
+    """
     winsize = []
     if spawn.find_executable('xrandr'):
         getwinsize = subprocess.Popen('xrandr',stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -64,6 +80,15 @@ def GetWinSize():
     return winsize
     
 def ShowStatistics(Names,Scale=None):
+    """
+    Shows statistics vs. resolution in multiplot using gnuplot
+    
+    @param Names: List of pahts do dataset results
+    @type  Names: list of strings
+    
+    @param Scale: Path to scaled data
+    @type  Scale: string 
+    """
     for data in Names:
         if os.path.isfile(data+'/CORRECT.LP'):
             GetStatistics(data+'/CORRECT.LP', data+'/statistics.out')
@@ -385,7 +410,9 @@ def ReadDatasetListFile(inData):
     DatasetsDict = {}
     names = []
     for line in fin:
-        row = line.split(LIST_SEPARATOR)
+        row = line.strip().split(LIST_SEPARATOR)
+        if row[0][0] == '#':
+            continue
         names.append(row[0])
         DatasetsDict[row[0]] = row[1].strip('\n\r\t ')
     fin.close()    

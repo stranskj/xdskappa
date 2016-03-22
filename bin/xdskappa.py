@@ -7,7 +7,7 @@ from xdsinp import XDSINP
 
 
 def ParseInput():
-	parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently for omega scans on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par')
+	parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently works on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par, gnuplot')
 	
 	parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input frames")
 	parser.add_argument('-d','--dataset-file', dest='DatasetListFile', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf')
