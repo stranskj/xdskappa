@@ -10,7 +10,7 @@ def ParseInput():
 	parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently works on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par, gnuplot')
 	
 	parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input frames")
-	parser.add_argument('-d','--dataset-file', dest='DatasetListFile', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf')
+	parser.add_argument('-D','--dataset-file', dest='DatasetListFile', nargs='?', default=None, const='datasets.list', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf')
 	
 	parser.add_argument('-out','--output-file', dest='OutputScale', metavar= 'FILE', default='scaled.HKL', help='File name for output from scaling.')
 	
@@ -19,7 +19,7 @@ def ParseInput():
 	parser.add_argument('--min-dataset', dest='minData', default=2, metavar='NUM', type=int, help="Minimal number of frames to be concidered as dataset.")
 	
 	parser.add_argument('-p','--parameter', dest='XDSParameter', nargs='+', action='append', metavar='PAR= VALUE', help='Modification to all XDS.INP files. Parameters format as defined for XDS.INP. Overrides parameters from --parameter-file.')
-	parser.add_argument('--parameter-file', dest='XDSParameterFile', metavar='FILE', help='File with list of parameters to modify XDS.INP files. Parameters format as defined for XDS.INP')
+	parser.add_argument('-P','--parameter-file', dest='XDSParameterFile', nargs='?', default=None, const='XDSKAPPA.INP',metavar='FILE', help='File with list of parameters to modify XDS.INP files. Parameters format as defined for XDS.INP')
 	
 	parser.add_argument('-r','--reference-dataset', dest='ReferenceData', metavar='DATASET', help='Name of reference dataset from working list. The first one used by default. For external reference dataset use: -p REFERENCE_DATASET= path/data/XDS_ASCII.HKL')
 	
@@ -49,7 +49,7 @@ def main():
 		print "Found datasets:"
 		for d in names :
 			print datasets[d]
-		print "Found datasets saved to dataset.list"
+		print "Found datasets saved to datasets.list"
 	
 	if in_data.DatasetListFile :
 		datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)
