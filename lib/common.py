@@ -485,6 +485,8 @@ def PrepareXDSINP(inData,Datasets,Names):
     
     for par in mod_list:
         par_dict.SetParam(par)   
+    
+    #print params to XDSKAPPA_run.INP
          
     
     if inData.ReferenceData:        #if global reference dataset entered as -p REFERENCE_DATASET= data/XDS_ASCII.HKL, overwritten later in XDS.INP setting
@@ -493,6 +495,20 @@ def PrepareXDSINP(inData,Datasets,Names):
         refdataset = Names[0]
         
     #Dictionary of modifications
+    par_full = XDSINP('temp')
+    par_full.path = 'XDSKAPPA_run.INP'
+    
+    for key in file_dict:
+        par_full[key] = file_dict[key]
+            
+    for key in par_dict:
+        par_full[key] = par_dict[key]
+        
+    kapinp = open('XDSKAPPA_run.INP','w')
+    for key in par_full:
+        kapinp.write(par_full.GetParam(key))
+        
+    print 'Parameters used to modify XDS.INP files was written to XDSKAPPA_run.INP.'       
         
     for path in Names:
         try:
@@ -516,11 +532,14 @@ def PrepareXDSINP(inData,Datasets,Names):
         if not path == refdataset:
             inp.SetParam("REFERENCE_DATA_SET= ../" + refdataset + "/XDS_ASCII.HKL")
         
-        for key in file_dict:
-            inp[key] = file_dict[key]
+        for key in par_full:
+            inp[key] = par_full[key]
+        
+        #for key in file_dict:
+        #    inp[key] = file_dict[key]
             
-        for key in par_dict:
-            inp[key] = par_dict[key]    
+        #for key in par_dict:
+        #    inp[key] = par_dict[key]    
         # poor Multiparam support
         #for parm in mod_list:
         #    inp.SetParam(parm)
