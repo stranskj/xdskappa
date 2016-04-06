@@ -6,7 +6,7 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.2 (22nd Mar 2016)'
+VERSION = '0.2.1 (31st Mar 2016)'
 LIST_SEPARATOR = '\t'
 
 import os,math,subprocess,re,glob,sys,shutil
