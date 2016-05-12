@@ -108,7 +108,7 @@ set terminal x11 size '+ winsize[0][0] +',' +winsize[0][1] +' \n \
 set xlabel "Resolution [A]"\n \
 set multiplot layout 3,3 \n \
 set nokey \n \
-set title "Completness"\n \
+set title "Completeness"\n \
 set ylabel "%"\n \
 set yrange [0:100] \n \
 set xrange [*:*] reverse \n \
