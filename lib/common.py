@@ -6,7 +6,7 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.2.1 (8th Apr 2016)'
+VERSION = '0.2.1 (11th Aug 2016)'
 LIST_SEPARATOR = '\t'
 
 import os,math,subprocess,re,glob,sys,shutil
@@ -92,15 +92,16 @@ def ShowStatistics(Names,Scale=None):
     for data in Names:
         if os.path.isfile(data+'/CORRECT.LP'):
             GetStatistics(data+'/CORRECT.LP', data+'/statistics.out')
-    
-    if os.path.isfile(Scale+'/XSCALE.LP'):
+    if not (Scale == None):
+        Names.append(Scale)
+        if os.path.isfile(Scale+'/XSCALE.LP'):
             GetStatistics(Scale+'/XSCALE.LP', Scale+'/statistics.out')
     
     winsize = GetWinSize()
     
 #    winsize = ['1920','1080']
     
-    Names.append(Scale)        
+            
     plt = open('gnuplot.plt','w')
     
     plt.write('\
@@ -512,7 +513,7 @@ def PrepareXDSINP(inData,Datasets,Names):
     for key in par_full:
         kapinp.write(par_full.GetParam(key))
         
-    print 'Parameters used to modify XDS.INP files was written to XDSKAPPA_run.INP.'       
+    print 'Parameters used to modify XDS.INP files were written to XDSKAPPA_run.INP.'       
         
     for path in Names:
         try:

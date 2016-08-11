@@ -40,9 +40,14 @@ def main():
 	print "\txdskappa " + common.VERSION
 	print "\tAuthor: Jan Stransky"
 	print "\t========================"
+	print " "
 	
 	in_data = ParseInput()
 	#print in_data
+
+	if (len(in_data.dataPath) == 0) and (in_data.DatasetListFile == None):
+		print "Nor path to data, nor dataset file specified. See help or documentation."
+		sys.exit(1)
 
 	if len(in_data.dataPath) > 0:
 		datasets,names = common.GetDatasets(in_data)
