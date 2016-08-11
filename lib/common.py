@@ -196,11 +196,16 @@ plot ')
     
     plt.close()
     
-    if spawn.find_executable('gnuplot') == None:
-        print "Gnuplot not found in $PATH. You can plot results using statistic.out in subdirectories"
-    arg = 'gnuplot -p gnuplot.plt'.split()
-    plot = subprocess.Popen(arg)
-    plot.wait()
+    print " "
+    print "Input file to plot merging statistics was written to gnuplot.plt. To see the graphs, run:"
+    print " "
+    print "gnuplot -p gnuplot.plt"
+    
+#    if spawn.find_executable('gnuplot') == None:
+#        print "Gnuplot not found in $PATH. You can plot results using statistic.out in subdirectories"
+#    arg = 'gnuplot -p gnuplot.plt'.split()
+#    plot = subprocess.Popen(arg)
+#    plot.wait()
 
 def getISa(path):
     corlp = path
