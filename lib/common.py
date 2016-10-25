@@ -463,6 +463,37 @@ def ReadXDSParamFile(inFile):
     fin.close()
     return outParList
 
+def ProcessParams(inParam,inParamFile):
+    """
+    Parses input from -p- and -P-like input
+    @param inParam: List of with paramters
+    @type inParam: List
+    @param inParamFile: Path to file with parameters
+    @type inParamFile: string
+
+    @return Dictionary of XDS parameters
+    @type XDSINP
+    """
+
+    out_dict = XDSINP('temp')
+    if inParamFile:
+        #mod_list += ReadXDSParamFile(inParamFile)
+        out_dict.path = inParamFile
+        try:
+            out_dict.read()
+        except IOError as e:
+            raise IOError(e)
+            return
+
+    mod_list = []
+#    par_dict = XDSINP('temp')
+    if inParam:
+        mod_list += MakeXDSParam(inParam)
+
+    for par in mod_list:
+        out_dict.SetParam(par)
+
+    return out_dict
         
 def PrepareXDSINP(inData,Datasets,Names):
     """
