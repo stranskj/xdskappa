@@ -26,7 +26,7 @@ def main():
     print " "
 
     in_data = ParseInput()
-    print in_data
+ #   print in_data
 
     if os.path.isfile(in_data.DatasetListFile):
         datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)

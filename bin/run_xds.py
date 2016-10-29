@@ -29,9 +29,9 @@ def ParseInput():
 
 
         # help on empty input
-        if len(sys.argv) == 1:
-                parser.print_help()     # help on empty input
-                sys.exit(1)
+ #       if len(sys.argv) == 1:
+ #               parser.print_help()     # help on empty input
+ #               sys.exit(1)
 
         return parser.parse_args()
 
@@ -43,7 +43,7 @@ def main():
     print " "
 
     in_data = ParseInput()
-    print in_data
+#    print in_data
 
     if os.path.isfile(in_data.DatasetListFile):
         datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)

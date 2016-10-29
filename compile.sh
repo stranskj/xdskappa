@@ -1,9 +1,12 @@
 #!/bin/bash
 
-pyinstaller -p lib/ --clean -y bin/xdskappa.py #bin/find.py
+pyi-build xdskappa.spec --clean 
 
 cd dist
-tar czvf ../release/xdskappa-v0.2-centos7.tar.gz xdskappa/*
+mv xdskappa.show_stat/xdskappa.show_stat
+mv xdskappa.run_xds/xdskappa.run_xds
 
-rm -rf xdskappa
+#tar czvf ../release/xdskappa-v0.2.2-debian.tar.gz xdskappa/*
+
+#rm -rf xdskappa
 

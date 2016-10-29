@@ -1,0 +1,16 @@
+*.pyc
+*_bck*
+*.list
+*.cbf
+!pilatus.cbf
+!photon.cbf
+*~
+*.swp
+build/
+dist/
+*.plt
+scale/
+[0-9]*/
+release/
+legacy/
+testing/
