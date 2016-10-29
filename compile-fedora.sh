@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pyinstaller -p lib/ --clean -y bin/xdskappa.py #bin/find.py
+bash compile.sh
 
 cd dist
 tar czvf ../release/xdskappa-v0.2.2-fedora23.tar.gz xdskappa/*
