@@ -4,5 +4,6 @@
 bash compile.sh
 
 cd dist
-tar czvf ../release/xdskappa-v0.2.2-debian.tar.gz xdskappa/*
+tar czvf ../release/xdskappa-v0.2.3-debian.tar.gz xdskappa/*
 
+rm -rf *

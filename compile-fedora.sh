@@ -3,7 +3,8 @@
 bash compile.sh
 
 cd dist
-tar czvf ../release/xdskappa-v0.2.2-fedora23.tar.gz xdskappa/*
+tar czvf ../release/xdskappa-v0.2.3-fedora23.tar.gz xdskappa/*
 
 rm -rf xdskappa
 
+rm -rf *
