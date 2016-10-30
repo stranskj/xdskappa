@@ -118,7 +118,7 @@ run_xds_coll = COLLECT(run_xds_exe,
                strip=False,
                upx=True,
                name='xdskappa.run_xds')
-run_xds_coll = COLLECT(optim_exe,
+optim_coll = COLLECT(optim_exe,
                optim_a.binaries,
                optim_a.zipfiles,
                optim_a.datas,

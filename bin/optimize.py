@@ -4,22 +4,26 @@ import common, os
 from xdsinp import XDSINP
 
 def ParseInput():
-    parser = argparse.ArgumentParser(prog= 'xdskappa', description='Modify input files to perform optimization of integration and rerun XDS.', epilog='Dependencies: XDS')
+    parser = argparse.ArgumentParser(prog= 'xdskappa.optimize', description='Modify input files to perform optimization of integration and rerun XDS.', epilog='Dependencies: XDS')
     
-    parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input frames")
-    parser.add_argument('-D','--dataset-file', dest='DatasetListFile', nargs='?', default=None, const='datasets.list', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf. When no file is given, "datasets.list" is expected.')
+    parser.add_argument('-D','--dataset-file', dest='DatasetListFile', nargs='?', default='datasets.list', const='datasets.list', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf. When no file is given, "datasets.list" is expected.')
     
-    parser.add_argument('-opt','--optimize', dest='OptIntegration', nargs='?', action='append', const= 'ALL', metavar='ALL FIX BEAM GEOMETRY', help='Run XDS twice, with optimized parameters in second run. FIX - fix parameters in integration; BEAM - copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS to XPARM.XDS. One keyword per parameter occurance. When given without a value, ALL is presumed.')
+    parser.add_argument('-opt','--optimize', dest='OptIntegration', nargs='?', action='append', const= 'ALL', metavar='VAL', help='Parameters to optimized in befor INTEGRATION. FIX - fix parameters in integration; BEAM - copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS to XPARM.XDS. One keyword per parameter occurance. When given without a value, ALL is presumed.')
     parser.add_argument('--backup', dest='BackupOpt', nargs='?', const='backup', default=None, metavar='NAME', help='Backup datasets folders prior optimization to their subfolder ("backup" on empty value) . It will erase older backup of [NAME] if present. No backup by default.')
     
     parser.add_argument('--no-run', dest='NoRun', action='store_false',default=True, help="Only modify files, don't run xds_par.")
 
     # help on empty input
-    if len(sys.argv) == 1:
-        parser.print_help()     # help on empty input
-        sys.exit(1)
+#    if len(sys.argv) == 1:
+#        parser.print_help()     # help on empty input
+#        sys.exit(1)
 
-    return parser.parse_args()
+    outArgs = parser.parse_args()
+    
+    if outArgs.OptIntegration == None:
+        outArgs.OptIntegration = ['ALL']
+
+    return outArgs
 
 def PrintISaOptimized(OldIsa,NewIsa):
     """
@@ -53,8 +57,8 @@ def main():
     print "\t========================"
     print " "
 
-    in_data = ParseInput()
-#    print in_data
+    in_data = ParseInput()#sys.argv)
+    print in_data
 
     if os.path.isfile(in_data.DatasetListFile):
         datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)
