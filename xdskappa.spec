@@ -37,15 +37,30 @@ run_xds_a = Analysis(['bin/run_xds.py'],
 #             win_private_assemblies=False)
 #             cipher=block_cipher)
 
+optim_a = Analysis(['bin/optimize.py'],
+             pathex=['lib/', '/src/xdskappa.optimize'],
+#             binaries=None,
+ #            datas=None,
+             hiddenimports=[],
+             hookspath=[],
+             runtime_hooks=[],
+             excludes=[])
+#             win_no_prefer_redirects=False,
+#             win_private_assemblies=False)
+#             cipher=block_cipher)
+
 MERGE( (full_a, 'xdskappa', 'xdskappa'),
 	(show_stat_a, 'xdskappa.show_stat', 'xdskappa.show_stat'),
-	(run_xds_a, 'xdskappa.run_xds', 'xdskappa.run_xds') )
+	(run_xds_a, 'xdskappa.run_xds', 'xdskappa.run_xds'),
+	(optim_a, 'xdskappa.optimize', 'xdskappa.optimize') )
 
 full_pyz = PYZ(full_a.pure)#, full_a.zipped_data,
              #cipher=block_cipher)
 show_stat_pyz = PYZ(show_stat_a.pure)#, show_stat_a.zipped_data,
 #             cipher=block_cipher)
 run_xds_pyz = PYZ(run_xds_a.pure)#, run_xds_a.zipped_data,
+#             cipher=block_cipher)
+optim_pyz = PYZ(optim_a.pure)#, run_xds_a.zipped_data,
 #             cipher=block_cipher)
 
 full_exe = EXE(full_pyz,
@@ -72,6 +87,15 @@ run_xds_exe = EXE(run_xds_pyz,
           strip=False,
           upx=True,
           console=True )
+optim_exe = EXE(optim_pyz,
+          optim_a.scripts,
+          exclude_binaries=True,
+          name='xdskappa.optimize',
+          debug=False,
+          strip=False,
+          upx=True,
+          console=True )
+
 
 full_coll = COLLECT(full_exe,
                full_a.binaries,
@@ -94,4 +118,10 @@ run_xds_coll = COLLECT(run_xds_exe,
                strip=False,
                upx=True,
                name='xdskappa.run_xds')
-
+run_xds_coll = COLLECT(optim_exe,
+               optim_a.binaries,
+               optim_a.zipfiles,
+               optim_a.datas,
+               strip=False,
+               upx=True,
+               name='xdskappa.optimize')

@@ -3,6 +3,7 @@
 #from _imaging import path
 #from xdataset import XDataset
 import common
+import optimize as opt
 from xdsinp import XDSINP
 
 
@@ -79,9 +80,19 @@ def main():
 		if in_data.BackupOpt != None:
 			print 'Backing up previous run...'
 			common.BackupOpt(names, in_data.BackupOpt)
+		
+		oldisa = common.ReadISa(names)
 		common.OptimizeXDS(names, in_data.OptIntegration)
+
+		print "Running XDS..."
 		common.RunXDS(names)
-		common.PrintISa(names)
+
+		newisa = common.ReadISa(names)
+		opt.PrintISaOptimized(oldisa, newisa)
+		
+		#common.OptimizeXDS(names, in_data.OptIntegration)
+		#common.RunXDS(names)
+		#common.PrintISa(names)
 		
 	common.Scale(names, in_data.OutputScale)
 	

@@ -222,16 +222,24 @@ def getISa(path):
     fcor.close()
     return line[2]
 
+def ReadISa(Paths):
+    outDict = {}
+    for dataset in Paths:
+        try:
+            outDict[dataset] = getISa(dataset + '/CORRECT.LP')
+        except IOError:
+            outDict[dataset] = 'N/A'
+            
+    return outDict        
+
 def PrintISa(Paths):
     print 'ISa for individual datasets:'
     print '\tISa\tDataset'
-    for dataset in Paths:
-        try:
-            isa = getISa(dataset + '/CORRECT.LP')
-        except IOError:
-            isa = 'N/A'
-        
-        print '\t' + isa + '\t' + dataset
+    
+    isalist = ReadISa(Paths)
+    
+    for dataset in sorted(isalist):    
+        print '\t' + isalist[dataset] + '\t' + dataset
     return
 
 def RunXDS(Paths):
