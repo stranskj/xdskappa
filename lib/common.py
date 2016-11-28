@@ -93,7 +93,7 @@ def ShowStatistics(Names,Scale=None):
         if os.path.isfile(data+'/CORRECT.LP'):
             GetStatistics(data+'/CORRECT.LP', data+'/statistics.out')
     if not (Scale == None):
-        Names.append(Scale)
+  #      Names.append(Scale)
         if os.path.isfile(Scale+'/XSCALE.LP'):
             GetStatistics(Scale+'/XSCALE.LP', Scale+'/statistics.out')
     
@@ -117,6 +117,8 @@ set xrange [*:*] reverse \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:5 with lines, ")
+    if not (Scale == None):
+        plt.write("'" + Scale + "/statistics.out' using 1:5 with lines lw 3")
     plt.write('\n')
     
     plt.write(' \
@@ -124,6 +126,8 @@ set title "Rmerge"\n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:3 with lines, ")
+    if not (Scale == None):
+        plt.write("'" + Scale + "/statistics.out' using 1:3 with lines lw 3")
     plt.write('\n')
     
     plt.write(' \
@@ -131,6 +135,8 @@ set title "Rmeas"\n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:4 with lines, ")
+    if not (Scale == None):
+        plt.write("'" + Scale + "/statistics.out' using 1:4 with lines lw 3")
     plt.write('\n')
         
     plt.write(' \
@@ -138,6 +144,8 @@ set title "CC(1/2)"\n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:7 with lines, ")
+    if not (Scale == None):
+        plt.write("'" + Scale + "/statistics.out' using 1:7 with lines lw 3")
     plt.write('\n')
 
     plt.write(' \
@@ -147,6 +155,8 @@ set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:2 with lines, ")
+    if not (Scale == None):
+        plt.write("'" + Scale + "/statistics.out' using 1:2 with lines lw 3 title '")
     plt.write('\n')
     
     plt.write(' \
@@ -156,6 +166,8 @@ set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:6 with lines, ")
+    if not (Scale == None):
+        plt.write("'" + Scale + "/statistics.out' using 1:6 with lines lw 3")
     plt.write('\n')
     
     plt.write(' \
@@ -165,6 +177,8 @@ set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:9 with lines, ")
+    if not (Scale == None):
+        plt.write("'" + Scale + "/statistics.out' using 1:9 with lines lw 3")
     plt.write('\n')
         
     plt.write(' \
@@ -174,8 +188,11 @@ set yrange [ *:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:8 with lines, ")
+    if not (Scale == None):
+        plt.write("'" + Scale + "/statistics.out' using 1:8 with lines lw 3")    
     plt.write('\n')
     
+            
     plt.write(' \
 #unset multiplot \n \
 set title "Legend"\n \
@@ -190,6 +207,10 @@ unset xtics \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:2 with lines title '"+data +"', ")
+        
+    if not (Scale == None):
+        plt.write("'" + Scale + "/statistics.out' using 1:2 with lines lw 3 title '"+ Scale +"'")
+            
     plt.write('\n')
     
     plt.write('unset multiplot \n')
