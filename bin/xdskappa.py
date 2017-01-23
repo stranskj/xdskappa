@@ -15,7 +15,7 @@ def ParseInput():
 	
 	parser.add_argument('-out','--output-file', dest='OutputScale', metavar= 'FILE', default='scaled.HKL', help='File name for output from scaling.')
 	
-	parser.add_argument('-g', dest='ShowGraphs', action='store_true', help='Show merging statistics in graphs in the end.')
+	parser.add_argument('-g', dest='ShowGraphs', default=True, action='store_true', help='Show merging statistics in graphs in the end.')
 	
 	parser.add_argument('--min-dataset', dest='minData', default=2, metavar='NUM', type=int, help="Minimal number of frames to be considered as dataset.")
 	

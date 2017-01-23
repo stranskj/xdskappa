@@ -6,7 +6,7 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.2.3 (29th Oct 2016)'
+VERSION = '0.2.3 (28th November 2016)'
 LIST_SEPARATOR = '\t'
 
 import os,math,subprocess,re,glob,sys,shutil
@@ -546,7 +546,7 @@ def PrepareXDSINP(inData,Datasets,Names):
             file_dict.read()
         except IOError as e:
             print e
-            exit(1)    
+            sys.exit(1)    
         
     mod_list = []
     par_dict = XDSINP('temp')    
