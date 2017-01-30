@@ -6,7 +6,7 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.2.3 (28th November 2016)'
+VERSION = '0.2.3 (30th January 2017)'
 LIST_SEPARATOR = '\t'
 
 import os,math,subprocess,re,glob,sys,shutil
@@ -64,7 +64,7 @@ def GetWinSize():
     @type return: list of tuples
     """
     winsize = []
-    if spawn.find_executable('xrandr'):
+    if spawn.find_executable('xrandr'): #TODO: nefunguje po ssh
         getwinsize = subprocess.Popen('xrandr',stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         
         for line in getwinsize.stdout:
@@ -74,8 +74,10 @@ def GetWinSize():
                 size = row[0],row[1]
                 winsize.append(size)
         getwinsize.wait()
-    else:
-        size = 1920,1080
+        
+    #else:
+    if len(winsize) == 0:
+        size = '1920','1080'
         winsize.append(size)
     return winsize
     
