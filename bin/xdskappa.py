@@ -97,7 +97,7 @@ def main():
 	common.Scale(names, in_data.OutputScale)
 	
 	if in_data.ShowGraphs:
-		common.ShowStatistics(names, 'scale')
+		common.ShowStatistics(names, ['scale'])
 	
 
 if __name__ == "__main__":

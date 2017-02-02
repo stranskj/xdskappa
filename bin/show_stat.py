@@ -9,7 +9,7 @@ def ParseInput():
 
 #        parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input frames")
         parser.add_argument('-D','--dataset-file', dest='DatasetListFile', nargs='?', default='datasets.list', const='datasets.list', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf. When no file is given, "datasets.list" is expected.')
-        parser.add_argument('-s', '--scaled', dest='Scaled', nargs='?', default=None, const='scale', metavar= 'FOLDER', help='Folder to results from XSCALE to include show statistics.')
+        parser.add_argument('-s', '--scaled', dest='Scaled', nargs='?', default=None, const='scale', action='append', metavar= 'FOLDER', help='Folder to results from XSCALE to include show statistics.')
         
         # help on empty input
 #        if len(sys.argv) == 1:

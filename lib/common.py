@@ -43,7 +43,11 @@ def GetStatistics(inFile, outFile):
         row = tab[i].split()
         
         res = row[0]
-        multiplicity = "{:.2f}".format(float(row[1]) / float(row[2]))
+        try:
+            multiplicity = "{:.2f}".format(float(row[1]) / float(row[2]))
+        except ZeroDivisionError:
+            multiplicity = "0.00"
+            
         Rfac = row[5].strip('%')
         Rmeas = row[9].strip('%')
         completness = row[4].strip('%')
@@ -81,7 +85,7 @@ def GetWinSize():
         winsize.append(size)
     return winsize
     
-def ShowStatistics(Names,Scale=None):
+def ShowStatistics(Names,Scale=None,plot_name='gnuplot.plt'):
     """
     Shows statistics vs. resolution in multiplot using gnuplot
     
@@ -94,17 +98,18 @@ def ShowStatistics(Names,Scale=None):
     for data in Names:
         if os.path.isfile(data+'/CORRECT.LP'):
             GetStatistics(data+'/CORRECT.LP', data+'/statistics.out')
-    if not (Scale == None):
+#    if not (Scale == None):
+    for sc in Scale:
   #      Names.append(Scale)
-        if os.path.isfile(Scale+'/XSCALE.LP'):
-            GetStatistics(Scale+'/XSCALE.LP', Scale+'/statistics.out')
+        if os.path.isfile(sc+'/XSCALE.LP'):
+            GetStatistics(sc+'/XSCALE.LP', sc+'/statistics.out')
     
     winsize = GetWinSize()
     
 #    winsize = ['1920','1080']
     
             
-    plt = open('gnuplot.plt','w')
+    plt = open(plot_name,'w')
     
     plt.write('\
 set terminal x11 size '+ winsize[0][0] +',' +winsize[0][1] +' \n \
@@ -119,8 +124,9 @@ set xrange [*:*] reverse \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:5 with lines, ")
-    if not (Scale == None):
-        plt.write("'" + Scale + "/statistics.out' using 1:5 with lines lw 3")
+#    if not (Scale == None):
+    for sc in Scale:
+        plt.write("'" + sc + "/statistics.out' using 1:5 with lines lw 3, ")
     plt.write('\n')
     
     plt.write(' \
@@ -128,8 +134,9 @@ set title "Rmerge"\n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:3 with lines, ")
-    if not (Scale == None):
-        plt.write("'" + Scale + "/statistics.out' using 1:3 with lines lw 3")
+#    if not (Scale == None):
+    for sc in Scale:
+        plt.write("'" + sc + "/statistics.out' using 1:3 with lines lw 3, ")
     plt.write('\n')
     
     plt.write(' \
@@ -137,8 +144,9 @@ set title "Rmeas"\n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:4 with lines, ")
-    if not (Scale == None):
-        plt.write("'" + Scale + "/statistics.out' using 1:4 with lines lw 3")
+#    if not (Scale == None):
+    for sc in Scale:
+        plt.write("'" + sc + "/statistics.out' using 1:4 with lines lw 3, ")
     plt.write('\n')
         
     plt.write(' \
@@ -146,8 +154,9 @@ set title "CC(1/2)"\n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:7 with lines, ")
-    if not (Scale == None):
-        plt.write("'" + Scale + "/statistics.out' using 1:7 with lines lw 3")
+#    if not (Scale == None):
+    for sc in Scale:
+        plt.write("'" + sc + "/statistics.out' using 1:7 with lines lw 3, ")
     plt.write('\n')
 
     plt.write(' \
@@ -157,8 +166,9 @@ set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:2 with lines, ")
-    if not (Scale == None):
-        plt.write("'" + Scale + "/statistics.out' using 1:2 with lines lw 3 title '")
+#    if not (Scale == None):
+    for sc in Scale:
+        plt.write("'" + sc + "/statistics.out' using 1:2 with lines lw 3, ")
     plt.write('\n')
     
     plt.write(' \
@@ -168,8 +178,9 @@ set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:6 with lines, ")
-    if not (Scale == None):
-        plt.write("'" + Scale + "/statistics.out' using 1:6 with lines lw 3")
+#    if not (Scale == None):
+    for sc in Scale:
+        plt.write("'" + sc + "/statistics.out' using 1:6 with lines lw 3, ")
     plt.write('\n')
     
     plt.write(' \
@@ -179,8 +190,9 @@ set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:9 with lines, ")
-    if not (Scale == None):
-        plt.write("'" + Scale + "/statistics.out' using 1:9 with lines lw 3")
+#    if not (Scale == None):
+    for sc in Scale:
+        plt.write("'" + sc + "/statistics.out' using 1:9 with lines lw 3, ")
     plt.write('\n')
         
     plt.write(' \
@@ -190,8 +202,9 @@ set yrange [ *:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:8 with lines, ")
-    if not (Scale == None):
-        plt.write("'" + Scale + "/statistics.out' using 1:8 with lines lw 3")    
+#    if not (Scale == None):
+    for sc in Scale:
+        plt.write("'" + sc + "/statistics.out' using 1:8 with lines lw 3, ")    
     plt.write('\n')
     
             
@@ -210,8 +223,9 @@ plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:2 with lines title '"+data +"', ")
         
-    if not (Scale == None):
-        plt.write("'" + Scale + "/statistics.out' using 1:2 with lines lw 3 title '"+ Scale +"'")
+#    if not (Scale == None):
+    for sc in Scale:
+        plt.write("'" + sc + "/statistics.out' using 1:2 with lines lw 3 title '"+ sc +"', ")
             
     plt.write('\n')
     
@@ -222,7 +236,7 @@ plot ')
     print " "
     print "Input file to plot merging statistics was written to gnuplot.plt. To see the graphs, run:"
     print " "
-    print "gnuplot -p gnuplot.plt"
+    print "gnuplot -p " + plot_name
     
 #    if spawn.find_executable('gnuplot') == None:
 #        print "Gnuplot not found in $PATH. You can plot results using statistic.out in subdirectories"
