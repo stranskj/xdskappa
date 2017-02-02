@@ -654,7 +654,7 @@ def GetDatasets(inData):
     DatasetsDict = {}
     names = []
     numdigit = int(math.log10(len(Datasets)))+1
-    for i,name in enumerate(Datasets):
+    for i,name in enumerate(Datasets,1):
         key = str(i).zfill(numdigit) + "_" + name.split("_?")[0].replace("/","_")
         DatasetsDict[key] = name
         names.append(key)
