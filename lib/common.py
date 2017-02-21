@@ -40,7 +40,23 @@ def GetStatistics(inFile, outFile):
     fout.write('# Resol.\tMultipl.\tRmerge\tRmeas\tComplet.\tI/sig\tCC1/2\tAnoCC\tSigAno\n')
     i = 4 # first row with numbers
     while not 'total' in tab[i]:
-        row = tab[i].split()
+        #row = tab[i].split()
+        
+        row = []
+        row.append(tab[i][0:9].strip())         # 0: resolution limit
+        row.append(tab[i][10:21].strip())       # 1: Number of observed refl.
+        row.append(tab[i][22:29].strip())       # 2: Number of unique refl.
+        row.append(tab[i][30:39].strip())       # 3: Number of possible refl.
+        row.append(tab[i][40:51].strip())       # 4: Completeness
+        row.append(tab[i][52:62].strip())       # 5: R-factor observed
+        row.append(tab[i][63:72].strip())       # 6: R-factor expecte
+        row.append(tab[i][72:81].strip())       # 7: Compared
+        row.append(tab[i][82:89].strip())       # 8: I/Sigma
+        row.append(tab[i][90:99].strip())       # 9: R-meas
+        row.append(tab[i][100:108].strip())     # 10: CC(1/2)
+        row.append(tab[i][109:114].strip())     # 11: Anomal Correlation
+        row.append(tab[i][115:123].strip())     # 12: SigAno
+        row.append(tab[i][124:131].strip())     # 13: Nano
         
         res = row[0]
         try:
