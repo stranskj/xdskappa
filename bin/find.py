@@ -26,6 +26,14 @@ def ParseInput():
     return parser.parse_args()
 
 def main():
+    print ""
+    print "\txdskappa.find " + common.VERSION
+    print "\tAuthor: Jan Stransky"
+    print "\t========================"
+    print " "
+    print common.LICENSE
+    print " " 
+    
     inpPar = ParseInput()
     
     datasets,names = common.GetDatasets(inpPar) #TODO: use of output file name

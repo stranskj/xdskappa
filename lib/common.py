@@ -8,6 +8,7 @@ Set of common functions for xdskappa tools
 
 VERSION = '0.2.3 (21st February 2017)'
 LIST_SEPARATOR = '\t'
+LICENSE = "The software is distributed under GNU General Public License v3."
 
 import os,math,subprocess,re,glob,sys,shutil
 from xdsinp import XDSINP

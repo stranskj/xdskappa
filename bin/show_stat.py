@@ -25,7 +25,9 @@ def main():
     print "\tAuthor: Jan Stransky"
     print "\t========================"
     print " "
-
+    print common.LICENSE
+    print " "
+    
     in_data = ParseInput()
  #   print in_data
 
