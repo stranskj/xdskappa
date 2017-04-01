@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os,sys
+import os,sys,common
 
 class UnitCell(): # potentialy utilize cctbx?
     """
@@ -103,6 +103,51 @@ class ParmXds():
             line2 = fi.readline()
             self.segments.append((line1,line2))
         
+        fi.close()        
+        
+        return
+        
+    def Write(self,path=None):
+        """
+           Writes to file at path
+        """
+        if path==None:
+            path = self.path
+        
+        fi = open(path,'w')
+        
+        fi.write(' XPARM.XDS    VERSION '+common.VERSION+'\n')
+        
+        fi.write('{:>6}{:>14.4f}{:>10.4f}{:>10.6f}{:>10.6f}{:>10.6f}\n'.format(
+                self.starting_frame,self.starting_angle,
+                self.oscilation,*self.rotation_axis))
+        
+        fi.write('{:>15.6f}{:>15.6f}{:>15.6f}{:>15.6f}\n'.format(
+                self.wavelenght,*self.beam_vector))        
+        
+        fi.write('{:>6}{:>12.4f}{:>12.4f}{:>12.4f}{:>8.3f}{:>8.3f}{:>8.3f}\n'.format(
+                self.unit_cell.spgr,self.unit_cell.a,self.unit_cell.b,self.unit_cell.c,
+                self.unit_cell.alpha,self.unit_cell.beta,self.unit_cell.gamma))        
+        
+        fi.write('{:>15.6f}{:>15.6f}{:>15.6f}\n'.format(*self.unit_cell.vec_a))        
+        fi.write('{:>15.6f}{:>15.6f}{:>15.6f}\n'.format(*self.unit_cell.vec_b))
+        fi.write('{:>15.6f}{:>15.6f}{:>15.6f}\n'.format(*self.unit_cell.vec_c))
+        
+        fi.write('{:>8}{:>8}{:>8}{:>15.6f}{:>15.6f}\n'.format(
+                self.seg_num,self.nx,self.ny,self.qx,self.qy))
+        
+        fi.write('{:>15.6f}{:>15.6f}{:>15.6f}\n'.format(
+                self.orgx,self.orgy,self.distance))               
+        
+        fi.write('{:>15.6f}{:>15.6f}{:>15.6f}\n'.format(*self.det_vec_x))                
+        fi.write('{:>15.6f}{:>15.6f}{:>15.6f}\n'.format(*self.det_vec_y))                
+        fi.write('{:>15.6f}{:>15.6f}{:>15.6f}\n'.format(*self.det_vec_normal))                
+        
+        for seg in self.segments:
+            fi.write('{}{}'.format(*seg))
+        
+        fi.close()        
+        
         return
         
 def Test():
@@ -110,8 +155,10 @@ def Test():
     fi_parm.Read()
     print fi_parm.unit_cell.vec_a
     print fi_parm.wavelenght
+    fi_parm.Write("XPARM_copy.XDS")
     return
 
 if __name__ == "__main__":
     Test()
+    sys.exit(0)
             
