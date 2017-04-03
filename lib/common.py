@@ -6,8 +6,9 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.2.3 (2nd February 2017)'
+VERSION = '0.2.3 (21st February 2017)'
 LIST_SEPARATOR = '\t'
+LICENSE = "The software is distributed under GNU General Public License v3."
 
 import os,math,subprocess,re,glob,sys,shutil
 from xdsinp import XDSINP
@@ -40,7 +41,23 @@ def GetStatistics(inFile, outFile):
     fout.write('# Resol.\tMultipl.\tRmerge\tRmeas\tComplet.\tI/sig\tCC1/2\tAnoCC\tSigAno\n')
     i = 4 # first row with numbers
     while not 'total' in tab[i]:
-        row = tab[i].split()
+        #row = tab[i].split()
+        
+        row = []
+        row.append(tab[i][0:9].strip())         # 0: resolution limit
+        row.append(tab[i][10:21].strip())       # 1: Number of observed refl.
+        row.append(tab[i][22:29].strip())       # 2: Number of unique refl.
+        row.append(tab[i][30:39].strip())       # 3: Number of possible refl.
+        row.append(tab[i][40:51].strip())       # 4: Completeness
+        row.append(tab[i][52:62].strip())       # 5: R-factor observed
+        row.append(tab[i][63:72].strip())       # 6: R-factor expecte
+        row.append(tab[i][72:81].strip())       # 7: Compared
+        row.append(tab[i][82:89].strip())       # 8: I/Sigma
+        row.append(tab[i][90:99].strip())       # 9: R-meas
+        row.append(tab[i][100:108].strip())     # 10: CC(1/2)
+        row.append(tab[i][109:114].strip())     # 11: Anomal Correlation
+        row.append(tab[i][115:123].strip())     # 12: SigAno
+        row.append(tab[i][124:131].strip())     # 13: Nano
         
         res = row[0]
         try:
@@ -98,11 +115,11 @@ def ShowStatistics(Names,Scale=None,plot_name='gnuplot.plt'):
     for data in Names:
         if os.path.isfile(data+'/CORRECT.LP'):
             GetStatistics(data+'/CORRECT.LP', data+'/statistics.out')
-#    if not (Scale == None):
-    for sc in Scale:
-  #      Names.append(Scale)
-        if os.path.isfile(sc+'/XSCALE.LP'):
-            GetStatistics(sc+'/XSCALE.LP', sc+'/statistics.out')
+    if not (Scale == None):
+        for sc in Scale:
+    #      Names.append(Scale)
+            if os.path.isfile(sc+'/XSCALE.LP'):
+                GetStatistics(sc+'/XSCALE.LP', sc+'/statistics.out')
     
     winsize = GetWinSize()
     
@@ -124,9 +141,9 @@ set xrange [*:*] reverse \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:5 with lines, ")
-#    if not (Scale == None):
-    for sc in Scale:
-        plt.write("'" + sc + "/statistics.out' using 1:5 with lines lw 3, ")
+    if not (Scale == None):
+        for sc in Scale:
+            plt.write("'" + sc + "/statistics.out' using 1:5 with lines lw 3, ")
     plt.write('\n')
     
     plt.write(' \
@@ -134,9 +151,9 @@ set title "Rmerge"\n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:3 with lines, ")
-#    if not (Scale == None):
-    for sc in Scale:
-        plt.write("'" + sc + "/statistics.out' using 1:3 with lines lw 3, ")
+    if not (Scale == None):
+        for sc in Scale:
+            plt.write("'" + sc + "/statistics.out' using 1:3 with lines lw 3, ")
     plt.write('\n')
     
     plt.write(' \
@@ -144,9 +161,9 @@ set title "Rmeas"\n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:4 with lines, ")
-#    if not (Scale == None):
-    for sc in Scale:
-        plt.write("'" + sc + "/statistics.out' using 1:4 with lines lw 3, ")
+    if not (Scale == None):
+        for sc in Scale:
+            plt.write("'" + sc + "/statistics.out' using 1:4 with lines lw 3, ")
     plt.write('\n')
         
     plt.write(' \
@@ -154,9 +171,9 @@ set title "CC(1/2)"\n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:7 with lines, ")
-#    if not (Scale == None):
-    for sc in Scale:
-        plt.write("'" + sc + "/statistics.out' using 1:7 with lines lw 3, ")
+    if not (Scale == None):
+        for sc in Scale:
+            plt.write("'" + sc + "/statistics.out' using 1:7 with lines lw 3, ")
     plt.write('\n')
 
     plt.write(' \
@@ -166,9 +183,9 @@ set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:2 with lines, ")
-#    if not (Scale == None):
-    for sc in Scale:
-        plt.write("'" + sc + "/statistics.out' using 1:2 with lines lw 3, ")
+    if not (Scale == None):
+        for sc in Scale:
+            plt.write("'" + sc + "/statistics.out' using 1:2 with lines lw 3, ")
     plt.write('\n')
     
     plt.write(' \
@@ -178,9 +195,9 @@ set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:6 with lines, ")
-#    if not (Scale == None):
-    for sc in Scale:
-        plt.write("'" + sc + "/statistics.out' using 1:6 with lines lw 3, ")
+    if not (Scale == None):
+        for sc in Scale:
+            plt.write("'" + sc + "/statistics.out' using 1:6 with lines lw 3, ")
     plt.write('\n')
     
     plt.write(' \
@@ -190,9 +207,9 @@ set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:9 with lines, ")
-#    if not (Scale == None):
-    for sc in Scale:
-        plt.write("'" + sc + "/statistics.out' using 1:9 with lines lw 3, ")
+    if not (Scale == None):
+        for sc in Scale:
+            plt.write("'" + sc + "/statistics.out' using 1:9 with lines lw 3, ")
     plt.write('\n')
         
     plt.write(' \
@@ -202,9 +219,9 @@ set yrange [ *:* ] \n \
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:8 with lines, ")
-#    if not (Scale == None):
-    for sc in Scale:
-        plt.write("'" + sc + "/statistics.out' using 1:8 with lines lw 3, ")    
+    if not (Scale == None):
+        for sc in Scale:
+            plt.write("'" + sc + "/statistics.out' using 1:8 with lines lw 3, ")    
     plt.write('\n')
     
             
@@ -223,9 +240,9 @@ plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:2 with lines title '"+data +"', ")
         
-#    if not (Scale == None):
-    for sc in Scale:
-        plt.write("'" + sc + "/statistics.out' using 1:2 with lines lw 3 title '"+ sc +"', ")
+    if not (Scale == None):
+        for sc in Scale:
+            plt.write("'" + sc + "/statistics.out' using 1:2 with lines lw 3 title '"+ sc +"', ")
             
     plt.write('\n')
     

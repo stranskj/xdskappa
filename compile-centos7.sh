@@ -1,10 +1,3 @@
 #!/bin/bash
 
-bash compile.sh
-
-cd dist
-tar czvf ../release/xdskappa-v0.2.3.2-centos7.tar.gz xdskappa/*
-
-rm -rf xdskappa
-
-rm -rf *
+docker run -t -v /home/stransky/skripty/xdskappa:/src/xdskappa --user=$UID centos:pyinst2 /bin/bash -c "cd /src/xdskappa; ./compile-dist.sh"
