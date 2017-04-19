@@ -140,40 +140,40 @@ set xrange [*:*] reverse \n \
 #set logscale x \n \
 plot ')
     for data in Names:
-        plt.write("'" + data + "/statistics.out' using 1:5 with lines, ")
+        plt.write("'" + data + "/statistics.out' using 1:5 with lines title '"+data +"', ")
     if not (Scale == None):
         for sc in Scale:
-            plt.write("'" + sc + "/statistics.out' using 1:5 with lines lw 3, ")
+            plt.write("'" + sc + "/statistics.out' using 1:5 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
     
     plt.write(' \
 set title "Rmerge"\n \
 plot ')
     for data in Names:
-        plt.write("'" + data + "/statistics.out' using 1:3 with lines, ")
+        plt.write("'" + data + "/statistics.out' using 1:3 with lines title '"+data +"', ")
     if not (Scale == None):
         for sc in Scale:
-            plt.write("'" + sc + "/statistics.out' using 1:3 with lines lw 3, ")
+            plt.write("'" + sc + "/statistics.out' using 1:3 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
     
     plt.write(' \
 set title "Rmeas"\n \
 plot ')
     for data in Names:
-        plt.write("'" + data + "/statistics.out' using 1:4 with lines, ")
+        plt.write("'" + data + "/statistics.out' using 1:4 with lines title '"+data +"', ")
     if not (Scale == None):
         for sc in Scale:
-            plt.write("'" + sc + "/statistics.out' using 1:4 with lines lw 3, ")
+            plt.write("'" + sc + "/statistics.out' using 1:4 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
         
     plt.write(' \
 set title "CC(1/2)"\n \
 plot ')
     for data in Names:
-        plt.write("'" + data + "/statistics.out' using 1:7 with lines, ")
+        plt.write("'" + data + "/statistics.out' using 1:7 with lines title '"+data +"', ")
     if not (Scale == None):
         for sc in Scale:
-            plt.write("'" + sc + "/statistics.out' using 1:7 with lines lw 3, ")
+            plt.write("'" + sc + "/statistics.out' using 1:7 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
 
     plt.write(' \
@@ -182,10 +182,10 @@ set ylabel "" \n \
 set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
-        plt.write("'" + data + "/statistics.out' using 1:2 with lines, ")
+        plt.write("'" + data + "/statistics.out' using 1:2 with lines title '"+data +"', ")
     if not (Scale == None):
         for sc in Scale:
-            plt.write("'" + sc + "/statistics.out' using 1:2 with lines lw 3, ")
+            plt.write("'" + sc + "/statistics.out' using 1:2 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
     
     plt.write(' \
@@ -194,10 +194,10 @@ set ylabel "" \n \
 set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
-        plt.write("'" + data + "/statistics.out' using 1:6 with lines, ")
+        plt.write("'" + data + "/statistics.out' using 1:6 with lines title '"+data +"', ")
     if not (Scale == None):
         for sc in Scale:
-            plt.write("'" + sc + "/statistics.out' using 1:6 with lines lw 3, ")
+            plt.write("'" + sc + "/statistics.out' using 1:6 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
     
     plt.write(' \
@@ -206,10 +206,10 @@ set ylabel "" \n \
 set yrange [ 0:* ] \n \
 plot ')
     for data in Names:
-        plt.write("'" + data + "/statistics.out' using 1:9 with lines, ")
+        plt.write("'" + data + "/statistics.out' using 1:9 with lines title '"+data +"', ")
     if not (Scale == None):
         for sc in Scale:
-            plt.write("'" + sc + "/statistics.out' using 1:9 with lines lw 3, ")
+            plt.write("'" + sc + "/statistics.out' using 1:9 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
         
     plt.write(' \
@@ -218,10 +218,10 @@ set ylabel "%" \n \
 set yrange [ *:* ] \n \
 plot ')
     for data in Names:
-        plt.write("'" + data + "/statistics.out' using 1:8 with lines, ")
+        plt.write("'" + data + "/statistics.out' using 1:8 with lines title '"+data +"', ")
     if not (Scale == None):
         for sc in Scale:
-            plt.write("'" + sc + "/statistics.out' using 1:8 with lines lw 3, ")    
+            plt.write("'" + sc + "/statistics.out' using 1:8 with lines lw 3 title '"+ sc +"', ")    
     plt.write('\n')
     
             
