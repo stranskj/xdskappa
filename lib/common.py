@@ -129,15 +129,15 @@ def ShowStatistics(Names,Scale=None,plot_name='gnuplot.plt'):
     plt = open(plot_name,'w')
     
     plt.write('\
-set terminal x11 size '+ winsize[0][0] +',' +winsize[0][1] +' \n \
-set xlabel "Resolution [A]"\n \
-set multiplot layout 3,3 \n \
-set nokey \n \
-set title "Completeness"\n \
-set ylabel "%"\n \
-set yrange [0:100] \n \
-set xrange [*:*] reverse \n \
-#set logscale x \n \
+set terminal x11 size '+ winsize[0][0] +',' +winsize[0][1] +' \n\
+set multiplot layout 3,3 \n\
+set xlabel "Resolution [A]"\n\
+set nokey \n \n\
+set title "Completeness"\n\
+set ylabel "%"\n\
+set yrange [0:100] \n\
+set xrange [*:*] reverse \n\
+#set logscale x \n\
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:5 with lines title '"+data +"', ")
@@ -146,8 +146,8 @@ plot ')
             plt.write("'" + sc + "/statistics.out' using 1:5 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
     
-    plt.write(' \
-set title "Rmerge"\n \
+    plt.write('\n\
+set title "Rmerge"\n\
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:3 with lines title '"+data +"', ")
@@ -156,8 +156,8 @@ plot ')
             plt.write("'" + sc + "/statistics.out' using 1:3 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
     
-    plt.write(' \
-set title "Rmeas"\n \
+    plt.write('\n\
+set title "Rmeas"\n\
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:4 with lines title '"+data +"', ")
@@ -166,8 +166,8 @@ plot ')
             plt.write("'" + sc + "/statistics.out' using 1:4 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
         
-    plt.write(' \
-set title "CC(1/2)"\n \
+    plt.write('\n\
+set title "CC(1/2)"\n\
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:7 with lines title '"+data +"', ")
@@ -176,10 +176,10 @@ plot ')
             plt.write("'" + sc + "/statistics.out' using 1:7 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
 
-    plt.write(' \
-set title "Redundancy"\n \
-set ylabel "" \n \
-set yrange [ 0:* ] \n \
+    plt.write('\n\
+set title "Redundancy"\n\
+set ylabel "" \n\
+set yrange [ 0:* ] \n\
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:2 with lines title '"+data +"', ")
@@ -188,10 +188,10 @@ plot ')
             plt.write("'" + sc + "/statistics.out' using 1:2 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
     
-    plt.write(' \
-set title "I/sig(I)"\n \
-set ylabel "" \n \
-set yrange [ 0:* ] \n \
+    plt.write('\n\
+set title "I/sig(I)"\n\
+set ylabel "" \n\
+set yrange [ 0:* ] \n\
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:6 with lines title '"+data +"', ")
@@ -200,10 +200,10 @@ plot ')
             plt.write("'" + sc + "/statistics.out' using 1:6 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
     
-    plt.write(' \
-set title "Anomalous I/sig(I)"\n \
-set ylabel "" \n \
-set yrange [ 0:* ] \n \
+    plt.write('\n\
+set title "Anomalous I/sig(I)"\n\
+set ylabel "" \n\
+set yrange [ 0:* ] \n\
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:9 with lines title '"+data +"', ")
@@ -212,10 +212,10 @@ plot ')
             plt.write("'" + sc + "/statistics.out' using 1:9 with lines lw 3 title '"+ sc +"', ")
     plt.write('\n')
         
-    plt.write(' \
-set title "Anomalous CC"\n \
-set ylabel "%" \n \
-set yrange [ *:* ] \n \
+    plt.write('\n\
+set title "Anomalous CC"\n\
+set ylabel "%" \n\
+set yrange [ *:* ] \n\
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:8 with lines title '"+data +"', ")
@@ -225,17 +225,16 @@ plot ')
     plt.write('\n')
     
             
-    plt.write(' \
-#unset multiplot \n \
-set title "Legend"\n \
-set ylabel "" \n \
-set yrange [ 1000:1100 ] \n \
-set xlabel "" \n \
-set key #center \n \
-set tics textcolor rgb "white" \n \
-unset border \n \
-unset ytics \n \
-unset xtics \n \
+    plt.write('\n\
+set title "Legend"\n\
+set ylabel "" \n\
+set yrange [ 1000:1100 ] \n\
+set xlabel "" \n\
+set key #center \n\
+set tics textcolor rgb "white" \n\
+unset border \n\
+unset ytics \n\
+unset xtics \n\
 plot ')
     for data in Names:
         plt.write("'" + data + "/statistics.out' using 1:2 with lines title '"+data +"', ")
