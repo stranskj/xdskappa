@@ -6,7 +6,7 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.2.3 (21st February 2017)'
+VERSION = '0.2.3 (20th April 2017)'
 LIST_SEPARATOR = '\t'
 LICENSE = "The software is distributed under GNU General Public License v3."
 
