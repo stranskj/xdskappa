@@ -14,3 +14,8 @@ scale/
 release/
 legacy/
 testing/
+*.spyderproject
+.project
+.pydevproject
+.spyderproject
+.spyderworkspace

@@ -172,10 +172,10 @@ class XDataset():
 		self.geometry['TWOTHETA'] = {}
 		self.geometry['OMEGA']['VECTOR'] = '0 -1 0' 	#TODO get from CBF? 
 		self.geometry['OMEGA']['ANGLE'] = axes['OMEGA']['_diffrn_scan_axis.angle_start']	
-		#self.geometry['PHI']['VECTOR'] = '0.21 -1 -0.34' #TODO, now irelevant for omega scans
-		self.geometry['PHI']['ANGLE'] = axes['PHI']['_diffrn_scan_axis.angle_start']	#TODO, now irelevant for omega scans
-		self.geometry['CHI']['VECTOR'] = '0 -1 0' #TODO, now irelevant for omega scans
-		self.geometry['CHI']['ANGLE'] = axes['CHI']['_diffrn_scan_axis.angle_start']	#TODO, now irelevant for omega scans
+		
+		self.geometry['PHI']['ANGLE'] = axes['PHI']['_diffrn_scan_axis.angle_start']	
+		self.geometry['CHI']['VECTOR'] = '0 -1 0' 
+		self.geometry['CHI']['ANGLE'] = axes['CHI']['_diffrn_scan_axis.angle_start']	
 		self.geometry['TWOTHETA']['VECTOR'] = '0 -1 0'
 		self.geometry['TWOTHETA']['ANGLE'] = axes['TWOTHETA']['_diffrn_scan_axis.angle_start']
 		self.SetOrigin()
