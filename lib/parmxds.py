@@ -107,6 +107,44 @@ class ParmXds():
         
         return
         
+    def SetFromDataset(self,dataset):
+        """
+        Sets values from xdataset.
+        Not set values (keeps current): unit_cell, starting_frame, segments
+        @param dataset: Object with dataset secription
+        @type dataset: XDataset
+        """
+        
+        
+ #       self.starting_frame = int(dataset)
+        self.starting_angle = float(0)      # TODO: Possibly DEPLHI parameter?
+        self.oscilation     = float(dataset.geometry['OSCILATION'])
+        rot_vec_string      = dataset.geometry[dataset.geometry['SCAN']]['VECTOR'].split()
+        self.rotation_axis  = (float(rot_vec_string[0]),float(rot_vec_string[1]),float(rot_vec_string[2]))
+        
+        self.wavelenght  = float(dataset.geometry['BEAM']['WAVELENGHT'])    
+        beam_vec_string  = dataset.geometry['BEAM']['WAVELENGHT'].split()
+        self.beam_vector = (float(beam_vec_string[0]),float(beam_vec_string[1]),float(beam_vec_string[2]))
+        
+#        self.seg_num = int(line[0])
+        self.nx      = int(dataset.detector['Pixel_Count_X'])
+        self.ny      = int(dataset.detector['Pixel_Count_Y'])
+        self.qx      = float(dataset.detector['Pixel_Size_X'])
+        self.qy      = float(dataset.detector['Pixel_Size_Y'])
+        
+        #8th line
+        self.orgx     = float(dataset.geometry['ORGX'])
+        self.orgy     = float(dataset.geometry['ORGY'])
+        self.distance = float(dataset.geometry['DISTANCE'])
+        
+        #9th - 11th line
+        det_x_string   = dataset.geometry['X-DETECTOR'].split()
+        self.det_vec_x = (float(det_x_string[0]),float(det_x_string[1]),float(det_x_string[2]))
+        det_y_string   = dataset.geometry['Y-DETECTOR'].split()
+        self.det_vec_y = (float(det_y_string[0]),float(det_y_string[1]),float(det_y_string[2]))
+        
+        self.det_vec_normal = tuple(numpy.cross(self.det_vec_x,self.det_vec_y))
+        
     def Write(self,path=None):
         """
            Writes to file at path
