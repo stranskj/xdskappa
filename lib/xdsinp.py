@@ -159,7 +159,7 @@ class XDSINP(dict):
 		self['ORGY'] = [self.dataset.geometry['ORGY']]
 		self['DETECTOR_DISTANCE'] = [self.dataset.geometry['DISTANCE']]
 		self['OSCILLATION_RANGE'] = [self.dataset.geometry['OSCILATION']]
-		self['X-RAY_WAVELENGTH'] = [fheader['_diffrn_radiation_wavelength.wavelength']]
+		self['X-RAY_WAVELENGTH'] = [self.dataset.geometry['BEAM']['WAVELENGHT']]
 		self['NAME_TEMPLATE_OF_DATA_FRAMES'] = [self.dataset.template]
 #       	self['REFERENCE_DATA_SET'] = ['']
 		self['DATA_RANGE'] = ['1 ' + str(data_range)]
@@ -187,7 +187,7 @@ class XDSINP(dict):
 		self['ROTATION_AXIS'] = [self.dataset.geometry[scan]['VECTOR']]
 		self['DIRECTION_OF_DETECTOR_X-AXIS'] = [self.dataset.geometry['X-DETECTOR']]
 		self['DIRECTION_OF_DETECTOR_Y-AXIS'] = [self.dataset.geometry['Y-DETECTOR']]
-		self['INCIDENT_BEAM_DIRECTION'] = ['0 0 1']
+		self['INCIDENT_BEAM_DIRECTION'] = [self.dataset.geometry['BEAM']['VECTOR']]
 		self['FRACTION_OF_POLARIZATION'] = ['0.98']#TODO: test fheader['_diffrn_radiation_wavelength.polarizn_source_ratio']
 		self['POLARIZATION_PLANE_NORMAL'] = ['0 1 0']
 
