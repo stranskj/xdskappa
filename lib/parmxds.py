@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os,sys,common
+import os,sys,common,xdataset,numpy
 
 class UnitCell(): # potentialy utilize cctbx?
     """
@@ -28,7 +28,7 @@ class ParmXds():
     def __init__(self,path=None):
         self.path=path
         
-    def Read(self,path=None):
+    def read(self,path=None):
         """
         Reads file from path
         """
@@ -107,7 +107,7 @@ class ParmXds():
         
         return
         
-    def SetFromDataset(self,dataset):
+    def set_from_dataset(self,dataset):
         """
         Sets values from xdataset.
         Not set values (keeps current): unit_cell, starting_frame, segments
@@ -123,7 +123,7 @@ class ParmXds():
         self.rotation_axis  = (float(rot_vec_string[0]),float(rot_vec_string[1]),float(rot_vec_string[2]))
         
         self.wavelenght  = float(dataset.geometry['BEAM']['WAVELENGHT'])    
-        beam_vec_string  = dataset.geometry['BEAM']['WAVELENGHT'].split()
+        beam_vec_string  = dataset.geometry['BEAM']['VECTOR'].split()
         self.beam_vector = (float(beam_vec_string[0]),float(beam_vec_string[1]),float(beam_vec_string[2]))
         
 #        self.seg_num = int(line[0])
@@ -145,7 +145,7 @@ class ParmXds():
         
         self.det_vec_normal = tuple(numpy.cross(self.det_vec_x,self.det_vec_y))
         
-    def Write(self,path=None):
+    def write(self,path=None):
         """
            Writes to file at path
         """
@@ -190,10 +190,12 @@ class ParmXds():
         
 def Test():
     fi_parm = ParmXds("XPARM.XDS")
-    fi_parm.Read()
+    fi_parm.read()
     print fi_parm.unit_cell.vec_a
     print fi_parm.wavelenght
-    fi_parm.Write("XPARM_copy.XDS")
+    dts = xdataset.XDataset('test/photon_????.cbf')
+    fi_parm.set_from_dataset(dts)
+    fi_parm.write("XPARM_copy.XDS")
     return
 
 if __name__ == "__main__":

@@ -165,13 +165,16 @@ class XDataset():
 			
 		self.geometry['DISTANCE'] = axes['DX']['_diffrn_scan_axis.displacement_start']
 		self.geometry['SCAN'] = self.fheader['_diffrn_measurement_axis.axis_id']
-		self.geometry['BEAM']['VECTOR'] = '0 0 1' 	#TODO get from CBF? 
-		self.geometry['BEAM']['WAVELENGHT'] = self.fheader['_diffrn_radiation_wavelength.wavelength']
-		self.geometry['OMEGA'] = {}
   
+		self.geometry['BEAM'] = {}
+		self.geometry['OMEGA'] = {}
 		self.geometry['CHI'] = {}
 		self.geometry['PHI'] = {}
 		self.geometry['TWOTHETA'] = {}
+  
+		self.geometry['BEAM']['VECTOR'] = '0 0 1' 	#TODO get from CBF? 
+		self.geometry['BEAM']['WAVELENGHT'] = self.fheader['_diffrn_radiation_wavelength.wavelength']
+  
 		self.geometry['OMEGA']['VECTOR'] = '0 -1 0' 	#TODO get from CBF? 
 		self.geometry['OMEGA']['ANGLE'] = axes['OMEGA']['_diffrn_scan_axis.angle_start']	
 		
