@@ -79,9 +79,50 @@ def process_arguments(argv):
     
     return outArgs
 
+def Test000(datasets_out,names_out):
+    for name in names_out:
+        dts   = xdataset.XDataset(datasets_out[name])
+        xinp  = xdsinp.XDSINP(name)
+        
+        try:
+            xinp.read()
+        except IOError as err:
+            print "Valid XDS.INP file has to be present in output dataset folder. "
+            print err
+            sys.exit(1)
+        
+        xparm = parmxds.ParmXds(name + '/XPARM.XDS')     # for re-use of segments part, already sets spg number and unit cell parameters
+        xparm.read()
+        
+        uc_in = xparm.unit_cell
+  #      xparm.path = name + '/XPARM.XDS'
+        
+        # Sets geometry based on frame header
+        xparm.set_from_dataset(dts)
+        
+        # Use ORGX and ORGY from XDS.INP, in case of user modification
+        xparm.orgx = float(xinp['ORGX'][0])
+        xparm.orgy = float(xinp['ORGY'][0])
+        
+        phi   = math.radians(float(dts.geometry['PHI']['ANGLE']))
+        chi   = math.radians(float(dts.geometry['CHI']['ANGLE']))
+        omega = math.radians(float(dts.geometry['OMEGA']['ANGLE']))
+        
+        xparm.unit_cell.vec_a = vector_from_000(uc_in.vec_a,omega,chi,phi)        
+        xparm.unit_cell.vec_b = vector_from_000(uc_in.vec_b,omega,chi,phi)
+        xparm.unit_cell.vec_c = vector_from_000(uc_in.vec_c,omega,chi,phi)
+        
+        xparm.write()
+        print 'Reindexed dataset: ' + name
+        
+        del dts
+        del xinp
+        
+    sys.exit(0)
+
 def Main(args):
     
-    datasets_out,names_out = common.ReadDatasetListFile(args.DatasetListFile)
+    datasets_olsut,names_out = common.ReadDatasetListFile(args.DatasetListFile)
     
     file_in = args.InDataset[0]
     geom_in = parmxds.ParmXds(file_in)
