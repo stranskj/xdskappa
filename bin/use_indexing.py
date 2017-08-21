@@ -122,7 +122,8 @@ def Test000(datasets_out,names_out):
 
 def Main(args):
     
-    datasets_olsut,names_out = common.ReadDatasetListFile(args.DatasetListFile)
+    datasets_out,names_out = common.ReadDatasetListFile(args.DatasetListFile)
+    Test000(datasets_out,names_out)
     
     file_in = args.InDataset[0]
     geom_in = parmxds.ParmXds(file_in)
