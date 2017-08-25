@@ -6,7 +6,7 @@ version=`git describe`
 if [ $# -eq 1 ] ; then 
 	dist=$1
 else
-	dist=`lsb_release -sri | sed 's/ //'`
+	dist=`lsb_release -sri | sed 's/ //g' | sed ':a;N;$!ba;s/\n//g'`
 fi
 
 pathout="../release/xdskappa-$version-$dist.tar.gz"
