@@ -7,11 +7,25 @@ import optimize as opt
 from xdsinp import XDSINP
 
 
+def parse_usage():
+	return ''' xdskappa -h
+		or
+	xdskappa dataPath [-p PAR= VALUE] [-P [FILE]] [-opt] 
+			[--min-dataset NUM] ...
+		OR
+	xdskappa dataPath1 dataPath2 ... dataPathN [-p PAR= VALUE]
+			[--min-dataset NUM] [-P [FILE]] [-opt] ...
+		OR
+	xdskappa -D [-p PAR= VALUE] [-P [FILE]] [-opt] ...
+		OR
+	xdskappa -D FILE [-p PAR= VALUE] [-P [FILE]] [-opt] ...
+			'''
+
 def ParseInput():
-	parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently works on D8 Venture at BIOCEV.', epilog='Dependencies: XDS, gnuplot')
+	parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently works on D8 Venture.', epilog='Dependencies: XDS, gnuplot', usage=parse_usage())
 	
-	parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input frames")
-	parser.add_argument('-D','--dataset-file', dest='DatasetListFile', nargs='?', default=None, const='datasets.list', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf. When no file is given, "datasets.list" is expected.')
+	parser.add_argument('dataPath', nargs='*', help="Directory with input frames. Multiple values are accepted.")
+	parser.add_argument('-D','--dataset-file', dest='DatasetListFile', nargs='?', default=None, const='datasets.list', metavar='FILE', help='File with list of datasets to use. When no value FILE is given, "datasets.list" is expected.')
 	
 	parser.add_argument('-out','--output-file', dest='OutputScale', metavar= 'FILE', default='scaled.HKL', help='File name for output from scaling.')
 	
@@ -20,7 +34,7 @@ def ParseInput():
 	parser.add_argument('--min-dataset', dest='minData', default=2, metavar='NUM', type=int, help="Minimal number of frames to be considered as dataset.")
 	
 	parser.add_argument('-p','--parameter', dest='XDSParameter', nargs='+', action='append', metavar='PAR= VALUE', help='Modification to all XDS.INP files. Parameters format as defined for XDS.INP. Overrides parameters from --parameter-file.')
-	parser.add_argument('-P','--parameter-file', dest='XDSParameterFile', nargs='?', default=None, const='XDSKAPPA.INP',metavar='FILE', help='File with list of parameters to modify XDS.INP files. Parameters format as defined for XDS.INP. When no file given, "XDSKAPPA.INP" is expected.')
+	parser.add_argument('-P','--parameter-file', dest='XDSParameterFile', nargs='?', default=None, const='XDSKAPPA.INP',metavar='FILE', help='File with list of parameters to modify XDS.INP files. Parameters format as defined for XDS.INP. When no value FILE is given, "XDSKAPPA.INP" is expected.')
 	
 	parser.add_argument('-r','--reference-dataset', dest='ReferenceData', metavar='DATASET', help='Name of reference dataset from working list. The first one used by default. For external reference dataset use: -p REFERENCE_DATA_SET= path/data/XDS_ASCII.HKL')
 	
