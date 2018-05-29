@@ -17,7 +17,7 @@ echo "Linux version: $dist"
 cd dist
 tar czvf $pathout xdskappa/*
 
-echo "Compressied binaries to: $pathout"
+echo "Compressed binaries to: $pathout"
 echo "Cleaning..."
 rm -rf xdskappa
 

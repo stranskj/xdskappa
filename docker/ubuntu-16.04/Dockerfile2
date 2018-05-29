@@ -1,7 +1,7 @@
 FROM debian:jessie
 MAINTAINER Jan Stransky <stransky@ibt.cas.cz>
 
-ARG pyver=2.7.15
+ARG pyver=2.7.13
 
 RUN apt-get update && apt-get upgrade -y && \
 		apt-get install -y tar wget gcc g++ make bzip2 git lsb-release xz-utils

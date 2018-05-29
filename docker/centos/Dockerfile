@@ -1,7 +1,7 @@
 FROM centos:7
 MAINTAINER Jan Stransky <stransky@ibt.cas.cz>
 
-ARG pyver=2.7.13
+ARG pyver=2.7.15
 
 RUN yum upgrade -y && \
 		yum install -y epel-release && \
