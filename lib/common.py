@@ -460,8 +460,9 @@ def Scale(Paths, Outname):
     xscaleinp.close()
     
     print 'Scaling with xscale_par...'
-    xscale = subprocess.Popen('xscale_par', cwd= 'scale', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    xscale.wait()
+    with open(os.devnull, 'w') as FNULL:
+        xscale = subprocess.Popen('xscale_par', cwd= 'scale', stdout=FNULL, stderr=subprocess.STDOUT)
+        xscale.wait()
     
     fout = open('scale/XSCALE.LP')
     if '!!! ERROR !!!' in fout:
