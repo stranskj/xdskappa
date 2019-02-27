@@ -121,7 +121,7 @@ class XDataset():
 		self.detector['Pixel_Size_Y']  = pixY
 		self.detector['Pixel_Count_X'] = self.fheader['X-Binary-Size-Fastest-Dimension']
 		self.detector['Pixel_Count_Y'] = self.fheader['X-Binary-Size-Second-Dimension']
-		self.detector['Name'] = 'PILATUS'		#TODO
+		self.detector['Name'] = 'BRUKER'		#TODO
 		
 	def PhiVector(self,angOmegaStr,angChiStr):
 		angOmega = math.radians(float(angOmegaStr))
