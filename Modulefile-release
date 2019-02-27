@@ -1,0 +1,30 @@
+#%Module1.0#####################################################################
+##
+## XDSkappa example modulefile
+##
+##
+proc ModulesHelp { } {
+        global version prefix
+
+        puts stderr "Loads module for XDSkappa"
+}
+
+set	version	0.2.4	
+
+module-whatis	"Module for usage of XDSkappa. It loads xds module too, if needed."
+
+# for Tcl script use only
+#set	prefix		/usr/share/Modules
+#set	exec_prefix	/usr/share/Modules
+#set	datarootdir	${prefix}/share
+
+
+#setenv		MODULESHOME	$prefix
+
+if { ![is-loaded 'xds'] } {
+    module load xds/default
+}
+
+prepend-path    PATH		/path/to/$version/xdskappa
+
+
