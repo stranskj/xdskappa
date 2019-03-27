@@ -6,7 +6,7 @@ version=`git describe`
 if [ $# -eq 1 ] ; then 
 	dist=$1
 else
-	dist=`lsb_release -sri | sed 's/ //'`
+	dist=`lsb_release -sri | sed 's/ //g' | sed ':a;N;$!ba;s/\n//g'`
 fi
 
 pathout="../release/xdskappa-$version-$dist.tar.gz"
@@ -17,7 +17,7 @@ echo "Linux version: $dist"
 cd dist
 tar czvf $pathout xdskappa/*
 
-echo "Compressied binaries to: $pathout"
+echo "Compressed binaries to: $pathout"
 echo "Cleaning..."
 rm -rf xdskappa
 

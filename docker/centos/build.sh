@@ -1,2 +1,2 @@
 #!/bin/sh
-docker built -t centos:pyinst .
+docker build -t centos:pyinst2 .

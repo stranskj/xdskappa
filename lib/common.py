@@ -6,7 +6,7 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.2.3 (20th April 2017)'
+VERSION = '0.2.4 (25th August 2017)'
 LIST_SEPARATOR = '\t'
 LICENSE = "The software is distributed under GNU General Public License v3."
 
@@ -30,10 +30,13 @@ def GetStatistics(inFile, outFile):
         raise IOError(inFile + " is not available. Problem with data processing?")
         return 
     fin = open(inFile,'r')
-    
+    firead = fin.read() 
+    if not  'SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE >= -3.0 A' in firead:
+        raise IOError(inFile + " is incompleate. Problem with data processing?")
+        return 
     
     # get last table + some appendix in rows
-    tab = fin.read().split('SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE >= -3.0 A')[-1].split('\n')
+    tab = firead.split('SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE >= -3.0 A')[-1].split('\n')
     fin.close()
     
     fout = open(outFile,'w')
@@ -114,12 +117,20 @@ def ShowStatistics(Names,Scale=None,plot_name='gnuplot.plt'):
     """
     for data in Names:
         if os.path.isfile(data+'/CORRECT.LP'):
-            GetStatistics(data+'/CORRECT.LP', data+'/statistics.out')
+            try:
+                GetStatistics(data+'/CORRECT.LP', data+'/statistics.out')
+            except IOError as e:
+                print e
+                print 'Skipping...'
     if not (Scale == None):
         for sc in Scale:
     #      Names.append(Scale)
             if os.path.isfile(sc+'/XSCALE.LP'):
-                GetStatistics(sc+'/XSCALE.LP', sc+'/statistics.out')
+                try:
+                    GetStatistics(sc+'/XSCALE.LP', sc+'/statistics.out')
+                except IOError as e:
+                    print e
+                    print 'Skipping...'
     
     winsize = GetWinSize()
     
@@ -268,8 +279,11 @@ def getISa(path):
     fcor = open(corlp,'r')
     
     line = fcor.readline()
-    while line.split() != ['a', 'b', 'ISa'] :
+    while (line.split() != ['a', 'b', 'ISa']) and (line != ''):
         line = fcor.readline()
+
+    if line == '':
+        return 'N/A'
 
     line = fcor.readline().split()
     fcor.close()
@@ -446,8 +460,9 @@ def Scale(Paths, Outname):
     xscaleinp.close()
     
     print 'Scaling with xscale_par...'
-    xscale = subprocess.Popen('xscale_par', cwd= 'scale', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    xscale.wait()
+    with open(os.devnull, 'w') as FNULL:
+        xscale = subprocess.Popen('xscale_par', cwd= 'scale', stdout=FNULL, stderr=subprocess.STDOUT)
+        xscale.wait()
     
     fout = open('scale/XSCALE.LP')
     if '!!! ERROR !!!' in fout:

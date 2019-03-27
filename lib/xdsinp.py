@@ -172,7 +172,7 @@ class XDSINP(dict):
 		self['TRUSTED_REGION'] = ['0.0 1.2']
 		self['VALUE_RANGE_FOR_TRUSTED_DETECTOR_PIXELS'] = ['6000. 30000.']
 		self['STRONG_PIXEL'] = ['4']
-		self['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = ['4']
+		self['MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT'] = ['6']
 		self['REFINE(IDXREF)'] = ['CELL BEAM ORIENTATION AXIS ! DISTANCE POSITION']
 		self['REFINE(INTEGRATE)'] = ['DISTANCE POSITION BEAM ORIENTATION ! AXIS CELL']
 		self['REFINE(CORRECT)'] = ['DISTANCE POSITION BEAM ORIENTATION AXIS CELL']
@@ -190,6 +190,9 @@ class XDSINP(dict):
 		self['INCIDENT_BEAM_DIRECTION'] = ['0 0 1']
 		self['FRACTION_OF_POLARIZATION'] = ['0.98']#TODO: test fheader['_diffrn_radiation_wavelength.polarizn_source_ratio']
 		self['POLARIZATION_PLANE_NORMAL'] = ['0 1 0']
+		self['DELPHI'] = ['15']
+		self['SEPMIN'] = ['7.0']
+		self['CLUSTER_RADIUS'] = ['3.5']
 
 	def SetDataset(self,_Dataset):
 		self.dataset = _Dataset

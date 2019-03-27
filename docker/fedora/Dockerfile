@@ -1,7 +1,7 @@
 FROM fedora:23
 MAINTAINER Jan Stransky <stransky@ibt.cas.cz>
 
-ARG pyver=2.7.13
+ARG pyver=2.7.15
 
 RUN dnf upgrade -y 
 RUN dnf install -y python-pip tar wget gcc make bzip2 xz git redhat-lsb-core
