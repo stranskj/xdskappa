@@ -1,5 +1,7 @@
 import xdskappa.common as common
 import xdskappa
+import argparse
+import sys
 
 def ParseInput():
     parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently for omega scans on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par')
@@ -44,14 +46,6 @@ def main():
     print("Found datasets saved to " + inpPar.DatasetListFile)
 
 if __name__ == "__main__":
-    import sys
-    try:
-        import argparse #sys,os,subprocess,shlex,,re,glob,math
-    #    from distutils import spawn
-    except Exception:
-        print("Your python is probably to old. At least version 2.7 is required.")
-        print("Your version is: " +  sys.version)
-        sys.exit(1)
 
     main()
     exit(0)

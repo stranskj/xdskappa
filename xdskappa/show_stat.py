@@ -1,9 +1,10 @@
 #!/bin/python
 
 import xdskappa.common as common
-import os
+import os, sys
 from xdskappa.xdsinp import XDSINP
 import xdskappa
+import argparse
 
 
 def ParseInput():
@@ -44,14 +45,6 @@ def main():
     return    
 
 if __name__ == "__main__":
-    import sys
-    try:
-        import argparse #sys,os,subprocess,shlex,,re,glob,math
-    #    from distutils import spawn
-    except Exception:
-        print("Your python is probably to old. At least version 2.7 is required.")
-        print("Your version is: " +  sys.version)
-        sys.exit(1)
 
     main()
     sys.exit(0)

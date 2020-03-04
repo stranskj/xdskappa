@@ -6,6 +6,8 @@ import xdskappa
 import xdskappa.common as common
 import xdskappa.optimize as opt
 from xdskappa.xdsinp import XDSINP
+import argparse
+import sys
 
 
 def parse_usage():
@@ -118,14 +120,6 @@ def main():
 	
 
 if __name__ == "__main__":
-	import sys
-	try:
-		import argparse #sys,os,subprocess,shlex,,re,glob,math
-	#	from distutils import spawn
-	except Exception:
-		print("Your python is probably to old. At least version 2.7 is required.")
-		print("Your version is: " +  sys.version)
-		sys.exit(1)
 
 	main()
 	sys.exit(0)
