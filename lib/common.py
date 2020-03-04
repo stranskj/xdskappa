@@ -91,7 +91,8 @@ def GetWinSize():
     if spawn.find_executable('xrandr'): #TODO: nefunguje po ssh
         getwinsize = subprocess.Popen('xrandr',stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         
-        for line in getwinsize.stdout:
+        for line_b in getwinsize.stdout:
+            line = line_b.decode()
             if '*' in line:
         #    lin = re.search('[0-9]+[x][0-9]+', line)
                 row = line.split()[0].split('x') #lin.string[lin.begin():lin.end()].split('x')
@@ -323,7 +324,8 @@ def RunXDS(Paths):
         log = open(path + '/xds.log','w')
         xds = subprocess.Popen(['xds_par'],cwd= path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         
-        for line in xds.stdout:
+        for line_b in xds.stdout:
+            line = line_b.decode()
             log.write(line)
             if '***** COLSPOT *****' in line:
                 print('Finding strong reflections...')
