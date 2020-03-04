@@ -160,7 +160,7 @@ class XDataset():
 		try:
 			axes = self.GetAxes()
 		except KeyError as e:
-			print e
+			print(e)
 			sys.exit(1)
 			
 		self.geometry['DISTANCE'] = axes['DX']['_diffrn_scan_axis.displacement_start']
@@ -186,25 +186,25 @@ class XDataset():
 def Test():
 	datset = XDataset('test/photon2_????.cbf',1)
 	
-	print "Data range: " + str(datset.frange)
-	print "Template: " + datset.template
-	print "Frame example: " + datset.GetFrameName(5)
-	print "Frame example: " + datset.GetFrameName(10)
+	print("Data range: " + str(datset.frange))
+	print("Template: " + datset.template)
+	print("Frame example: " + datset.GetFrameName(5))
+	print("Frame example: " + datset.GetFrameName(10))
 	
-	print "Geometry:"
+	print("Geometry:")
 	for key in datset.geometry:
 		if type(datset.geometry[key]).__name__ == 'str':
-			print key + ": " + datset.geometry[key]
+			print(key + ": " + datset.geometry[key])
 		elif type(datset.geometry[key]).__name__ == 'dict':	
 			for subkey in datset.geometry[key]:
-				print key + ":" + subkey + ": " + datset.geometry[key][subkey]
+				print(key + ":" + subkey + ": " + datset.geometry[key][subkey])
 		else:
-			print key + ": type " + type(datset.geometry[key]).__name__
+			print(key + ": type " + type(datset.geometry[key]).__name__)
 			
 		
-	print "Detector:"
+	print("Detector:")
 	for key in datset.detector:
-		print key + ": " + datset.detector[key]	
+		print(key + ": " + datset.detector[key])	
 			
 	 
 if __name__ == "__main__":

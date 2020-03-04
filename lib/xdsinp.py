@@ -64,13 +64,13 @@ class XDSINP(dict):
 				#print err #+' in ' + self.path
 		
 		if not len(miskey) == 0:
-			print 'Missing requiered parameter in ' + self.path + ':'
+			print('Missing requiered parameter in ' + self.path + ':')
 			strout = ""
 			for key in miskey:
 				strout = strout + ', ' + key
 			
 			strout.strip(' ,')
-			print strout
+			print(strout)
 			sys.exit(1)	
 
 		fout = open(self.path, 'w')
@@ -269,14 +269,14 @@ class XDSINP(dict):
 # 	        return
 
 def Test():
-	print 'Test1'
+	print('Test1')
 	dts = xdataset.XDataset('test/photon_????.cbf')
 	inp = XDSINP('test',dts)
 	inp.SetDefaults()
 	#inp.read()
 	for key in sorted(inp):
 		for val in inp[key]:
-			print key + ": " + val 
+			print(key + ": " + val) 
 			
 	inp.path = 'test/XDS3.INP'
 	#for key in inp:
@@ -284,12 +284,12 @@ def Test():
 	inp.write()
 	
 def Test2():
-	print 'Test2'
+	print('Test2')
 	inp = XDSINP('test')
 	inp.read()
 	for key in inp:
 		for val in inp[key]:
-			print key + ": " + val
+			print(key + ": " + val)
 			
 	inp.path = 'test/XDS2.INP'
 	inp.write()

@@ -51,34 +51,34 @@ def ParseInput():
 	return parser.parse_args()
 
 def main():
-	print ""
-	print "\txdskappa " + common.VERSION
-	print "\tAuthor: Jan Stransky"
-	print "\t========================"
-	print " "
-	print common.LICENSE
-	print " "
+	print("")
+	print("\txdskappa " + common.VERSION)
+	print("\tAuthor: Jan Stransky")
+	print("\t========================")
+	print(" ")
+	print(common.LICENSE)
+	print(" ")
 	
 	in_data = ParseInput()
 	#print in_data
 
 	if (len(in_data.dataPath) == 0) and (in_data.DatasetListFile == None):
-		print "Nor path to data, nor dataset file specified. See help or documentation."
+		print("Nor path to data, nor dataset file specified. See help or documentation.")
 		sys.exit(1)
 
 	if len(in_data.dataPath) > 0:
 		datasets,names = common.GetDatasets(in_data)
-		print "Found datasets:"
+		print("Found datasets:")
 		for d in names :
-			print datasets[d]
-		print "Found datasets saved to datasets.list"
+			print(datasets[d])
+		print("Found datasets saved to datasets.list")
 	
 	if in_data.DatasetListFile :
 		datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)
 	
-	print "Using datasets (name, path):"
+	print("Using datasets (name, path):")
 	for d in names :
-		print d + '\t' +datasets[d]
+		print(d + '\t' +datasets[d])
 		
 	common.PrepareXDSINP(in_data,datasets,names)
 	
@@ -94,13 +94,13 @@ def main():
 	
 	if in_data.OptIntegration != None:			#TODO: Nedelej pri neuspesne indexaci
 		if in_data.BackupOpt != None:
-			print 'Backing up previous run...'
+			print('Backing up previous run...')
 			common.BackupOpt(names, in_data.BackupOpt)
 		
 		oldisa = common.ReadISa(names)
 		common.OptimizeXDS(names, in_data.OptIntegration)
 
-		print "Running XDS..."
+		print("Running XDS...")
 		common.RunXDS(names)
 
 		newisa = common.ReadISa(names)
@@ -122,8 +122,8 @@ if __name__ == "__main__":
 		import argparse #sys,os,subprocess,shlex,,re,glob,math
 	#	from distutils import spawn
 	except Exception:
-		print "Your python is probably to old. At least version 2.7 is required."
-		print "Your version is: " +  sys.version
+		print("Your python is probably to old. At least version 2.7 is required.")
+		print("Your version is: " +  sys.version)
 		sys.exit(1)
 
 	main()

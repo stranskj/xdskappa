@@ -20,13 +20,13 @@ def ParseInput():
         return parser.parse_args()
 
 def main():
-    print ""
-    print "\txdskappa.show_stat " + common.VERSION
-    print "\tAuthor: Jan Stransky"
-    print "\t========================"
-    print " "
-    print common.LICENSE
-    print " "
+    print("")
+    print("\txdskappa.show_stat " + common.VERSION)
+    print("\tAuthor: Jan Stransky")
+    print("\t========================")
+    print(" ")
+    print(common.LICENSE)
+    print(" ")
     
     in_data = ParseInput()
  #   print in_data
@@ -34,7 +34,7 @@ def main():
     if os.path.isfile(in_data.DatasetListFile):
         datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)
     else:
-        print "File not found: " + in_data.DatasetListFile
+        print("File not found: " + in_data.DatasetListFile)
         sys.exit(1)
         
     common.ShowStatistics(names, in_data.Scaled, in_data.gnuplot_input)    
@@ -47,8 +47,8 @@ if __name__ == "__main__":
         import argparse #sys,os,subprocess,shlex,,re,glob,math
     #    from distutils import spawn
     except Exception:
-        print "Your python is probably to old. At least version 2.7 is required."
-        print "Your version is: " +  sys.version
+        print("Your python is probably to old. At least version 2.7 is required.")
+        print("Your version is: " +  sys.version)
         sys.exit(1)
 
     main()

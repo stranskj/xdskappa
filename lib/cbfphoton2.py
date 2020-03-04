@@ -104,7 +104,7 @@ class photonCIF(dict):
 		try :
 			frame_file = open(frame,'r')
 		except IOError :
-			print "File not found: " + frame
+			print("File not found: " + frame)
 			sys.exit(1)
 		
 #		header = {}
@@ -167,9 +167,9 @@ class photonCIF(dict):
 
 def Test():
 	hd = photonCIF('photon.cbf')
-	print hd
-	print hd['_diffrn_radiation_wavelength.wavelength']
-	print hd['_diffrn_measurement_axis.axis_id']
+	print(hd)
+	print(hd['_diffrn_radiation_wavelength.wavelength'])
+	print(hd['_diffrn_measurement_axis.axis_id'])
 	
 if __name__ == "__main__":
 	import sys,re
