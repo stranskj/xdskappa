@@ -7,6 +7,13 @@ def GetEolChar(sdata):
 
 import re,sys,os
 
+def RemoveBinary(bin_file):
+	'''
+	Returns charactes in the file, which are readable as utf-8 or ascii; e.g. returns header
+	'''
+	return bin_file.read().decode(errors='ignore')
+	
+
 class photonCIF(dict):	
 
 	def __init__(self,strFilename=None):
@@ -102,14 +109,15 @@ class photonCIF(dict):
 	def GetHeader(self,frame):
 	
 		try :
-			frame_file = open(frame,'r')
+			with open(frame,'rb') as frame_file:
+				frame_string = frame_file.read().decode(errors='ignore')
 		except IOError :
 			print("File not found: " + frame)
 			sys.exit(1)
 		
 #		header = {}
-	
-		frame_split = frame_file.read().split('--CIF-BINARY-FORMAT-SECTION-')		#last '-' omitted to pervent empty first line later in binary processing
+		
+		frame_split = frame_string.split('--CIF-BINARY-FORMAT-SECTION-')		#last '-' omitted to pervent empty first line later in binary processing
 		frame_header = frame_split[0]
 		frame_binary = frame_split[1]
 		eolc = GetEolChar(frame_header)
