@@ -6,14 +6,13 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-
-
-
 import os,math,subprocess,re,glob,sys,shutil
 from xdskappa.xdsinp import XDSINP
 from xdskappa.xdataset import XDataset
 import xdskappa
 from distutils import spawn
+
+__version__ = xdskappa.__version__
 
 def GetStatistics(inFile, outFile):
     """
@@ -693,7 +692,7 @@ def GetDatasets(inData):
         names.append(key)
     names.sort()
     fdatasets = open('datasets.list','w')
-    fdatasets.write('# Written by xdskappa ('+xdskappa.VERSION+').\n #Use # in line begining to disable dataset processing.\n# Dataset name\tFrame name template\n')
+    fdatasets.write('# Written by xdskappa ({}).\n #Use # in line begining to disable dataset processing.\n# Dataset name\tFrame name template\n'.format(__version__))
     for key in names:
         fdatasets.write(key + xdskappa.LIST_SEPARATOR + DatasetsDict[key] + "\n")
     fdatasets.close()    

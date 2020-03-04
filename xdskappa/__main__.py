@@ -9,6 +9,7 @@ from xdskappa.xdsinp import XDSINP
 import argparse
 import sys
 
+__version__ = xdskappa.__version__
 
 def parse_usage():
 	return ''' xdskappa -h
@@ -54,13 +55,7 @@ def ParseInput():
 	return parser.parse_args()
 
 def main():
-	print("")
-	print("\txdskappa " + xdskappa.VERSION)
-	print("\tAuthor: Jan Stransky")
-	print("\t========================")
-	print(" ")
-	print(xdskappa.LICENSE)
-	print(" ")
+	xdskappa.intro()
 	
 	in_data = ParseInput()
 	#print in_data

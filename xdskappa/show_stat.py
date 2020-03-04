@@ -6,6 +6,8 @@ from xdskappa.xdsinp import XDSINP
 import xdskappa
 import argparse
 
+__version__ = xdskappa.__version__
+
 
 def ParseInput():
         parser = argparse.ArgumentParser(prog= 'xdskappa.show_stat', description='Shows merging statistic vs. resolution.', epilog='Dependencies: XDS, gnuplot')
@@ -23,13 +25,7 @@ def ParseInput():
         return parser.parse_args()
 
 def main():
-    print("")
-    print("\txdskappa.show_stat " + xdskappa.VERSION)
-    print("\tAuthor: Jan Stransky")
-    print("\t========================")
-    print(" ")
-    print(xdskappa.LICENSE)
-    print(" ")
+    xdskappa.intro()
     
     in_data = ParseInput()
  #   print in_data
