@@ -1,6 +1,10 @@
-import cbfphoton2,re,os,sys,glob
-import xdataset, common #import XDataset
-VERSION = common.VERSION
+import xdskappa.detector.cbfphoton2 as cbfphoton2
+import re,os,sys,glob
+import xdskappa.xdataset as xdataset
+import xdskappa.common as common #import XDataset
+import xdskappa
+
+VERSION = xdskappa.VERSION
 
 MINIMAL_KEY= ['JOB', 'NAME_TEMPLATE_OF_DATA_FRAMES', 'DATA_RANGE', 'ORGX', 'ORGY', 'OSCILLATION_RANGE', 'X-RAY_WAVELENGTH', 'DETECTOR_DISTANCE', 'SPACE_GROUP_NUMBER', 'UNIT_CELL_CONSTANTS']
 MULTIPARAM = ['EXCLUDE_RESOLUTION_RANGE', 'SPOT_RANGE', 'UNTRUSTED_RECTANGLE', 'UNTRUSTED_ELLIPSE', 'UNTRUSTED_QUADRILATERAL']

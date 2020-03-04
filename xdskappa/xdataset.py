@@ -1,4 +1,5 @@
-import cbfphoton2,os,re,sys,math,glob
+import xdskappa.detector.cbfphoton2 as cbfphoton2
+import os,re,sys,math,glob
 
 class XDataset():
 	"""

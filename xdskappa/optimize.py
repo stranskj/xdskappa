@@ -1,7 +1,9 @@
 #!/bin/python
 
-import common, os
-from xdsinp import XDSINP
+import xdskappa
+import xdskappa.common as common
+import os
+from xdskappa.xdsinp import XDSINP
 
 def ParseInput():
     parser = argparse.ArgumentParser(prog= 'xdskappa.optimize', description='Modify input files to perform optimization of integration and rerun XDS.', epilog='Dependencies: XDS')
@@ -52,11 +54,11 @@ def PrintISaOptimized(OldIsa,NewIsa):
 
 def main():
     print("")
-    print("\txdskappa.optimize " + common.VERSION)
+    print("\txdskappa.optimize " + xdskappa.VERSION)
     print("\tAuthor: Jan Stransky")
     print("\t========================")
     print(" ")
-    print(common.LICENSE)
+    print(xdskappa.LICENSE)
     print(" ")
 
     in_data = ParseInput()#sys.argv)

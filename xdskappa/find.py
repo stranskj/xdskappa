@@ -1,4 +1,5 @@
-import common
+import xdskappa.common as common
+import xdskappa
 
 def ParseInput():
     parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently for omega scans on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par')
@@ -27,11 +28,11 @@ def ParseInput():
 
 def main():
     print("")
-    print("\txdskappa.find " + common.VERSION)
+    print("\txdskappa.find " + xdskappa.VERSION)
     print("\tAuthor: Jan Stransky")
     print("\t========================")
     print(" ")
-    print(common.LICENSE)
+    print(xdskappa.LICENSE)
     print(" ") 
     
     inpPar = ParseInput()

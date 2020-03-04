@@ -2,9 +2,10 @@
 #from xdsinp	import XDSINP
 #from _imaging import path
 #from xdataset import XDataset
-import common
-import optimize as opt
-from xdsinp import XDSINP
+import xdskappa
+import xdskappa.common as common
+import xdskappa.optimize as opt
+from xdskappa.xdsinp import XDSINP
 
 
 def parse_usage():
@@ -52,11 +53,11 @@ def ParseInput():
 
 def main():
 	print("")
-	print("\txdskappa " + common.VERSION)
+	print("\txdskappa " + xdskappa.VERSION)
 	print("\tAuthor: Jan Stransky")
 	print("\t========================")
 	print(" ")
-	print(common.LICENSE)
+	print(xdskappa.LICENSE)
 	print(" ")
 	
 	in_data = ParseInput()

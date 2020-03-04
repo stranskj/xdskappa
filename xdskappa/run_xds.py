@@ -1,7 +1,9 @@
 #!/bin/python
 
-import common, os
-from xdsinp import XDSINP
+import xdskappa.common as common
+import os
+from xdskappa.xdsinp import XDSINP
+import xdskappa
 
 
 def ParseInput():
@@ -37,11 +39,11 @@ def ParseInput():
 
 def main():
     print("")
-    print("\txdskappa.run_xds " + common.VERSION)
+    print("\txdskappa.run_xds " + xdskappa.VERSION)
     print("\tAuthor: Jan Stransky")
     print("\t========================")
     print(" ")
-    print(common.LICENSE)
+    print(xdskappa.LICENSE)
     print(" ")    
 
     in_data = ParseInput()

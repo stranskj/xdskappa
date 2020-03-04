@@ -6,13 +6,13 @@ Set of common functions for xdskappa tools
 @author: stransky
 '''
 
-VERSION = '0.2.5.1 (27th March 2019)'
-LIST_SEPARATOR = '\t'
-LICENSE = "The software is distributed under GNU General Public License v3."
+
+
 
 import os,math,subprocess,re,glob,sys,shutil
-from xdsinp import XDSINP
-from xdataset import XDataset
+from xdskappa.xdsinp import XDSINP
+from xdskappa.xdataset import XDataset
+import xdskappa
 from distutils import spawn
 
 def GetStatistics(inFile, outFile):
@@ -494,7 +494,7 @@ def ReadDatasetListFile(inData):
     DatasetsDict = {}
     names = []
     for line in fin:
-        row = line.strip().split(LIST_SEPARATOR)
+        row = line.strip().split(xdskappa.LIST_SEPARATOR)
         if row[0][0] == '#':
             continue
         names.append(row[0])
@@ -693,8 +693,8 @@ def GetDatasets(inData):
         names.append(key)
     names.sort()
     fdatasets = open('datasets.list','w')
-    fdatasets.write('# Written by xdskappa ('+VERSION+').\n #Use # in line begining to disable dataset processing.\n# Dataset name\tFrame name template\n')
+    fdatasets.write('# Written by xdskappa ('+xdskappa.VERSION+').\n #Use # in line begining to disable dataset processing.\n# Dataset name\tFrame name template\n')
     for key in names:
-        fdatasets.write(key + LIST_SEPARATOR + DatasetsDict[key] + "\n")
+        fdatasets.write(key + xdskappa.LIST_SEPARATOR + DatasetsDict[key] + "\n")
     fdatasets.close()    
     return DatasetsDict,names
