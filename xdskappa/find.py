@@ -1,4 +1,9 @@
-import common
+import xdskappa.common as common
+import xdskappa
+import argparse
+import sys
+
+__version__ = xdskappa.__version__
 
 def ParseInput():
     parser = argparse.ArgumentParser(prog= 'xdskappa', description='Finds all data collection runs, makes XDS.INP files and attempts running XDS for all runs and scale them. Currently for omega scans on D8 Venture at BIOCEV.', epilog='Dependencies: xds_par')
@@ -26,31 +31,17 @@ def ParseInput():
     return parser.parse_args()
 
 def main():
-    print ""
-    print "\txdskappa.find " + common.VERSION
-    print "\tAuthor: Jan Stransky"
-    print "\t========================"
-    print " "
-    print common.LICENSE
-    print " " 
+    xdskappa.intro() 
     
     inpPar = ParseInput()
     
     datasets,names = common.GetDatasets(inpPar) #TODO: use of output file name
-    print "Found datasets:"
+    print("Found datasets:")
     for d in names :
-        print datasets[d]
-    print "Found datasets saved to " + inpPar.DatasetListFile
+        print(datasets[d])
+    print("Found datasets saved to " + inpPar.DatasetListFile)
 
 if __name__ == "__main__":
-    import sys
-    try:
-        import argparse #sys,os,subprocess,shlex,,re,glob,math
-    #    from distutils import spawn
-    except Exception:
-        print "Your python is probably to old. At least version 2.7 is required."
-        print "Your version is: " +  sys.version
-        sys.exit(1)
 
     main()
     exit(0)

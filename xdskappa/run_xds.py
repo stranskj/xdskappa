@@ -1,8 +1,12 @@
 #!/bin/python
 
-import common, os
-from xdsinp import XDSINP
+import xdskappa.common as common
+import os, sys
+from xdskappa.xdsinp import XDSINP
+import xdskappa
+import argparse
 
+__version__ = xdskappa.__version__
 
 def ParseInput():
         parser = argparse.ArgumentParser(prog= 'xdskappa.run_xds', description='Modifies existing XDS.INPs, run XDS and shows overall statistics (no scaling)', epilog='Dependencies: XDS, gnuplot')
@@ -36,13 +40,7 @@ def ParseInput():
         return parser.parse_args()
 
 def main():
-    print ""
-    print "\txdskappa.run_xds " + common.VERSION
-    print "\tAuthor: Jan Stransky"
-    print "\t========================"
-    print " "
-    print common.LICENSE
-    print " "    
+    xdskappa.intro()   
 
     in_data = ParseInput()
 #    print in_data
@@ -50,23 +48,23 @@ def main():
     if os.path.isfile(in_data.DatasetListFile):
         datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)
     else:
-        print "File not found: " + in_data.DatasetListFile
+        print("File not found: " + in_data.DatasetListFile)
         sys.exit(1)
 
     parmod = common.ProcessParams(in_data.XDSParameter,in_data.XDSParameterFile)
     if not len(parmod) == 0:
-        print "Modifying XDS.INP files:"
+        print("Modifying XDS.INP files:")
         for name in names:
             try:
-                print name+"/XDS.INP"
+                print(name+"/XDS.INP")
                 inXDS = XDSINP(name)
                 inXDS.read()
                 for key in parmod:
                     inXDS[key] = parmod[key]
                 inXDS.write()
             except IOError as e:
-                print e
-                print "Skipping."
+                print(e)
+                print("Skipping.")
                 continue
 
     if in_data.norun:
@@ -79,14 +77,6 @@ def main():
     return                
 
 if __name__ == "__main__":
-    import sys
-    try:
-        import argparse #sys,os,subprocess,shlex,,re,glob,math
-    #    from distutils import spawn
-    except Exception:
-        print "Your python is probably to old. At least version 2.7 is required."
-        print "Your version is: " +  sys.version
-        sys.exit(1)
 
     main()
     sys.exit(0)

@@ -1,7 +1,11 @@
 #!/bin/python
 
-import common, os
-from xdsinp import XDSINP
+import xdskappa
+import xdskappa.common as common
+import os, sys, argparse
+from xdskappa.xdsinp import XDSINP
+
+__version__ = xdskappa.__version__
 
 def ParseInput():
     parser = argparse.ArgumentParser(prog= 'xdskappa.optimize', description='Modify input files to perform optimization of integration and rerun XDS.', epilog='Dependencies: XDS')
@@ -33,8 +37,8 @@ def PrintISaOptimized(OldIsa,NewIsa):
     @param NewIsa: Dictionary of new ISa values
     @type dictionary
     """
-    print 'ISa for individual datasets before (Old) and after (New) optimization:'
-    print '\tOld\tNew\tDataset'
+    print('ISa for individual datasets before (Old) and after (New) optimization:')
+    print('\tOld\tNew\tDataset')
     for dataset in sorted(OldIsa):
         
         try:
@@ -47,52 +51,38 @@ def PrintISaOptimized(OldIsa,NewIsa):
         except KeyError:
             nisa = 'N/A'
             
-        print '\t' + oisa + '\t' + nisa + '\t' + dataset
+        print('\t' + oisa + '\t' + nisa + '\t' + dataset)
     return
 
 def main():
-    print ""
-    print "\txdskappa.optimize " + common.VERSION
-    print "\tAuthor: Jan Stransky"
-    print "\t========================"
-    print " "
-    print common.LICENSE
-    print " "
+    xdskappa.intro()
 
     in_data = ParseInput()#sys.argv)
-    print in_data
+    print(in_data)
 
     if os.path.isfile(in_data.DatasetListFile):
         datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)
     else:
-        print "File not found: " + in_data.DatasetListFile
+        print("File not found: " + in_data.DatasetListFile)
         sys.exit(1)
 
     if in_data.BackupOpt != None:
-        print 'Backing up previous run...'
+        print('Backing up previous run...')
         common.BackupOpt(names, in_data.BackupOpt)
     
-    print "Applying settings for optimization..."    
+    print("Applying settings for optimization...")    
     common.OptimizeXDS(names, in_data.OptIntegration)
     
     if in_data.NoRun:
         oldisa = common.ReadISa(names)
         
-        print "Running XDS..."
+        print("Running XDS...")
         common.RunXDS(names)
         
         newisa = common.ReadISa(names)
         PrintISaOptimized(oldisa, newisa)        
 
 if __name__ == "__main__":
-    import sys
-    try:
-        import argparse #sys,os,subprocess,shlex,,re,glob,math
-    #    from distutils import spawn
-    except Exception:
-        print "Your python is probably to old. At least version 2.7 is required."
-        print "Your version is: " +  sys.version
-        sys.exit(1)
 
     main()
     sys.exit(0)
