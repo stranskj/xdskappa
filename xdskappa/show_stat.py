@@ -1,7 +1,12 @@
 #!/bin/python
 
-import common, os
-from xdsinp import XDSINP
+import xdskappa.common as common
+import os, sys
+from xdskappa.xdsinp import XDSINP
+import xdskappa
+import argparse
+
+__version__ = xdskappa.__version__
 
 
 def ParseInput():
@@ -20,13 +25,7 @@ def ParseInput():
         return parser.parse_args()
 
 def main():
-    print ""
-    print "\txdskappa.show_stat " + common.VERSION
-    print "\tAuthor: Jan Stransky"
-    print "\t========================"
-    print " "
-    print common.LICENSE
-    print " "
+    xdskappa.intro()
     
     in_data = ParseInput()
  #   print in_data
@@ -34,7 +33,7 @@ def main():
     if os.path.isfile(in_data.DatasetListFile):
         datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)
     else:
-        print "File not found: " + in_data.DatasetListFile
+        print("File not found: " + in_data.DatasetListFile)
         sys.exit(1)
         
     common.ShowStatistics(names, in_data.Scaled, in_data.gnuplot_input)    
@@ -42,14 +41,6 @@ def main():
     return    
 
 if __name__ == "__main__":
-    import sys
-    try:
-        import argparse #sys,os,subprocess,shlex,,re,glob,math
-    #    from distutils import spawn
-    except Exception:
-        print "Your python is probably to old. At least version 2.7 is required."
-        print "Your version is: " +  sys.version
-        sys.exit(1)
 
     main()
     sys.exit(0)

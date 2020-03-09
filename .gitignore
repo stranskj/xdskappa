@@ -18,3 +18,7 @@ testing/
 .pydevproject
 *.spyderproject
 .spyderworkspace
+sdist
+test_bin
+.eggs
+*.egg-info

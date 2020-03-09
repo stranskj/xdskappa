@@ -1,3 +1,11 @@
+v0.3.0
+==========
+
+## News
+  * Technical modernization
+    * Python3
+    * Proper pythonic packaging
+
 v0.2.5.1
 ==========
 
