@@ -3,6 +3,6 @@
 
 #./compile-fedora.sh
 ./compile-centos7.sh
-./compile-debian.sh
-chown -R stransky:users `pwd`/xdskappa/release/
+#./compile-debian.sh
+chown -R stransky:users `pwd`/release/
 
