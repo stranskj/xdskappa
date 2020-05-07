@@ -11,8 +11,54 @@ from xdskappa.xdsinp import XDSINP
 from xdskappa.xdataset import XDataset
 import xdskappa
 from distutils import spawn
+import logging
 
 __version__ = xdskappa.__version__
+
+logging_config = dict(
+    version = 1,
+    formatters = {
+        'simple_print' : {'format' : '%(message)s'}
+    },
+    handlers = {
+        'print_stdout' : {
+            'class': 'logging.StreamHandler',
+            'formatter' : 'simple_print',
+            'level': logging.WARNING
+        },
+        'file_log' : {
+            'class' : 'logging.FileHandler',
+            'formatter' : 'simple_print',
+            'level' : logging.INFO,
+            'filename' : 'xdskappa.log',
+            'mode' : 'a'
+        },
+        'debug_file' : {
+            'class' : 'logging.FileHandler',
+            'formatter' : 'simple_print',
+            'level' : logging.DEBUG,
+            'filename' : 'xdskappa.debug.log',
+            'mode' : 'w'
+        },
+    },
+    root = {
+        'handlers' : ['print_stdout', 'file_log', 'debug_file'],
+        'level' : logging.DEBUG
+    }
+
+)
+
+def my_print(msg):
+    '''
+    Prints to sdout, but also logs as logging.INFO
+    :param args:
+    :return:
+    '''
+
+    print(msg)
+    logging.info(msg)
+
+#print=my_print
 
 def GetStatistics(inFile, outFile):
     """
@@ -120,8 +166,8 @@ def ShowStatistics(Names,Scale=None,plot_name='gnuplot.plt'):
             try:
                 GetStatistics(data+'/CORRECT.LP', data+'/statistics.out')
             except IOError as e:
-                print(e)
-                print('Skipping...')
+                my_print(e)
+                my_print('Skipping...')
     if not (Scale == None):
         for sc in Scale:
     #      Names.append(Scale)
@@ -129,8 +175,8 @@ def ShowStatistics(Names,Scale=None,plot_name='gnuplot.plt'):
                 try:
                     GetStatistics(sc+'/XSCALE.LP', sc+'/statistics.out')
                 except IOError as e:
-                    print(e)
-                    print('Skipping...')
+                    my_print(e)
+                    my_print('Skipping...')
     
     winsize = GetWinSize()
     
@@ -260,10 +306,10 @@ plot ')
     
     plt.close()
     
-    print(" ")
-    print("Input file to plot merging statistics was written to gnuplot.plt. To see the graphs, run:")
-    print(" ")
-    print("gnuplot -p " + plot_name)
+    my_print(" ")
+    my_print("Input file to plot merging statistics was written to gnuplot.plt. To see the graphs, run:")
+    my_print(" ")
+    my_print("gnuplot -p " + plot_name)
     
 #    if spawn.find_executable('gnuplot') == None:
 #        print "Gnuplot not found in $PATH. You can plot results using statistic.out in subdirectories"
@@ -300,24 +346,24 @@ def ReadISa(Paths):
     return outDict        
 
 def PrintISa(Paths):
-    print('ISa for individual datasets:')
-    print('\tISa\tDataset')
+    my_print('ISa for individual datasets:')
+    my_print('\tISa\tDataset')
     
     isalist = ReadISa(Paths)
     
     for dataset in sorted(isalist):    
-        print('\t' + isalist[dataset] + '\t' + dataset)
+        my_print('\t' + isalist[dataset] + '\t' + dataset)
     return
 
 def RunXDS(Paths):
     if spawn.find_executable('xds_par') == None:
-        print("ERROR: Cannot find XDS executable.")
+        my_print("ERROR: Cannot find XDS executable.")
         sys.exit(1)
         
     for path in Paths:
-        print("Processing " + path + ":")
+        my_print("Processing " + path + ":")
         if not os.path.isfile(path+'/XDS.INP'):
-            print("File not found: "+path+'/XDS.INP')
+            my_print("File not found: "+path+'/XDS.INP')
             continue
         
         log = open(path + '/xds.log','w')
@@ -327,22 +373,22 @@ def RunXDS(Paths):
             line = line_b.decode()
             log.write(line)
             if '***** COLSPOT *****' in line:
-                print('Finding strong reflections...')
+                my_print('Finding strong reflections...')
             
             if '***** IDXREF *****' in line:
-                print('Indexing...')
+                my_print('Indexing...')
                 
             if '***** INTEGRATE *****' in line:
-                print('Integrating...')
+                my_print('Integrating...')
         
         xds.wait()
         log.close()
                 
         log = open(path + '/xds.log','r')
         if '!!! ERROR !!!' in log.read():
-            print("An error during data procesing using XDS. Check IDXREF.LP, INTEGRATE.LP, other *.LP or xds.log files fo further details.")
+            my_print("An error during data procesing using XDS. Check IDXREF.LP, INTEGRATE.LP, other *.LP or xds.log files fo further details.")
         else:
-            print('Finished.')
+            my_print('Finished.')
         log.close()
     return 
 
@@ -352,7 +398,7 @@ def ForceXDS(paths):
         if 'YOU MAY CHOOSE TO CONTINUE DATA' in log.read():
             
             
-            print("Attempting integration of: " + path)
+            my_print("Attempting integration of: " + path)
             inp = XDSINP(path)
             inp.read()
             inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
@@ -371,11 +417,11 @@ def BackupOpt(Paths,bckname):
         #    print "Backup directory already exists, overwritting content: "+ pathbck 
         
         if os.path.isdir(pathbck):
-            print('Backup in '+pathbck+' exists, deleting...')
+            my_print('Backup in '+pathbck+' exists, deleting...')
             try:
                 shutil.rmtree(pathbck, ignore_errors=False, onerror=IOError)
             except IOError:
-                print('Nothing to remove')
+                my_print('Nothing to remove')
                 
         try:
             #shutil.copytree(path, pathbck, symlinks=True)
@@ -386,12 +432,12 @@ def BackupOpt(Paths,bckname):
                     shutil.copy2(path+'/'+fi, pathbck+'/'+fi)
                     
         except Exception as e:
-            print(e)
+            my_print(e)
     return                    
 
 def OptimizeXDS(Paths,Optim): 
     if Optim == None or len(Optim) == 0:
-        print('Nothing to optimize.')
+        my_print('Nothing to optimize.')
         return False
 
     if 'ALL' in Optim:
@@ -401,10 +447,10 @@ def OptimizeXDS(Paths,Optim):
     opt = ''
     for o in Optim:
         if not o in ['BEAM','FIX','GEOMETRY', 'ALL']:
-            print('Unknown parameter to optimize: ' + o)
+            my_print('Unknown parameter to optimize: ' + o)
         else :
             opt += o + ' '
-    print('Optimizing integration: ' + opt) #TODO: co optimalizuje
+    my_print('Optimizing integration: ' + opt) #TODO: co optimalizuje
     
     for path in Paths:
         inp = XDSINP(path)
@@ -450,7 +496,7 @@ def Scale(Paths, Outname):
     try:
         os.mkdir('scale')
     except:
-        print("Directory already exists: scale")
+        my_print("Directory already exists: scale")
     
     xscaleinp = open('scale/XSCALE.INP','w')
     
@@ -459,21 +505,21 @@ def Scale(Paths, Outname):
         if os.path.isfile(path + '/XDS_ASCII.HKL'):
             xscaleinp.write('   INPUT_FILE= ../' + path + '/XDS_ASCII.HKL\n')
         else:
-            print('XDS_ASCII.HKL not available in ' + path)
-            print('Excluding from scaling')
+            my_print('XDS_ASCII.HKL not available in ' + path)
+            my_print('Excluding from scaling')
     
     xscaleinp.close()
     
-    print('Scaling with xscale_par...')
+    my_print('Scaling with xscale_par...')
     with open(os.devnull, 'w') as FNULL:
         xscale = subprocess.Popen('xscale_par', cwd= 'scale', stdout=FNULL, stderr=subprocess.STDOUT)
         xscale.wait()
     
     fout = open('scale/XSCALE.LP')
     if '!!! ERROR !!!' in fout:
-        print('Error in scaling. Please read: scale/XSCALE.LP')
+        my_print('Error in scaling. Please read: scale/XSCALE.LP')
     else:
-        print('Scaled. Output written in: scale/' + Outname)
+        my_print('Scaled. Output written in: scale/' + Outname)
     
     
 
@@ -587,7 +633,7 @@ def PrepareXDSINP(inData,Datasets,Names):
     @param Names: List of keys in Datasets (ordered)
     @type Names: list
     """
-    print("Processing...")
+    my_print("Processing...")
     
     #TODO: nejak z funkcnit/prerozdelit kvuli toolum?
     file_dict = XDSINP('temp')
@@ -597,7 +643,7 @@ def PrepareXDSINP(inData,Datasets,Names):
         try:
             file_dict.read()
         except IOError as e:
-            print(e)
+            my_print(e)
             sys.exit(1)    
         
     mod_list = []
@@ -630,13 +676,13 @@ def PrepareXDSINP(inData,Datasets,Names):
     for key in par_full:
         kapinp.write(par_full.GetParam(key))
         
-    print('Parameters used to modify XDS.INP files were written to XDSKAPPA_run.INP.')       
+    my_print('Parameters used to modify XDS.INP files were written to XDSKAPPA_run.INP.')
         
     for path in Names:
         try:
             os.mkdir(path)
         except:
-            print("Directory already exists: "+ path)
+            my_print("Directory already exists: "+ path)
         
         
         
@@ -678,7 +724,7 @@ def GetDatasets(inData):
         try:
             leadingFrames = [fi for fi in os.listdir(datapath) if firstframe.search(fi)] #get first frame of each dataset
         except os.error:
-            print("Cannot access: " + datapath + " No such directory")
+            my_print("Cannot access: " + datapath + " No such directory")
             sys.exit(1)
 
         for setname in leadingFrames :        

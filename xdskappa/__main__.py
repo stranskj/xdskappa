@@ -8,6 +8,10 @@ import xdskappa.optimize as opt
 from xdskappa.xdsinp import XDSINP
 import argparse
 import sys
+import logging
+import logging.config
+
+logging.config.dictConfig(common.logging_config)
 
 __version__ = xdskappa.__version__
 
@@ -51,32 +55,40 @@ def ParseInput():
 	if len(sys.argv) == 1:
 		parser.print_help()     # help on empty input
 		sys.exit(1)
-
-	return parser.parse_args()
+	logging.info('Command line input: ' + ' '.join(sys.argv))
+	args = parser.parse_args()
+	logging.debug('Input understanding:')
+	logging.debug(args) # + '\n'.join([key + ': ' + val for key, val in vars(args).items()]))
+	return args
 
 def main():
 	xdskappa.intro()
-	
+	# logging.info('''
+	#
+	# Xdskappa ({version}, {date})
+	# ==========================
+	#
+	# '''.format(version=__version__, date=datetime.datetime.now()))
 	in_data = ParseInput()
 	#print in_data
 
 	if (len(in_data.dataPath) == 0) and (in_data.DatasetListFile == None):
-		print("Nor path to data, nor dataset file specified. See help or documentation.")
+		logging.error("Nor path to data, nor dataset file specified. See help or documentation.")
 		sys.exit(1)
 
 	if len(in_data.dataPath) > 0:
 		datasets,names = common.GetDatasets(in_data)
-		print("Found datasets:")
+		common.my_print("Found datasets:")
 		for d in names :
-			print(datasets[d])
-		print("Found datasets saved to datasets.list")
+			common.my_print(datasets[d])
+		common.my_print("Found datasets saved to datasets.list")
 	
 	if in_data.DatasetListFile :
 		datasets,names = common.ReadDatasetListFile(in_data.DatasetListFile)
 	
-	print("Using datasets (name, path):")
+	common.my_print("Using datasets (name, path):")
 	for d in names :
-		print(d + '\t' +datasets[d])
+		common.my_print(d + '\t' +datasets[d])
 		
 	common.PrepareXDSINP(in_data,datasets,names)
 	
@@ -92,13 +104,13 @@ def main():
 	
 	if in_data.OptIntegration != None:			#TODO: Nedelej pri neuspesne indexaci
 		if in_data.BackupOpt != None:
-			print('Backing up previous run...')
+			common.my_print('Backing up previous run...')
 			common.BackupOpt(names, in_data.BackupOpt)
 		
 		oldisa = common.ReadISa(names)
 		common.OptimizeXDS(names, in_data.OptIntegration)
 
-		print("Running XDS...")
+		common.my_print("Running XDS...")
 		common.RunXDS(names)
 
 		newisa = common.ReadISa(names)
