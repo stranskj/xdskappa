@@ -61,7 +61,7 @@ def ParseInput():
 	logging.debug(args) # + '\n'.join([key + ': ' + val for key, val in vars(args).items()]))
 	return args
 
-def main():
+def run():
 	xdskappa.intro()
 	# logging.info('''
 	#
@@ -125,6 +125,13 @@ def main():
 	if in_data.ShowGraphs:
 		common.ShowStatistics(names, ['scale'])
 	
+
+def main():
+	try:
+		run()
+	except Exception as e:
+		logging.exception(e)
+		sys.exit(2)
 
 if __name__ == "__main__":
 
