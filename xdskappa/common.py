@@ -353,6 +353,10 @@ def ForceXDS(paths):
             
             
             print("Attempting integration of: " + path)
+            inp = XDSINP(path)
+            inp.read()
+            inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
+            inp.write()
             RunXDS([path])
         else:
             log.close() 
