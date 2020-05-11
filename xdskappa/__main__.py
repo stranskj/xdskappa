@@ -187,6 +187,7 @@ def main():
         sys.exit(2)
     except Exception as e:
         logging.exception(e)
+        print('Please, report back to the developes. Include the debug file with the report.')
         sys.exit(2)
 
 
