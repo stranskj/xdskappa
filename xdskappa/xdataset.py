@@ -1,4 +1,6 @@
 import xdskappa.detector.cbfphoton2 as cbfphoton2
+import xdskappa
+import logging
 import os,re,sys,math,glob
 
 class XDataset():
@@ -161,8 +163,9 @@ class XDataset():
 		try:
 			axes = self.GetAxes()
 		except KeyError as e:
-			print(e)
-			sys.exit(1)
+			logging.debug(**e) # TODO: Test!!!
+		 	raise xdskappa.RuntimeErrorUser('Error while reading data headers: \n'+str(e))
+
 			
 		self.geometry['DISTANCE'] = axes['DX']['_diffrn_scan_axis.displacement_start']
 		self.geometry['SCAN'] = self.fheader['_diffrn_measurement_axis.axis_id']

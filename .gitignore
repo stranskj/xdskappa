@@ -22,3 +22,4 @@ sdist
 test_bin
 .eggs
 *.egg-info
+.venv

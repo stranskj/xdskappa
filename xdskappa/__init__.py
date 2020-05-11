@@ -21,3 +21,15 @@ def intro():
     my_print(" ")
     my_print(LICENSE)
     my_print(" ")
+
+class RuntimeErrorUser(RuntimeError):
+    '''
+    Exception marking user-related errors, which should be handled user-friendly.
+    '''
+    pass
+
+class RuntimeWarningUser(RuntimeError):
+    '''
+    Exception marking user-related warnings, which should be handled user-friendly.
+    '''
+    pass
