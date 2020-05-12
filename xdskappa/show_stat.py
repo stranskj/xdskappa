@@ -6,6 +6,9 @@ from xdskappa.xdsinp import XDSINP
 import xdskappa
 import argparse
 
+import logging.config
+logging.config.dictConfig(common.logging_config)
+
 __version__ = xdskappa.__version__
 
 

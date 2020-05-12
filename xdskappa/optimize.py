@@ -5,6 +5,9 @@ import xdskappa.common as common
 import os, sys, argparse
 from xdskappa.xdsinp import XDSINP
 
+import logging.config
+logging.config.dictConfig(common.logging_config)
+
 __version__ = xdskappa.__version__
 
 def ParseInput():
