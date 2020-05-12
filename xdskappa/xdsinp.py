@@ -1,7 +1,8 @@
 import xdskappa.detector.cbfphoton2 as cbfphoton2
 import re,os,sys,glob
 import xdskappa.xdataset as xdataset
-import xdskappa.common as common #import XDataset
+#import xdskappa.common #as common
+#import XDataset
 import xdskappa
 
 __version__ = xdskappa.__version__
