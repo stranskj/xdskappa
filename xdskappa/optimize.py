@@ -9,7 +9,7 @@ import logging.config
 
 prog_name = 'xdskappa.optimize'
 prog_short_description = 'Performs XDS optimization steps'
-logging.config.dictConfig(xdskappa.logging_config(prog_name))
+#logging.config.dictConfig(xdskappa.logging_config(prog_name))
 
 __version__ = xdskappa.__version__
 
@@ -78,6 +78,7 @@ def PrintISaOptimized(OldIsa, NewIsa):
 
 
 def main():
+    logging.config.dictConfig(xdskappa.logging_config(prog_name))
     xdskappa.intro()
 
     in_data = ParseInput()  # sys.argv)
@@ -107,5 +108,6 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()
     sys.exit(0)

@@ -15,7 +15,7 @@ import importlib
 
 prog_name='xdskappa'
 prog_short_description='Core programme'
-logging.config.dictConfig(xdskappa.logging_config(prog_name))
+
 
 __version__ = xdskappa.__version__
 
@@ -118,13 +118,9 @@ def ParseInput():
 
 def run():
     xdskappa.intro()
-    # logging.info('''
-    #
-    # Xdskappa ({version}, {date})
-    # ==========================
-    #
-    # '''.format(version=__version__, date=datetime.datetime.now()))
+
     in_data = ParseInput()
+
     # print in_data
 
     if (len(in_data.dataPath) == 0) and (in_data.DatasetListFile == None):
@@ -181,6 +177,7 @@ def run():
 
 
 def main():
+    logging.config.dictConfig(xdskappa.logging_config(prog_name))
     try:
         run()
     except KeyboardInterrupt:
@@ -196,5 +193,6 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()
     sys.exit(0)

@@ -7,7 +7,7 @@ prog_name='xdskappa.find'
 prog_short_description='Finds datasets'
 
 import logging.config
-logging.config.dictConfig(xdskappa.logging_config(prog_name))
+#logging.config.dictConfig(xdskappa.logging_config(prog_name))
 
 __version__ = xdskappa.__version__
 
@@ -37,6 +37,7 @@ def ParseInput():
     return parser.parse_args()
 
 def main():
+    logging.config.dictConfig(xdskappa.logging_config(prog_name))
     xdskappa.intro() 
     
     inpPar = ParseInput()

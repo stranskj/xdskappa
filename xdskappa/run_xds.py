@@ -10,7 +10,7 @@ import logging.config
 
 prog_name='xdskappa.run_xds'
 prog_short_description='Runs XDS without generating XDS.INP from scratch. Useful after custom modifications of XDS.INP'
-logging.config.dictConfig(xdskappa.logging_config(prog_name))
+#logging.config.dictConfig(xdskappa.logging_config(prog_name))
 
 __version__ = xdskappa.__version__
 
@@ -84,6 +84,7 @@ def ParseInput():
         return parser.parse_args()
 
 def main():
+    logging.config.dictConfig(xdskappa.logging_config(prog_name))
     xdskappa.intro()   
 
     in_data = ParseInput()

@@ -23,7 +23,7 @@ def intro():
     my_print(" ")
     my_print(LICENSE)
     my_print(" ")
-    logging.info('Run command:\n'+" ".join(sys.argv))
+    logging.info('Run command:\n'+" ".join(sys.argv)+'\n')
 
 class RuntimeErrorUser(RuntimeError):
     '''
