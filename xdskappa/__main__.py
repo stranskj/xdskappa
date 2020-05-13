@@ -13,7 +13,8 @@ import logging.config
 import pkg_resources
 import importlib
 
-logging.config.dictConfig(common.logging_config)
+prog_name='xdskappa'
+logging.config.dictConfig(xdskappa.logging_config(prog_name))
 
 __version__ = xdskappa.__version__
 
@@ -57,7 +58,7 @@ def epilog():
 
 
 def ParseInput():
-    parser = argparse.ArgumentParser(prog='xdskappa',
+    parser = argparse.ArgumentParser(prog=prog_name,
                                      description='Finds all data collection runs, makes XDS.INP files and attempts '
                                                  'running XDS for all runs and scale them. Currently works on D8 '
                                                  'Venture.',

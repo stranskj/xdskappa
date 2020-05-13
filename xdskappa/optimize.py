@@ -6,12 +6,13 @@ import os, sys, argparse
 from xdskappa.xdsinp import XDSINP
 
 import logging.config
-logging.config.dictConfig(common.logging_config)
+prog_name='xdskappa.optimize'
+logging.config.dictConfig(xdskappa.logging_config(prog_name))
 
 __version__ = xdskappa.__version__
 
 def ParseInput():
-    parser = argparse.ArgumentParser(prog= 'xdskappa.optimize', description='Modify input files to perform optimization of integration and rerun XDS.', epilog='Dependencies: XDS')
+    parser = argparse.ArgumentParser(prog= prog_name, description='Modify input files to perform optimization of integration and rerun XDS.', epilog='Dependencies: XDS')
     
     parser.add_argument('-D','--dataset-file', dest='DatasetListFile', nargs='?', default='datasets.list', const='datasets.list', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf. When no file is given, "datasets.list" is expected.')
     

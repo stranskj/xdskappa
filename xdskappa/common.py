@@ -10,54 +10,12 @@ import os, math, subprocess, re, glob, sys, shutil
 from xdskappa.xdsinp import XDSINP
 from xdskappa.xdataset import XDataset
 import xdskappa
+from xdskappa import my_print
 from distutils import spawn
 import logging
 
 __version__ = xdskappa.__version__
 
-logging_config = dict(
-    version=1,
-    formatters={
-        'simple_print': {'format': '%(message)s'}
-    },
-    handlers={
-        'print_stdout': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple_print',
-            'level': logging.WARNING
-        },
-        'file_log': {
-            'class': 'logging.FileHandler',
-            'formatter': 'simple_print',
-            'level': logging.INFO,
-            'filename': 'xdskappa.log',
-            'mode': 'a'
-        },
-        'debug_file': {
-            'class': 'logging.FileHandler',
-            'formatter': 'simple_print',
-            'level': logging.DEBUG,
-            'filename': 'xdskappa.debug.log',
-            'mode': 'w'
-        },
-    },
-    root={
-        'handlers': ['print_stdout', 'file_log', 'debug_file'],
-        'level': logging.DEBUG
-    }
-
-)
-
-
-def my_print(msg):
-    '''
-    Prints to sdout, but also logs as logging.INFO
-    :param args:
-    :return:
-    '''
-
-    print(msg)
-    logging.info(msg)
 
 
 # print=my_print

@@ -8,12 +8,13 @@ import argparse
 import logging
 import logging.config
 
-logging.config.dictConfig(common.logging_config)
+prog_name='xdskappa.run_xds'
+logging.config.dictConfig(xdskappa.logging_config(prog_name))
 
 __version__ = xdskappa.__version__
 
 def ParseInput():
-        parser = argparse.ArgumentParser(prog= 'xdskappa.run_xds', description='Modifies existing XDS.INPs, run XDS and shows overall statistics (no scaling)', epilog='Dependencies: XDS, gnuplot')
+        parser = argparse.ArgumentParser(prog= prog_name, description='Modifies existing XDS.INPs, run XDS and shows overall statistics (no scaling)', epilog='Dependencies: XDS, gnuplot')
 
 #        parser.add_argument('dataPath', nargs='*', help="Directory (or more) with input frames")
         parser.add_argument('-D','--dataset-file', dest='DatasetListFile', nargs='?', default='datasets.list', const='datasets.list', metavar='FILE', help='List of datasets to use. Entries are in format: output_subdirectory<tab>path/template_????.cbf. When no file is given, "datasets.list" is expected.')
