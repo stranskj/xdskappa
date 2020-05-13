@@ -14,6 +14,7 @@ VERSION = __version__
 def intro():
     my_print("")
     executable_name = os.path.split(sys.argv[0])[-1]
+    my_print("\t========================")
     my_print('\t{}'.format(executable_name))
     my_print("\tVersion: {}".format( __version__))
     my_print("\tDate: {}".format(datetime.datetime.now()))

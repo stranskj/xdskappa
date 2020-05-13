@@ -14,6 +14,7 @@ import pkg_resources
 import importlib
 
 prog_name='xdskappa'
+prog_short_description='Core programme'
 logging.config.dictConfig(xdskappa.logging_config(prog_name))
 
 __version__ = xdskappa.__version__
@@ -44,12 +45,13 @@ def epilog():
             suffix = ''
 
         for ep in (ept for ept in pkg_resources.iter_entry_points('console_scripts')  # ):
-                   if 'saxspoint' in ept.module_name):
+                   if 'xdskappa' in ept.module_name):
             try:
                 module = importlib.import_module(ep.module_name)
                 return_str += ep.name + suffix + '\n\t' + module.prog_short_description + '\n\n'
-            except:
-                return_str += 'Cannot find {}\nTry reinstall the package.'.format(ep.module_name)
+            except Exception as e:
+                logging.exception(e)
+                return_str += 'Cannot find {}\nTry reinstall the package.\n'.format(ep.module_name)
     except Exception as e:
         logging.exception(e)
         return_str += 'Here is typicaly list of available commands. Something is wrong.'
@@ -62,6 +64,7 @@ def ParseInput():
                                      description='Finds all data collection runs, makes XDS.INP files and attempts '
                                                  'running XDS for all runs and scale them. Currently works on D8 '
                                                  'Venture.',
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog=epilog(), usage=parse_usage())
 
     parser.add_argument('dataPath', nargs='*', help="Directory with input frames. Multiple values are accepted.")

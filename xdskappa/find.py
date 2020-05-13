@@ -3,6 +3,12 @@ import xdskappa
 import argparse
 import sys
 
+prog_name='xdskappa.find'
+prog_short_description='Finds datasets'
+
+import logging.config
+logging.config.dictConfig(xdskappa.logging_config(prog_name))
+
 __version__ = xdskappa.__version__
 
 def ParseInput():
