@@ -9,7 +9,7 @@ import logging
 import logging.config
 
 prog_name='xdskappa.run_xds'
-prog_short_description='Runs XDS without generating XDS.INP from scratch. Useful after custom modifications of XDS.INP'
+prog_short_description='Runs XDS without generating XDS.INP from scratch. Useful after custom modifications of XDS.INP. No scaling with xscale is done.'
 #logging.config.dictConfig(xdskappa.logging_config(prog_name))
 
 __version__ = xdskappa.__version__
@@ -83,11 +83,10 @@ def ParseInput():
 
         return parser.parse_args()
 
-def main():
-    logging.config.dictConfig(xdskappa.logging_config(prog_name))
-    xdskappa.intro()   
-
-    in_data = ParseInput()
+def run(in_data):
+    '''
+    Actual worker
+    '''
 #    print in_data
 
     if os.path.isfile(in_data.DatasetListFile):
@@ -121,7 +120,92 @@ def main():
         common.PrintISa(names)
     return                
 
-if __name__ == "__main__":
+class RunXDSJob(xdskappa.Job):
+    def __worker__(self):
+        '''
+        The actual programme worker
+        :return:
+        '''
+        self.job_exit = run(self._args)
 
-    main()
-    sys.exit(0)
+    def __set_meta__(self):
+        self._program_short_description = prog_short_description
+
+    def __program_arguments__(self):
+        '''
+        Settings of CLI arguments. self._parser to be used as argparse.ArgumentParser()
+        '''
+        parser = self._parser
+        parser.add_argument('-D', '--dataset-file',
+                            dest='DatasetListFile',
+                            nargs='?',
+                            default='datasets.list',
+                            const='datasets.list',
+                            metavar='FILE',
+                            help='List of datasets to use. Entries are in format: '
+                                 'output_subdirectory<tab>path/template_????.cbf. When no file is given, '
+                                 '"datasets.list" is expected.')
+
+        #        parser.add_argument('-out','--output-file', dest='OutputScale', metavar= 'FILE', default='scaled.HKL', help='File name for output from scaling.')
+
+        parser.add_argument('-g',
+                            dest='ShowGraphs',
+                            action='store_true',
+                            help='Show merging statistics in graphs in the end.')
+
+        #       parser.add_argument('--min-dataset', dest='minData', default=2, metavar='NUM', type=int, help="Minimal number of frames to be considered as dataset.")
+
+        parser.add_argument('-p', '--parameter',
+                            dest='XDSParameter',
+                            nargs='+',
+                            action='append',
+                            metavar='PAR= VALUE',
+                            help='Modification to all XDS.INP files. Parameters format as defined for XDS.INP. '
+                                 'Overrides parameters from --parameter-file.')
+        parser.add_argument('-P', '--parameter-file',
+                            dest='XDSParameterFile',
+                            nargs='?',
+                            default=None,
+                            const='XDSKAPPA.INP',
+                            metavar='FILE',
+                            help='File with list of parameters to modify XDS.INP files. Parameters format as defined '
+                                 'for XDS.INP. When no file given, "XDSKAPPA.INP" is expected.')
+
+        parser.add_argument('-r', '--reference-dataset',
+                            dest='ReferenceData',
+                            metavar='DATASET',
+                            help='Name of reference dataset from working list. The first one used by default. For '
+                                 'external reference dataset use: -p REFERENCE_DATA_SET= path/data/XDS_ASCII.HKL')
+
+        parser.add_argument('--no-run',
+                            dest='norun',
+                            action='store_false',
+                            default=True,
+                            help="Only modify XDS.INP, don't run xds_par.")
+
+        parser.add_argument('-f', '--force',
+                            dest='ForceXDS',
+                            action='store_true',
+                            help='Force integration on unsuccesfull indexing.')
+
+    def __argument_processing__(self):
+        '''
+        Adjustments of raw input arguments. Modifies self._args, if needed
+
+        '''
+        pass
+
+    def __help_epilog__(self):
+        '''
+        Epilog for the help
+
+        '''
+        pass
+
+def main():
+    job = RunXDSJob()
+    return job.job_exit
+
+
+if __name__ == "__main__":
+    sys.exit(main())

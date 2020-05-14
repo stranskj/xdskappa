@@ -309,7 +309,7 @@ def ReadISa(Paths):
 
 
 def PrintISa(Paths):
-    my_print('ISa for individual datasets:')
+    my_print('\nISa for individual datasets:')
     my_print('\tISa\tDataset')
 
     isalist = ReadISa(Paths)
@@ -461,31 +461,28 @@ def OptimizeXDS(Paths, Optim):
 def Scale(Paths, Outname):
     try:
         os.mkdir('scale')
-    except:
-        my_print("Directory already exists: scale")
+    except FileExistsError:
+        my_print("\nDirectory already exists: scale")
 
-    xscaleinp = open('scale/XSCALE.INP', 'w')
+    with open('scale/XSCALE.INP', 'w') as xscaleinp:
+        xscaleinp.write('OUTPUT_FILE= ' + Outname + '\n')
+        for path in Paths:
+            if os.path.isfile(path + '/XDS_ASCII.HKL'):
+                xscaleinp.write('   INPUT_FILE= ../' + path + '/XDS_ASCII.HKL\n')
+            else:
+                my_print('XDS_ASCII.HKL not available in ' + path)
+                my_print('Excluding from scaling')
 
-    xscaleinp.write('OUTPUT_FILE= ' + Outname + '\n')
-    for path in Paths:
-        if os.path.isfile(path + '/XDS_ASCII.HKL'):
-            xscaleinp.write('   INPUT_FILE= ../' + path + '/XDS_ASCII.HKL\n')
-        else:
-            my_print('XDS_ASCII.HKL not available in ' + path)
-            my_print('Excluding from scaling')
-
-    xscaleinp.close()
-
-    my_print('Scaling with xscale_par...')
+    my_print('\nScaling with xscale_par...')
     with open(os.devnull, 'w') as FNULL:
         xscale = subprocess.Popen('xscale_par', cwd='scale', stdout=FNULL, stderr=subprocess.STDOUT)
         xscale.wait()
 
-    fout = open('scale/XSCALE.LP')
-    if '!!! ERROR !!!' in fout:
-        my_print('Error in scaling. Please read: scale/XSCALE.LP')
-    else:
-        my_print('Scaled. Output written in: scale/' + Outname)
+    with open('scale/XSCALE.LP') as fout:
+        if '!!! ERROR !!!' in fout:
+            my_print('Error in scaling. Please read: scale/XSCALE.LP')
+        else:
+            my_print('Scaled. Output written in: scale/' + Outname)
 
 
 def ReadDatasetListFile(inData):
@@ -601,7 +598,7 @@ def PrepareXDSINP(inData, Datasets, Names):
     @param Names: List of keys in Datasets (ordered)
     @type Names: list
     """
-    my_print("Processing...")
+    my_print("\nProcessing...")
 
     # TODO: nejak z funkcnit/prerozdelit kvuli toolum?
     file_dict = XDSINP('temp')
@@ -648,7 +645,7 @@ def PrepareXDSINP(inData, Datasets, Names):
     for path in Names:
         try:
             os.mkdir(path)
-        except:
+        except FileExistsError:
             my_print("Directory already exists: " + path)
 
         dts = XDataset(Datasets[path])  # gives template relative to running director to find frames
@@ -707,6 +704,7 @@ def GetDatasets(inData):
         DatasetsDict[key] = name
         names.append(key)
     names.sort()
+
     fdatasets = open('datasets.list', 'w')
     fdatasets.write(
         '# Written by xdskappa ({}).\n #Use # in line begining to disable dataset processing.\n# Dataset name\tFrame name template\n'.format(

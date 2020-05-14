@@ -111,15 +111,14 @@ def ParseInput():
         sys.exit(1)
     logging.info('Command line input: ' + ' '.join(sys.argv))
     args = parser.parse_args()
-    logging.debug('Input understanding:')
-    logging.debug(args)  # + '\n'.join([key + ': ' + val for key, val in vars(args).items()]))
+
     return args
 
 
-def run():
-    xdskappa.intro()
+def run(in_data):
+#    xdskappa.intro()
 
-    in_data = ParseInput()
+    #in_data = ParseInput()
 
     # print in_data
 
@@ -176,23 +175,100 @@ def run():
         common.ShowStatistics(names, ['scale'])
 
 
+class XdskappaMainJob(xdskappa.Job):
+    def __worker__(self):
+        '''
+        The actual programme worker
+        :return:
+        '''
+        run(self._args)
+
+    def __program_arguments__(self):
+        '''
+        Settings of CLI arguments. self._parser to be used as argparse.ArgumentParser()
+        '''
+        parser = self._parser
+        parser.add_argument('dataPath', nargs='*', help="Directory with input frames. Multiple values are accepted.")
+        parser.add_argument('-D', '--dataset-file', dest='DatasetListFile', nargs='?', default=None,
+                            const='datasets.list',
+                            metavar='FILE',
+                            help='File with list of datasets to use. When no value FILE is given, "datasets.list" is expected.')
+
+        parser.add_argument('-out', '--output-file', dest='OutputScale', metavar='FILE', default='scaled.HKL',
+                            help='File name for output from scaling.')
+
+        parser.add_argument('-g', dest='ShowGraphs', default=True, action='store_true',
+                            help='Show merging statistics in graphs in the end.')
+
+        parser.add_argument('--min-dataset', dest='minData', default=2, metavar='NUM', type=int,
+                            help="Minimal number of frames to be considered as dataset.")
+
+        parser.add_argument('-p', '--parameter', dest='XDSParameter', nargs='+', action='append', metavar='PAR= VALUE',
+                            help='Modification to all XDS.INP files. Parameters format as defined for XDS.INP. Overrides '
+                                 'parameters from --parameter-file.')
+        parser.add_argument('-P', '--parameter-file', dest='XDSParameterFile', nargs='?', default=None,
+                            const='XDSKAPPA.INP', metavar='FILE',
+                            help='File with list of parameters to modify XDS.INP files. Parameters format as defined for '
+                                 'XDS.INP. When no value FILE is given, "XDSKAPPA.INP" is expected.')
+
+        parser.add_argument('-r', '--reference-dataset', dest='ReferenceData', metavar='DATASET',
+                            help='Name of reference dataset from working list. The first one used by default. For '
+                                 'external reference dataset use: -p REFERENCE_DATA_SET= path/data/XDS_ASCII.HKL')
+
+        parser.add_argument('-f', '--force', dest='ForceXDS', action='store_true',
+                            help='Force integration on unsuccesfull indexing.')
+        parser.add_argument('-opt', '--optimize', dest='OptIntegration', nargs='?', action='append', const='ALL',
+                            metavar='ALL FIX BEAM GEOMETRY',
+                            help='Run XDS twice, with optimized parameters in second run. FIX - fix parameters in '
+                                 'integration; BEAM - copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS '
+                                 'to XPARM.XDS. One keyword per parameter occurance. When given without a value, '
+                                 'ALL is presumed.')
+        parser.add_argument('--backup', dest='BackupOpt', nargs='?', const='backup', default=None, metavar='NAME',
+                            help='Backup datasets folders prior optimization to their subfolder ("backup" on empty value)'
+                                 '. It will erase older backup of [NAME] if present. No backup by default.')
+
+    def __set_meta__(self):
+        self._program_short_description = 'Finds all data collection runs, makes XDS.INP files and attempts running ' \
+                                          'XDS for all runs and scale them. Currently works on D8 Venture.'
+        self._usage = parse_usage()
+
+    def __argument_processing__(self):
+        '''
+        Adjustments of raw input arguments. Modifies self._args, if needed
+
+        '''
+        if len(sys.argv) == 1:
+            self._parser.print_help()  # help on empty input
+            self.job_exit = 1
+            self.run_job = False
+
+    def __help_epilog__(self):
+        '''
+        Epilog for the help
+
+        '''
+        return_str = 'List of available commands in this package:\n'
+        try:
+
+            for ep in (ept for ept in pkg_resources.iter_entry_points('console_scripts')  # ):
+                       if 'xdskappa' in ept.module_name):
+                try:
+                    module = importlib.import_module(ep.module_name)
+                    return_str += ep.name + '\n\t' + module.prog_short_description + '\n\n'
+                except Exception as e:
+                    logging.exception(e)
+                    return_str += 'Cannot find {}\nTry reinstall the package.\n'.format(ep.module_name)
+        except Exception as e:
+            logging.exception(e)
+            return_str += 'Here is typically list of available commands. Something is wrong.'
+
+        return return_str
+
+
 def main():
-    logging.config.dictConfig(xdskappa.logging_config(prog_name))
-    try:
-        run()
-    except KeyboardInterrupt:
-        common.my_print('Keyboard interrupt. Exiting...')
-        sys.exit(0)
-    except xdskappa.RuntimeErrorUser as e:
-        logging.error('ERROR: ' + str(e))
-        sys.exit(2)
-    except Exception as e:
-        logging.exception(e)
-        print('Please, report back to the developes. Include the debug file with the report.')
-        sys.exit(2)
+    job = XdskappaMainJob()
+    return job.job_exit
 
 
 if __name__ == "__main__":
-
-    main()
-    sys.exit(0)
+    sys.exit(main())
