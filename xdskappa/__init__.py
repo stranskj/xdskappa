@@ -226,6 +226,7 @@ Input understanding:
         my_print("\tDate: {}".format(datetime.datetime.now()))
         my_print("\tAuthor: Jan Stransky")
         my_print("\t========================")
+        logging.debug('Python and system versions:\n'+sys.version)
         my_print(" ")
         my_print(LICENSE)
         my_print(" ")
