@@ -127,17 +127,17 @@ def run(in_data):
 
     if len(in_data.dataPath) > 0:
         datasets, names = common.GetDatasets(in_data)
-        common.my_print("Found datasets:")
+        xdskappa.my_print("Found datasets:")
         for d in names:
-            common.my_print(datasets[d])
-        common.my_print("Found datasets saved to datasets.list")
+            xdskappa.my_print(datasets[d])
+        xdskappa.my_print("Found datasets saved to datasets.list")
 
     if in_data.DatasetListFile:
         datasets, names = common.ReadDatasetListFile(in_data.DatasetListFile)
 
-    common.my_print("Using datasets (name, path):")
+    xdskappa.my_print("Using datasets (name, path):")
     for d in names:
-        common.my_print(d + '\t' + datasets[d])
+        xdskappa.my_print(d + '\t' + datasets[d])
 
     common.PrepareXDSINP(in_data, datasets, names)
 
@@ -153,13 +153,13 @@ def run(in_data):
 
     if in_data.OptIntegration != None:  # TODO: Nedelej pri neuspesne indexaci
         if in_data.BackupOpt != None:
-            common.my_print('Backing up previous run...')
+            xdskappa.my_print('Backing up previous run...')
             common.BackupOpt(names, in_data.BackupOpt)
 
         oldisa = common.ReadISa(names)
         common.OptimizeXDS(names, in_data.OptIntegration)
 
-        common.my_print("Running XDS...")
+        xdskappa.my_print("Running XDS...")
         common.RunXDS(names)
 
         newisa = common.ReadISa(names)

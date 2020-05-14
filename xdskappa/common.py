@@ -705,11 +705,15 @@ def GetDatasets(inData):
         names.append(key)
     names.sort()
 
-    fdatasets = open('datasets.list', 'w')
-    fdatasets.write(
-        '# Written by xdskappa ({}).\n #Use # in line begining to disable dataset processing.\n# Dataset name\tFrame name template\n'.format(
-            __version__))
-    for key in names:
-        fdatasets.write(key + xdskappa.LIST_SEPARATOR + DatasetsDict[key] + "\n")
-    fdatasets.close()
+    out_file_name = inData.DatasetListFile
+    if out_file_name is None:
+        out_file_name = 'datasets.list'
+
+    with open(out_file_name, 'w') as fdatasets:
+        fdatasets.write(
+            '# Written by xdskappa ({}).\n #Use # in line begining to disable dataset processing.\n# Dataset name\tFrame name template\n'.format(
+                __version__))
+        for key in names:
+            fdatasets.write(key + xdskappa.LIST_SEPARATOR + DatasetsDict[key] + "\n")
+
     return DatasetsDict, names

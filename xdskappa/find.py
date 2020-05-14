@@ -40,8 +40,8 @@ def run(inpPar):
 
     datasets,names = common.GetDatasets(inpPar) #TODO: use of output file name
     xdskappa.my_print("Found datasets:")
-    for d in names :
-        xdskappa.my_print(datasets[d])
+    for d in names:
+        xdskappa.my_print(d + '\t' + datasets[d])
     xdskappa.my_print("Found datasets saved to " + inpPar.DatasetListFile)
 
     return 0
