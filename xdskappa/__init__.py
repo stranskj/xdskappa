@@ -189,13 +189,13 @@ USAGE
 
             my_print('Keyboard interrupt. Exiting...')
 
-            sys.exit(0)
+            self.job_exit = 0
 
         except RuntimeErrorUser as e:
 
             logging.error('ERROR: ' + str(e))
 
-            sys.exit(2)
+            self.job_exit = 2
 
         except Exception as e:
 
@@ -215,7 +215,7 @@ Input understanding:
 
             print('Please, report back to the developes. Include the debug file with the report.')
 
-            sys.exit(2)
+            self.job_exit = 2
 
 
     def __intro__(self):
