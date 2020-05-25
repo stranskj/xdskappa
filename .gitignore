@@ -25,3 +25,5 @@ test_bin
 test*
 .tox
 .venv
+.idea
+*.log
