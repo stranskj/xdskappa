@@ -1,8 +1,8 @@
 # XDSkappa
-*XDSkappa* allows processing single crystal X-ray diffraction collected using multicircle gonimeters with XDS. See USAGE.md for more details.
+*XDSkappa* allows processing single crystal X-ray diffraction collected using multicircle gonimeters with XDS. See `USAGE.md` for more details.
 
 ### Available jobs
-List of the available jobs with short description is accessible using command `atsas_mp`:
+List of the available jobs with short description is accessible using command `xdskappa`:
 * xdskappa
 * xdskappa.find
 * xdskappa.optimize
@@ -13,7 +13,7 @@ List of the available jobs with short description is accessible using command `a
 ## Requirements
 The package requires Python 3.5 or newer. There are no extra modules needed for installation and usage. However, `setuptools_scm` is needed from package creation from Git source.
 
-*XDSkappa* uses binaries from XDS package, which has to be installed separatelly, and uses different license. The XDS binaries (e.g. `xds_par`) have to be callable from the command line.
+*XDSkappa* uses binaries from XDS package, which has to be installed separately, and uses different license. The XDS binaries (e.g. `xds_par` and `xscale_par`) have to be callable from the command line. Control files for *GNUplot* are generated for plotting various data processing statistics.
 
 The package is heavily tested in Linux, it might work at macOS. 
 
@@ -26,7 +26,7 @@ When Python3 is installed, recommended installation is using `pip`:
 pip3 install xdskappa-0.3.0.tar.gz
 ```
 
-This is Python's packaging system, so also installs any potentially missing modules. Also, the *XDSkappa* will be installed for everybody, so you will probably need a root access (e.g. use `sudo`).
+This is Python's packaging system, so also installs any potentially missing modules. *XDSkappa* will be installed for everybody, so you will probably need a root access (e.g. use `sudo`).
 
 
 *Note:* `pip` is part of standard Python distribution, however, in some Linux distributions it might not be part of `python3` package; e.g. in Debian, you need also package `python3-pip`.

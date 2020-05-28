@@ -1,3 +1,18 @@
+v0.3.1
+==========
+
+## New features
+  * Progress of *XDSkappa* tools are logged into files
+
+## Improvements
+  * Further under the hood modernization
+  * Some clarifications in documentation and help
+  * Subtools are listed in help
+  
+## Fixes
+  * Forcing integration after not-great indexing did not work.
+
+
 v0.3.0
 ==========
 
