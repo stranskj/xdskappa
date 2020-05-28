@@ -22,3 +22,8 @@ sdist
 test_bin
 .eggs
 *.egg-info
+test*
+.tox
+.venv
+.idea
+*.log
