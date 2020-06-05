@@ -99,7 +99,7 @@ class Job(object):
         Sets various package metadata
         '''
 
-        self._program_short_description = 'Package for processing data from SAXSpoint 2.0 and accessories'
+        self._program_short_description = 'Package for processing data from multi-axis goniometer'
 
         self._program_name = os.path.basename(sys.argv[0])
         self._program_version = __version__
@@ -213,7 +213,7 @@ Input understanding:
                  args=self._args))
             logging.exception(e)
 
-            print('Please, report back to the developes. Include the debug file with the report.')
+            print('Please, report back to the developers. Include the debug file with the report.')
 
             self.job_exit = 2
 
