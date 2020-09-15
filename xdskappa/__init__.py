@@ -217,7 +217,6 @@ Input understanding:
 
             self.job_exit = 2
 
-
     def __intro__(self):
         my_print("")
         my_print("\t========================")

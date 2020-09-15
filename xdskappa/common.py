@@ -589,7 +589,7 @@ def ProcessParams(inParam, inParamFile):
 
 def PrepareXDSINP(inData, Datasets, Names):
     """
-    Makes working dirs and XDS.INP for all choosen datasets
+    Makes working dirs and XDS.INP for all chosen datasets
     
     @param inData: Parsed input
     @type inData: Namespace
@@ -636,9 +636,9 @@ def PrepareXDSINP(inData, Datasets, Names):
     for key in par_dict:
         par_full[key] = par_dict[key]
 
-    kapinp = open('XDSKAPPA_run.INP', 'w')
-    for key in par_full:
-        kapinp.write(par_full.GetParam(key))
+    with open('XDSKAPPA_run.INP', 'w') as kapinp:
+        for key in par_full:
+            kapinp.write(par_full.GetParam(key))
 
     my_print('Parameters used to modify XDS.INP files were written to XDSKAPPA_run.INP.')
 
@@ -653,7 +653,7 @@ def PrepareXDSINP(inData, Datasets, Names):
         inp.SetDefaults()  # read in geometry from frame header etc.
         # inp.read()
 
-        if Datasets[path][0] == "/":  # setup templates path relativ to XDS.INP directory
+        if Datasets[path][0] == "/":  # setup templates path relative to XDS.INP directory
             template = Datasets[path]
         else:
             template = '../' + Datasets[path]
