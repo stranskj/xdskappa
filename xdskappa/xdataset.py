@@ -20,10 +20,11 @@ class XDataset():
         frame = self.GetFrameName(_intFrame)
         self.frange = len(glob.glob(self.template.split("?")[0] + "*.cbf"))
         self.fheader = cbfphoton2.photonCIF(frame)
-        self.geometry = {}
-        self.SetGeometry()
         self.detector = {}
         self.SetDetector()
+        self.geometry = {}
+        self.SetGeometry()
+
 
     def GetFrameName(self,frame):
         """
@@ -82,15 +83,24 @@ class XDataset():
         @param ORGY: user defined origin Y
         @type  ORGY: int
         """
+        axes = self.GetAxes()
+        offsetH = float(axes['H']['_diffrn_scan_axis.displacement_start'])
+        offsetV = float(axes['V']['_diffrn_scan_axis.displacement_start'])
+        qx = float(self.detector['Pixel_Size_X'])
+        qy = float(self.detector['Pixel_Size_Y'])
+
         if ORGX:
             self.geometry['ORGX'] = str(ORGX)
         else:
-            self.geometry['ORGX'] = str(int(int(self.fheader['X-Binary-Size-Fastest-Dimension'])/2))
+            orgX = float(self.fheader['X-Binary-Size-Fastest-Dimension'])/2 + offsetH/qx
+            self.geometry['ORGX'] = '{:.1f}'.format(orgX)
 
         if ORGY:
             self.geometry['ORGY'] = str(ORGY)
         else:
-            self.geometry['ORGY'] = str(int(int(self.fheader['X-Binary-Size-Second-Dimension'])/2))
+            orgY = float(self.fheader['X-Binary-Size-Second-Dimension'])/2 - offsetV/qy
+            self.geometry['ORGY'] = '{:.1f}'.format(orgY)
+        pass
 
     def SetPixelSize(self,QX=None,QY=None):
         """
