@@ -88,7 +88,7 @@ def run(in_data):
     if in_data.ReferenceData:
         names.insert(0, names.pop(names.index(in_data.ReferenceData)))
 
-    common.RunXDS(names)
+    common.RunXDS(names,job_control=in_data.job_control)
 
     if in_data.ForceXDS:
         common.ForceXDS(names)
@@ -104,7 +104,7 @@ def run(in_data):
         common.OptimizeXDS(names, in_data.OptIntegration)
 
         xdskappa.my_print("Running XDS...")
-        common.RunXDS(names)
+        common.RunXDS(names,job_control=in_data.job_control)
 
         newisa = common.ReadISa(names)
         opt.PrintISaOptimized(oldisa, newisa)
@@ -167,6 +167,8 @@ class XdskappaMainJob(xdskappa.Job):
                                  'integration; BEAM - copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS '
                                  'to XPARM.XDS. One keyword per parameter occurance. When given without a value, '
                                  'ALL is presumed.')
+        parser.add_argument('-J', dest='job_control', action='store_true',
+                            help='Controlling of XDS parallelization')
         parser.add_argument('--backup', dest='BackupOpt', nargs='?', const='backup', default=None, metavar='NAME',
                             help='Backup datasets folders prior optimization to their subfolder ("backup" on empty value)'
                                  '. It will erase older backup of [NAME] if present. No backup by default.')

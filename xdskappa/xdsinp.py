@@ -13,8 +13,8 @@ class XDSINP(dict):
 	"""
 	Class for working with single XDS.INP
 	"""
-	path = str()
-	dataset = cbfphoton2.photonCIF()
+#	path = str()
+#	dataset = cbfphoton2.photonCIF()
 	def __init__(self, _strPath, _Dataset=None):
 		"""
 		Constructor
@@ -26,7 +26,10 @@ class XDSINP(dict):
 		"""
 		dict.__init__(self)
 		self.path = _strPath + "/XDS.INP"
-		self.dataset = _Dataset
+		if _Dataset is None:
+			self.dataset = cbfphoton2.photonCIF()
+		else:
+			self.dataset = _Dataset
 
 #		if os.path.isfile(self.path):
 #			self.read()
@@ -112,7 +115,7 @@ class XDSINP(dict):
 		"""
 		Set parametr value to self dictionary
 
-		@param _param: Parametr with value as row in XDS.INP
+		@param _param: Parameter with value as row in XDS.INP
 		@type  _param: string
 		"""
 		row = _param.split('=')

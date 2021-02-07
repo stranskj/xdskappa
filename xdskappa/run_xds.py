@@ -7,6 +7,7 @@ import xdskappa
 import argparse
 import logging
 import logging.config
+import freephil as phil
 
 prog_name='xdskappa.run_xds'
 prog_short_description='Runs XDS without generating XDS.INP from scratch. Useful after custom modifications of XDS.INP. No scaling with xscale is done.'
@@ -14,6 +15,38 @@ prog_short_description='Runs XDS without generating XDS.INP from scratch. Useful
 
 __version__ = xdskappa.__version__
 
+phil_job_control =  phil.parse(
+    '''
+job_control
+.help = Controlling of  processing flow. Note, that actual performance can be determined not only by available CPU, but also available data throughput. 
+{
+    nproc = None
+    .type = int
+    .help = Overall maximum number of CPUs to be used. If None, all cores are used.
+    job
+    .help = Define maximum number of cores used by XDS with in a run. This determines number of runs runnnig in parallel.
+    {
+        xycorr = 1
+        .type = int
+        init = 1
+        .type = int
+        colspot = 4
+        .type = int
+        idxref = 4
+        .type = int
+        defpix = 1
+        .type = int
+        integrate = 4
+        .type = int
+        correct = 4 
+        .type = int
+    } 
+    max_jobs = None
+    .type = int
+    .help = Maximum number of jobs to be run in parallel. If None, derived automatically.
+}
+    '''
+)
 
 def run(in_data):
     '''

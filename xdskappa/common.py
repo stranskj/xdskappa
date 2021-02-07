@@ -13,6 +13,7 @@ import xdskappa
 from xdskappa import my_print
 from distutils import spawn
 import logging
+import concurrent.futures
 
 __version__ = xdskappa.__version__
 
@@ -318,8 +319,98 @@ def PrintISa(Paths):
         my_print('\t' + isalist[dataset] + '\t' + dataset)
     return
 
+def xds_worker(path):
 
-def RunXDS(Paths):
+    with open(path + '/xds.log', 'a') as log:
+        xds = subprocess.Popen(['xds_par'], cwd=path, stdout=log, stderr=subprocess.STDOUT)
+
+        # for line_b in xds.stdout:
+        #     line = line_b.decode()
+        #     log.write(line)
+        #     if '***** COLSPOT *****' in line:
+        #         my_print('Finding strong reflections...')
+        #
+        #     if '***** IDXREF *****' in line:
+        #         my_print('Indexing...')
+        #
+        #     if '***** INTEGRATE *****' in line:
+        #         my_print('Integrating...')
+
+        xds.wait()
+
+    with open(path + '/xds.log', 'r') as log:
+        if '!!! ERROR !!!' in log.read():
+            my_print(
+                path +": An error during data procesing using XDS. Check IDXREF.LP, INTEGRATE.LP, other *.LP or xds.log files fo further details.")
+        else:
+            my_print(path +":Finished.")
+    return xds.returncode
+
+def RunXDS(Paths, job_control=None):
+    '''
+    Runs XDS in all Paths. If possible, jobs in parallel
+    @param Paths:
+    @return:
+    '''
+
+    if spawn.find_executable('xds_par') == None:
+        raise xdskappa.RuntimeErrorUser("Cannot find XDS executable.")
+
+    if job_control is None: # or job_control.max_jobs == 1
+        RunXDS_old(Paths)
+        return
+    else:
+        #TODO: tohle je potreba jinak, poeditovat input
+        from xdskappa.run_xds import phil_job_control
+        job_control = phil_job_control.extract().job_control
+
+    assert len(Paths) > 0
+
+    first_xdsinp = XDSINP(Paths[0])
+    first_xdsinp.read()
+
+    xds_jobs = first_xdsinp['JOB'][0].split()
+
+    for pth in Paths:
+        shutil.copy(pth+'/XDS.INP',pth+'/XDS.INP_original_to_run')
+        with open(pth+'/xds.log','w') as log:
+            log.write('Original XDS.INP copied to XDS.INP_original_to_run.\n')
+
+    if job_control.nproc is None:
+        import multiprocessing
+        nproc = multiprocessing.cpu_count()
+    else:
+        nproc = job_control.nproc
+
+    try:
+        for job in xds_jobs:
+            job_cpu = job_control.job.__dict__[job.lower()]
+
+            paralell_jobs = int(nproc/job_cpu)
+            if job_control.max_jobs is not None:
+                paralell_jobs = min(paralell_jobs,job_control.max_jobs)
+
+            xdskappa.my_print('Running {job} in {par_job} parallel jobs...'.format(job=job, par_job=paralell_jobs))
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=paralell_jobs) as ex:
+                running_jobs = []
+                for pth in Paths:
+                    xdsinp = XDSINP(pth)
+                    xdsinp.read()
+                    xdsinp['JOB'] = [job]
+                    xdsinp['MAXIMUM_NUMBER_OF_PROCESSORS'] = ["{}".format(job_cpu)]
+                    xdsinp.write()
+                    running_jobs.append(ex.submit(xds_worker, pth))
+
+                concurrent.futures.wait(running_jobs)
+
+    finally:
+        for pth in Paths:
+            shutil.copy(pth + '/XDS.INP_original_to_run', pth + '/XDS.INP')
+            with open(pth+'/xds.log','a') as log:
+                log.write('Original XDS.INP restored.\n')
+
+def RunXDS_old(Paths):
     if spawn.find_executable('xds_par') == None:
         raise xdskappa.RuntimeErrorUser("Cannot find XDS executable.")
 
@@ -538,7 +629,7 @@ def MakeXDSParam(inParList):
 
 def ReadXDSParamFile(inFile):
     """
-    Parse input file with prameters for modifing XDS.INP
+    Parse input file with parameters for modifing XDS.INP
     
     @param inFile: File with XDS.INP-like parameters
     @type inFile: file
@@ -546,11 +637,11 @@ def ReadXDSParamFile(inFile):
     if not os.path.isfile(inFile):
         raise xdskappa.RuntimeErrorUser('File not found: ' + inFile)
 
-    fin = open(inFile, 'r')
-    outParList = []
-    for line in fin:
-        outParList.append(line.strip('\r\n\t '))
-    fin.close()
+    with open(inFile, 'r') as fin:
+        outParList = []
+        for line in fin:
+            outParList.append(line.strip('\r\n\t '))
+
     return outParList
 
 

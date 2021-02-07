@@ -11,7 +11,7 @@ List of the available jobs with short description is accessible using command `x
 
 
 ## Requirements
-The package requires Python 3.5 or newer. There are no extra modules needed for installation and usage. However, `setuptools_scm` is needed from package creation from Git source.
+The package requires Python 3.6 or newer. There are no extra modules needed for installation and usage. However, `setuptools_scm` is needed from package creation from Git source.
 
 *XDSkappa* uses binaries from XDS package, which has to be installed separately, and uses different license. The XDS binaries (e.g. `xds_par` and `xscale_par`) have to be callable from the command line. Control files for *GNUplot* are generated for plotting various data processing statistics.
 
