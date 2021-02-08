@@ -167,8 +167,8 @@ class XdskappaMainJob(xdskappa.Job):
                                  'integration; BEAM - copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS '
                                  'to XPARM.XDS. One keyword per parameter occurance. When given without a value, '
                                  'ALL is presumed.')
-        parser.add_argument('-J', dest='job_control', action='store_true',
-                            help='Controlling of XDS parallelization')
+        parser.add_argument('-J', dest='job_control', nargs='*',
+                            help='Controlling of XDS parallelization. Takes PHIL arguments, or PHIL file. If no argument is used, default values are used.')
         parser.add_argument('--backup', dest='BackupOpt', nargs='?', const='backup', default=None, metavar='NAME',
                             help='Backup datasets folders prior optimization to their subfolder ("backup" on empty value)'
                                  '. It will erase older backup of [NAME] if present. No backup by default.')
@@ -187,6 +187,12 @@ class XdskappaMainJob(xdskappa.Job):
             self._parser.print_help()  # help on empty input
             self.job_exit = 1
             self.run_job = False
+
+        if self._args.job_control is not None:
+            import xdskappa.run_xds
+            self._args.job_control = xdskappa.run_xds.parse_job_control(self._args.job_control)
+        pass
+
 
     def __help_epilog__(self):
         '''

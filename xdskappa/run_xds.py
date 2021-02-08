@@ -28,11 +28,11 @@ job_control
     {
         xycorr = 1
         .type = int
-        init = 1
+        init = 4
         .type = int
         colspot = 4
         .type = int
-        idxref = 4
+        idxref = 2
         .type = int
         defpix = 1
         .type = int
@@ -47,6 +47,76 @@ job_control
 }
     '''
 )
+
+def parse_job_control(args, file_out='job_control.phil',verbose=False, return_unhandled=False, quick_parse=False):
+    '''
+    Parses CLI input into a PHIL object
+    @param args: List of CLI argumetns
+    @type  args: list
+    @return: freephil.scope_extract
+    '''
+
+    def _is_a_phil_file(filename):
+        return any(
+            filename.endswith(phil_ext)
+            for phil_ext in (".phil", ".param", ".params", ".eff", ".def")
+        )
+
+
+    # Parse the command line phil parameters
+    user_phils = []
+    unhandled = []
+    interpretor = phil_job_control.command_line_argument_interpreter()
+
+    # TODO: enable space separated = ; clever splits and strips?
+
+    for arg in args:
+        if (
+                _is_a_phil_file(arg)
+                and os.path.isfile(arg)
+                and os.path.getsize(arg) > 0
+        ):
+            try:
+                user_phils.append(phil.parse(file_name=arg))
+                xdskappa.my_print('Job resource control parameters were read from: {}'.format(arg))
+            except Exception:
+                if return_unhandled:
+                    unhandled.append(arg)
+                else:
+                    raise
+        # Treat "has a schema" as "looks like a URL (not phil)
+        elif "=" in arg:  # and not urlparse(arg).scheme:
+            try:
+                user_phils.append(interpretor.process_arg(arg=arg))
+            except Exception:
+                if return_unhandled:
+                    unhandled.append(arg)
+                else:
+                    raise
+        else:
+            unhandled.append(arg)
+
+    # Fetch the phil parameters
+    phil_out, unused = phil_job_control.fetch(
+        sources=user_phils, track_unused_definitions=True
+    )
+
+    # Print if bad definitions
+    if len(unused) > 0:
+        msg = [item.object.as_str().strip() for item in unused]
+        msg = "\n".join(["  %s" % line for line in msg])
+        raise xdskappa.RuntimeErrorUser(
+            "The following definitions were not recognised\n%s" % msg
+        )
+
+    # Extract the parameters
+    with open(file_out,'w') as fiout:
+        phil_out.show(out=fiout,attributes_level=1)
+
+    xdskappa.my_print('Job resource controlling parameters were written to: {}'.format(file_out))
+    return phil_out.extract().job_control
+
+
 
 def run(in_data):
     '''
@@ -135,7 +205,8 @@ class RunXDSJob(xdskappa.Job):
                             metavar='FILE',
                             help='File with list of parameters to modify XDS.INP files. Parameters format as defined '
                                  'for XDS.INP. When no file given, "XDSKAPPA.INP" is expected.')
-
+        parser.add_argument('-J', dest='job_control', nargs='*',
+                            help='Controlling of XDS parallelization. Takes PHIL arguments, or PHIL file. If no argument is used, default values are used.')
         parser.add_argument('-r', '--reference-dataset',
                             dest='ReferenceData',
                             metavar='DATASET',
@@ -159,6 +230,9 @@ class RunXDSJob(xdskappa.Job):
 
         '''
         pass
+        if self._args.job_control is not None:
+            import xdskappa.run_xds
+            self._args.job_control = xdskappa.run_xds.parse_job_control(self._args.job_control)
 
     def __help_epilog__(self):
         '''

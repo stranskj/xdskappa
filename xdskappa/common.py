@@ -359,10 +359,6 @@ def RunXDS(Paths, job_control=None):
     if job_control is None: # or job_control.max_jobs == 1
         RunXDS_old(Paths)
         return
-    else:
-        #TODO: tohle je potreba jinak, poeditovat input
-        from xdskappa.run_xds import phil_job_control
-        job_control = phil_job_control.extract().job_control
 
     assert len(Paths) > 0
 
@@ -390,7 +386,7 @@ def RunXDS(Paths, job_control=None):
             if job_control.max_jobs is not None:
                 paralell_jobs = min(paralell_jobs,job_control.max_jobs)
 
-            xdskappa.my_print('Running {job} in {par_job} parallel jobs...'.format(job=job, par_job=paralell_jobs))
+            xdskappa.my_print('\nRunning {job} in {par_job} parallel jobs...'.format(job=job, par_job=paralell_jobs))
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=paralell_jobs) as ex:
                 running_jobs = []
