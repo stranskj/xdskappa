@@ -399,6 +399,8 @@ def RunXDS(Paths, job_control=None):
                     # xdsinp['MAXIMUM_NUMBER_OF_JOBS'] = ["{}".format(job_cpu)]
                     xdsinp.write()
                     running_jobs.append(ex.submit(xds_worker, pth))
+                    if (job == 'CORRECT') and (pth == Paths[0]):
+                        concurrent.futures.wait(running_jobs)
 
                 concurrent.futures.wait(running_jobs)
             el_time = time.time() - time_start
