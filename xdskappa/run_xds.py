@@ -27,19 +27,21 @@ job_control
     .help = Define maximum number of cores used by XDS with in a run. This determines number of runs runnnig in parallel.
     {
         xycorr = 1
-        .type = int
+        .type = ints(size=1)
         init = 4
-        .type = int
+        .type = ints(size=1)
         colspot = 4
-        .type = int
+        .type = ints(size_min=1, size_max=2)
+        .help = Second number specifies number of jobs to be spawned by XDS itself. Left on XDS, if empty.
         idxref = 2
-        .type = int
+        .type = ints(size=1)
         defpix = 1
-        .type = int
+        .type = ints(size=1)
         integrate = 4
-        .type = int
+        .type = ints(size_min=1, size_max=2)
+        .help = Second number specifies number of jobs to be spawned by XDS itself. Left on XDS, if empty.
         correct = 4 
-        .type = int
+        .type = ints(size=1)
     } 
     max_jobs = None
     .type = int
