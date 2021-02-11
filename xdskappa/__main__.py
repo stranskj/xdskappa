@@ -91,7 +91,7 @@ def run(in_data):
     common.RunXDS(names,job_control=in_data.job_control)
 
     if in_data.ForceXDS:
-        common.ForceXDS(names)
+        common.ForceXDS(names, job_control=in_data.job_control)
 
     common.PrintISa(names)
 

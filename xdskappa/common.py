@@ -14,6 +14,7 @@ from xdskappa import my_print
 from distutils import spawn
 import logging
 import concurrent.futures
+import time
 
 __version__ = xdskappa.__version__
 
@@ -380,27 +381,34 @@ def RunXDS(Paths, job_control=None):
 
     try:
         for job in xds_jobs:
-            job_cpu = job_control.job.__dict__[job.lower()]
+            job_pwr = job_control.job.__dict__[job.lower()]
+            job_cpu = job_pwr[0]
 
-            paralell_jobs = int(nproc/job_cpu)
+            parallel_jobs = int(nproc/job_cpu) # +1 ?
             if job_control.max_jobs is not None:
-                paralell_jobs = min(paralell_jobs,job_control.max_jobs)
+                parallel_jobs = job_control.max_jobs#min(parallel_jobs,job_control.max_jobs)
 
-            xdskappa.my_print('\nRunning {job} in {par_job} parallel jobs...'.format(job=job, par_job=paralell_jobs))
-
-            with concurrent.futures.ThreadPoolExecutor(max_workers=paralell_jobs) as ex:
+            xdskappa.my_print('\nRunning {job} in {par_job} parallel jobs...'.format(job=job, par_job=parallel_jobs))
+            time_start = time.time()
+            with concurrent.futures.ThreadPoolExecutor(max_workers=parallel_jobs) as ex:
                 running_jobs = []
                 for pth in Paths:
                     xdsinp = XDSINP(pth)
                     xdsinp.read()
                     xdsinp['JOB'] = [job]
                     xdsinp['MAXIMUM_NUMBER_OF_PROCESSORS'] = ["{}".format(job_cpu)]
-                    xdsinp['MAXIMUM_NUMBER_OF_JOBS'] = ["{}".format(2)]
+                    if len(job_pwr) == 2:
+                        xdsinp['MAXIMUM_NUMBER_OF_JOBS'] = ["{}".format(job_pwr[1])]
+                        #TODO: Maybe fix to 1, and do it on xdskappa level, to have CPU slightly oversaturated?
+                        #Needs testing...
                     xdsinp.write()
                     running_jobs.append(ex.submit(xds_worker, pth))
+                    if (job == 'CORRECT') and (pth == Paths[0]):
+                        concurrent.futures.wait(running_jobs)
 
                 concurrent.futures.wait(running_jobs)
-
+            el_time = time.time() - time_start
+            my_print('Finished {} in {:.1f}s.'.format(job,el_time))
     finally:
         for pth in Paths:
             shutil.copy(pth + '/XDS.INP_original_to_run', pth + '/XDS.INP')
@@ -444,7 +452,8 @@ def RunXDS_old(Paths):
     return
 
 
-def ForceXDS(paths):
+def ForceXDS(paths, job_control=None):
+    rerun = []
     for path in paths:
         with open(path + '/xds.log') as log:
             lines = log. read()
@@ -455,7 +464,9 @@ def ForceXDS(paths):
             inp.read()
             inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
             inp.write()
-            RunXDS([path])
+            rerun.append(path)
+
+    RunXDS(rerun,job_control=job_control)
 
     return
 
