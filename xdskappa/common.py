@@ -395,6 +395,7 @@ def RunXDS(Paths, job_control=None):
                     xdsinp.read()
                     xdsinp['JOB'] = [job]
                     xdsinp['MAXIMUM_NUMBER_OF_PROCESSORS'] = ["{}".format(job_cpu)]
+                    xdsinp['MAXIMUM_NUMBER_OF_JOBS'] = ["{}".format(2)]
                     xdsinp.write()
                     running_jobs.append(ex.submit(xds_worker, pth))
 
