@@ -15,6 +15,8 @@ prog_short_description='Runs XDS without generating XDS.INP from scratch. Useful
 
 __version__ = xdskappa.__version__
 
+XDS_JOBS = ['XYCORR', 'INIT', 'COLSPOT', 'IDXREF', 'DEFPIX', 'INTEGRATE', 'CORRECT']
+
 phil_job_control =  phil.parse(
     '''
 job_control

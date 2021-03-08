@@ -9,6 +9,7 @@ Set of common functions for xdskappa tools
 import os, math, subprocess, re, glob, sys, shutil
 from xdskappa.xdsinp import XDSINP
 from xdskappa.xdataset import XDataset
+import xdskappa.run_xds
 import xdskappa
 from xdskappa import my_print
 from distutils import spawn
@@ -357,9 +358,6 @@ def RunXDS(Paths, job_control=None):
     if spawn.find_executable('xds_par') == None:
         raise xdskappa.RuntimeErrorUser("Cannot find XDS executable.")
 
-    if job_control is None: # or job_control.max_jobs == 1
-        RunXDS_old(Paths)
-        return
 
     assert len(Paths) > 0
 
@@ -367,6 +365,20 @@ def RunXDS(Paths, job_control=None):
     first_xdsinp.read()
 
     xds_jobs = first_xdsinp['JOB'][0].split()
+
+    for job in xds_jobs:
+        if job not in xdskappa.run_xds.XDS_JOBS:
+            import difflib
+            closest = difflib.get_close_matches(job,xdskappa.run_xds.XDS_JOBS,1)
+            message = 'Unknown XDS job name: {}\n'.format(job)
+            if len(closest) > 0:
+                message += 'Did you mean {}?'.format(closest[0])
+            raise xdskappa.RuntimeErrorUser(message)
+
+    # Fallback to old RunXDS
+    if job_control is None: # or job_control.max_jobs == 1
+        RunXDS_old(Paths)
+        return
 
     for pth in Paths:
         shutil.copy(pth+'/XDS.INP',pth+'/XDS.INP_original_to_run')
