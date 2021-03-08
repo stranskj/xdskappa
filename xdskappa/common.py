@@ -439,7 +439,7 @@ def RunXDS(Paths, job_control=None, force = False):
                 for path, rj in running_jobs.items():
                     if rj.result()[1] and not force:
                         run_Paths.remove(path)
-                    failed.append(path)
+                        failed.append(path)
 
             el_time = time.time() - time_start
             my_print('Finished {} in {:.1f}s.'.format(job,el_time))
