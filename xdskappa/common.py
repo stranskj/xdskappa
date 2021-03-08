@@ -16,6 +16,7 @@ from distutils import spawn
 import logging
 import concurrent.futures
 import time
+import copy
 
 __version__ = xdskappa.__version__
 
@@ -344,11 +345,13 @@ def xds_worker(path):
         if '!!! ERROR !!!' in log.read():
             my_print(
                 path +": An error during data procesing using XDS. Check IDXREF.LP, INTEGRATE.LP, other *.LP or xds.log files fo further details.")
+            error = True
         else:
             my_print(path +":Finished.")
-    return xds.returncode
+            error = False
+    return xds.returncode, error
 
-def RunXDS(Paths, job_control=None):
+def RunXDS(Paths, job_control=None, force = False):
     '''
     Runs XDS in all Paths. If possible, jobs in parallel
     @param Paths:
@@ -395,7 +398,10 @@ def RunXDS(Paths, job_control=None):
         nproc = job_control.nproc
 
     try:
+        run_Paths = copy.copy(Paths)
+        failed = []
         for job in xds_jobs:
+
             job_pwr = job_control.job.__dict__[job.lower()]
             job_cpu = job_pwr[0]
 
@@ -404,10 +410,13 @@ def RunXDS(Paths, job_control=None):
                 parallel_jobs = job_control.max_jobs#min(parallel_jobs,job_control.max_jobs)
 
             xdskappa.my_print('\nRunning {job} in {par_job} parallel jobs...'.format(job=job, par_job=parallel_jobs))
+            if len(run_Paths) == 0:
+                raise xdskappa.RuntimeErrorUser('No XDS jobs to be run.')
+
             time_start = time.time()
             with concurrent.futures.ThreadPoolExecutor(max_workers=parallel_jobs) as ex:
-                running_jobs = []
-                for pth in Paths:
+                running_jobs = {}
+                for pth in run_Paths:
                     xdsinp = XDSINP(pth)
                     xdsinp.read()
                     xdsinp['JOB'] = [job]
@@ -417,11 +426,16 @@ def RunXDS(Paths, job_control=None):
                         #TODO: Maybe fix to 1, and do it on xdskappa level, to have CPU slightly oversaturated?
                         #Needs testing...
                     xdsinp.write()
-                    running_jobs.append(ex.submit(xds_worker, pth))
+                    running_jobs[pth] = ex.submit(xds_worker, pth)
                     if (job == 'CORRECT') and (pth == Paths[0]):
-                        concurrent.futures.wait(running_jobs)
+                        concurrent.futures.wait(running_jobs.values())
 
-                concurrent.futures.wait(running_jobs)
+                concurrent.futures.wait(running_jobs.values())
+                for path, rj in running_jobs.items():
+                    if rj.result()[1] and not force:
+                        run_Paths.remove(path)
+                    failed.append(path)
+
             el_time = time.time() - time_start
             my_print('Finished {} in {:.1f}s.'.format(job,el_time))
     finally:
@@ -429,6 +443,10 @@ def RunXDS(Paths, job_control=None):
             shutil.copy(pth + '/XDS.INP_original_to_run', pth + '/XDS.INP')
             with open(pth+'/xds.log','a') as log:
                 log.write('Original XDS.INP restored.\n')
+    if len(failed) > 0:
+        my_print('WARNING: Following runs have failed XDS jobs. Check the log files:')
+        for path in failed:
+            my_print('\t'+path)
 
 def RunXDS_old(Paths):
     if spawn.find_executable('xds_par') == None:
