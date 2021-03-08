@@ -380,6 +380,9 @@ def RunXDS(Paths, job_control=None):
         RunXDS_old(Paths)
         return
 
+    # Secure correct order of XDS jobs
+    xds_jobs = [job for job in xdskappa.run_xds.XDS_JOBS if job in xds_jobs]
+
     for pth in Paths:
         shutil.copy(pth+'/XDS.INP',pth+'/XDS.INP_original_to_run')
         with open(pth+'/xds.log','w') as log:
