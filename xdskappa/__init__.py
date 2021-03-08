@@ -26,6 +26,11 @@ class RuntimeWarningUser(RuntimeError):
     '''
     pass
 
+class Exit(Exception):
+    '''
+    Exception to cleanly exit XDSkappa.
+    '''
+
 def logging_config(prog_name = 'xdskappa'):
     return dict(
     version=1,
@@ -203,6 +208,10 @@ USAGE
             logging.error('ERROR: ' + str(e))
 
             self.job_exit = 2
+
+        except Exit:
+            my_print('Finished.')
+            self.job_exit = 0
 
         except Exception as e:
 

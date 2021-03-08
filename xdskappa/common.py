@@ -354,8 +354,13 @@ def xds_worker(path):
 def RunXDS(Paths, job_control=None, force = False):
     '''
     Runs XDS in all Paths. If possible, jobs in parallel
-    @param Paths:
-    @return:
+    :@param Paths: Paths to the XDS.INP files and processing folders
+    :@type Paths: list
+    :@param job_control: How should be job control preformed. Input in PHIL scope format
+    :@type job_control: freephil.scope
+    :@param force: Perform all XDS jobs regardless encountered errors.
+    :@type force: bool
+    :@return:
     '''
 
     if spawn.find_executable('xds_par') == None:

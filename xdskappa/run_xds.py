@@ -20,7 +20,7 @@ XDS_JOBS = ['XYCORR', 'INIT', 'COLSPOT', 'IDXREF', 'DEFPIX', 'INTEGRATE', 'CORRE
 phil_job_control =  phil.parse(
     '''
 job_control
-.help = Controlling of  processing flow. Note, that actual performance can be determined not only by available CPU, but also available data throughput. 
+.help = Controlling of  processing flow. The parameters are following freePHIL syntax. They can be passed to XDSkappa as a file, or typed in directly after -J. Note, that actual performance can be determined not only by available CPU, but also available data throughput. 
 {
     nproc = None
     .type = int
@@ -151,10 +151,10 @@ def run(in_data):
                 continue
 
     if in_data.norun:
-        common.RunXDS(names)
-        
-        if in_data.ForceXDS:
-            common.ForceXDS(names)
+        common.RunXDS(names, job_control=in_data.job_control, force=in_data.ForceXDS)
+
+        if in_data.ForceXDS and in_data.job_control is None:
+            common.ForceXDS(names, job_control=in_data.job_control)
         
         common.PrintISa(names)
     return                
@@ -209,8 +209,12 @@ class RunXDSJob(xdskappa.Job):
                             metavar='FILE',
                             help='File with list of parameters to modify XDS.INP files. Parameters format as defined '
                                  'for XDS.INP. When no file given, "XDSKAPPA.INP" is expected.')
-        parser.add_argument('-J', dest='job_control', nargs='*',
-                            help='Controlling of XDS parallelization. Takes PHIL arguments, or PHIL file. If no argument is used, default values are used.')
+        parser.add_argument('-J', dest='job_control', nargs='*', metavar='PHIL_FILE',
+                            help='Controlling of XDS parallelization. Takes PHIL arguments, '
+                                 'or PHIL file. If no argument is used, default values are used. '
+                                 'When no additional parameters are used, default values are '
+                                 'used, and a control file is written to "job_contol.param". Use '
+                                 '"-J help" for more details.')
         parser.add_argument('-r', '--reference-dataset',
                             dest='ReferenceData',
                             metavar='DATASET',
@@ -236,6 +240,11 @@ class RunXDSJob(xdskappa.Job):
         pass
         if self._args.job_control is not None:
             import xdskappa.run_xds
+            if self._args.job_control is not None:
+                import xdskappa.run_xds
+                if 'help' in self._args.job_control:
+                    xdskappa.run_xds.phil_job_control.show(attributes_level=1)
+                    raise xdskappa.Exit
             self._args.job_control = xdskappa.run_xds.parse_job_control(self._args.job_control)
 
     def __help_epilog__(self):
