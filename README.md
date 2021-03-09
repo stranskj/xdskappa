@@ -1,5 +1,5 @@
 # XDSkappa
-*XDSkappa* allows processing single crystal X-ray diffraction collected using multicircle gonimeters with XDS. See `USAGE.md` for more details.
+*XDSkappa* allows processing single crystal X-ray diffraction collected using multiaxis gonimeters with XDS. See `USAGE.md` for more details.
 
 ### Available jobs
 List of the available jobs with short description is accessible using command `xdskappa`:
