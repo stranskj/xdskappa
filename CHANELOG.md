@@ -1,3 +1,27 @@
+v0.3.3
+======
+
+## New feature
+
+* Multiple XDS jobs can run in parallel
+
+## Improvements
+* Documentation update
+
+## Fix
+* Typos in help and logs
+
+v0.3.2
+======
+
+## New feature
+
+* ORGX and ORGY are now read from the file headers, which are (usually) correct.
+
+## Fix
+* Typos in help and logs
+
+
 v0.3.1
 ==========
 
