@@ -88,10 +88,10 @@ def run(in_data):
     if in_data.ReferenceData:
         names.insert(0, names.pop(names.index(in_data.ReferenceData)))
 
-    common.RunXDS(names)
+    common.RunXDS(names,job_control=in_data.job_control, force=in_data.ForceXDS)
 
-    if in_data.ForceXDS:
-        common.ForceXDS(names)
+    if in_data.ForceXDS and in_data.job_control is None:
+        common.ForceXDS(names, job_control=in_data.job_control)
 
     common.PrintISa(names)
 
@@ -104,7 +104,7 @@ def run(in_data):
         common.OptimizeXDS(names, in_data.OptIntegration)
 
         xdskappa.my_print("Running XDS...")
-        common.RunXDS(names)
+        common.RunXDS(names,job_control=in_data.job_control)
 
         newisa = common.ReadISa(names)
         opt.PrintISaOptimized(oldisa, newisa)
@@ -167,6 +167,12 @@ class XdskappaMainJob(xdskappa.Job):
                                  'integration; BEAM - copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS '
                                  'to XPARM.XDS. One keyword per parameter occurance. When given without a value, '
                                  'ALL is presumed.')
+        parser.add_argument('-J', dest='job_control', nargs='*', metavar='PHIL_FILE',
+                            help='Controlling of XDS parallelization. Takes PHIL arguments, '
+                                 'or PHIL file. If no argument is used, default values are used. '
+                                 'When no additional parameters are used, default values are '
+                                 'used, and a control file is written to "job_contol.param". Use '
+                                 '"-J help" for more details.')
         parser.add_argument('--backup', dest='BackupOpt', nargs='?', const='backup', default=None, metavar='NAME',
                             help='Backup datasets folders prior optimization to their subfolder ("backup" on empty value)'
                                  '. It will erase older backup of [NAME] if present. No backup by default.')
@@ -185,6 +191,15 @@ class XdskappaMainJob(xdskappa.Job):
             self._parser.print_help()  # help on empty input
             self.job_exit = 1
             self.run_job = False
+
+        if self._args.job_control is not None:
+            import xdskappa.run_xds
+            if 'help' in self._args.job_control:
+                xdskappa.run_xds.phil_job_control.show(attributes_level=1)
+                raise xdskappa.Exit
+            self._args.job_control = xdskappa.run_xds.parse_job_control(self._args.job_control)
+        pass
+
 
     def __help_epilog__(self):
         '''

@@ -26,6 +26,11 @@ class RuntimeWarningUser(RuntimeError):
     '''
     pass
 
+class Exit(Exception):
+    '''
+    Exception to cleanly exit XDSkappa.
+    '''
+
 def logging_config(prog_name = 'xdskappa'):
     return dict(
     version=1,
@@ -84,7 +89,14 @@ class Job(object):
 
         self.run_job = run
         Job.__set_meta__(self)
-        logging.config.dictConfig(logging_config(self._program_name))
+        try:
+            logging.config.dictConfig(logging_config(self._program_name))
+        except ValueError or PermissionError as e:
+            print(repr(e))
+            print('ERROR: Cannot initialize logging. Permission denied.\n'
+                  'Check, that you have sufficient rights to write in current folder.')
+            self.job_exit = 2
+            return
         self.__set_meta__()
         self.__set_argument_parser__()
         self.__program_arguments__()
@@ -196,6 +208,10 @@ USAGE
             logging.error('ERROR: ' + str(e))
 
             self.job_exit = 2
+
+        except Exit:
+            my_print('Finished.')
+            self.job_exit = 0
 
         except Exception as e:
 

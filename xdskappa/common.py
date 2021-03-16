@@ -9,10 +9,14 @@ Set of common functions for xdskappa tools
 import os, math, subprocess, re, glob, sys, shutil
 from xdskappa.xdsinp import XDSINP
 from xdskappa.xdataset import XDataset
+import xdskappa.run_xds
 import xdskappa
 from xdskappa import my_print
 from distutils import spawn
 import logging
+import concurrent.futures
+import time
+import copy
 
 __version__ = xdskappa.__version__
 
@@ -318,8 +322,142 @@ def PrintISa(Paths):
         my_print('\t' + isalist[dataset] + '\t' + dataset)
     return
 
+def xds_worker(path):
 
-def RunXDS(Paths):
+    with open(path + '/xds.log', 'a') as log:
+        xds = subprocess.Popen(['xds_par'], cwd=path, stdout=log, stderr=subprocess.STDOUT)
+
+        # for line_b in xds.stdout:
+        #     line = line_b.decode()
+        #     log.write(line)
+        #     if '***** COLSPOT *****' in line:
+        #         my_print('Finding strong reflections...')
+        #
+        #     if '***** IDXREF *****' in line:
+        #         my_print('Indexing...')
+        #
+        #     if '***** INTEGRATE *****' in line:
+        #         my_print('Integrating...')
+
+        xds.wait()
+
+    xdsinp = XDSINP(path)
+    xdsinp.read()
+    job = xdsinp['JOB'][0]
+
+    with open(os.path.join(path,job+'.LP'), 'r') as log:
+        if '!!! ERROR !!!' in log.read():
+            my_print(
+                path +": An error during data procesing using XDS. Check "+job+".LP or xds.log files fo further details.")
+            error = True
+        else:
+            my_print(path +":Finished.")
+            error = False
+    return xds.returncode, error
+
+def RunXDS(Paths, job_control=None, force = False):
+    '''
+    Runs XDS in all Paths. If possible, jobs in parallel
+    :@param Paths: Paths to the XDS.INP files and processing folders
+    :@type Paths: list
+    :@param job_control: How should be job control preformed. Input in PHIL scope format
+    :@type job_control: freephil.scope
+    :@param force: Perform all XDS jobs regardless encountered errors.
+    :@type force: bool
+    :@return:
+    '''
+
+    if spawn.find_executable('xds_par') == None:
+        raise xdskappa.RuntimeErrorUser("Cannot find XDS executable.")
+
+
+    assert len(Paths) > 0
+
+    first_xdsinp = XDSINP(Paths[0])
+    first_xdsinp.read()
+
+    xds_jobs = first_xdsinp['JOB'][0].split()
+
+    for job in xds_jobs:
+        if job not in xdskappa.run_xds.XDS_JOBS:
+            import difflib
+            closest = difflib.get_close_matches(job,xdskappa.run_xds.XDS_JOBS,1)
+            message = 'Unknown XDS job name: {}\n'.format(job)
+            if len(closest) > 0:
+                message += 'Did you mean {}?'.format(closest[0])
+            raise xdskappa.RuntimeErrorUser(message)
+
+    # Fallback to old RunXDS
+    if job_control is None: # or job_control.max_jobs == 1
+        RunXDS_old(Paths)
+        return
+
+    # Secure correct order of XDS jobs
+    xds_jobs = [job for job in xdskappa.run_xds.XDS_JOBS if job in xds_jobs]
+
+    for pth in Paths:
+        shutil.copy(pth+'/XDS.INP',pth+'/XDS.INP_original_to_run')
+        with open(pth+'/xds.log','w') as log:
+            log.write('Original XDS.INP copied to XDS.INP_original_to_run.\n')
+
+    if job_control.nproc is None:
+        import multiprocessing
+        nproc = multiprocessing.cpu_count()
+    else:
+        nproc = job_control.nproc
+
+    try:
+        run_Paths = copy.copy(Paths)
+        failed = []
+        for job in xds_jobs:
+
+            job_pwr = job_control.job.__dict__[job.lower()]
+            job_cpu = job_pwr[0]
+
+            parallel_jobs = int(nproc/job_cpu) # +1 ?
+            if job_control.max_jobs is not None:
+                parallel_jobs = job_control.max_jobs#min(parallel_jobs,job_control.max_jobs)
+
+            xdskappa.my_print('\nRunning {job} in {par_job} parallel jobs...'.format(job=job, par_job=parallel_jobs))
+            if len(run_Paths) == 0:
+                raise xdskappa.RuntimeErrorUser('No XDS jobs to be run.')
+
+            time_start = time.time()
+            with concurrent.futures.ThreadPoolExecutor(max_workers=parallel_jobs) as ex:
+                running_jobs = {}
+                for pth in run_Paths:
+                    xdsinp = XDSINP(pth)
+                    xdsinp.read()
+                    xdsinp['JOB'] = [job]
+                    xdsinp['MAXIMUM_NUMBER_OF_PROCESSORS'] = ["{}".format(job_cpu)]
+                    if len(job_pwr) == 2:
+                        xdsinp['MAXIMUM_NUMBER_OF_JOBS'] = ["{}".format(job_pwr[1])]
+                        #TODO: Maybe fix to 1, and do it on xdskappa level, to have CPU slightly oversaturated?
+                        #Needs testing...
+                    xdsinp.write()
+                    running_jobs[pth] = ex.submit(xds_worker, pth)
+                    if (job == 'CORRECT') and (pth == Paths[0]):
+                        concurrent.futures.wait(running_jobs.values())
+
+                concurrent.futures.wait(running_jobs.values())
+                for path, rj in running_jobs.items():
+                    if rj.result()[1] and not force:
+                        run_Paths.remove(path)
+                        failed.append(path)
+
+            el_time = time.time() - time_start
+            my_print('Finished {} in {:.1f}s.'.format(job,el_time))
+    finally:
+        for pth in Paths:
+            shutil.copy(pth + '/XDS.INP_original_to_run', pth + '/XDS.INP')
+            with open(pth+'/xds.log','a') as log:
+                log.write('Original XDS.INP restored.\n')
+    if len(failed) > 0:
+        my_print('WARNING: Following runs have failed XDS jobs. Check the log files:')
+        for path in failed:
+            my_print('\t'+path)
+
+def RunXDS_old(Paths):
     if spawn.find_executable('xds_par') == None:
         raise xdskappa.RuntimeErrorUser("Cannot find XDS executable.")
 
@@ -356,7 +494,8 @@ def RunXDS(Paths):
     return
 
 
-def ForceXDS(paths):
+def ForceXDS(paths, job_control=None):
+    rerun = []
     for path in paths:
         with open(path + '/xds.log') as log:
             lines = log. read()
@@ -367,7 +506,9 @@ def ForceXDS(paths):
             inp.read()
             inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
             inp.write()
-            RunXDS([path])
+            rerun.append(path)
+
+    RunXDS(rerun,job_control=job_control)
 
     return
 
@@ -538,7 +679,7 @@ def MakeXDSParam(inParList):
 
 def ReadXDSParamFile(inFile):
     """
-    Parse input file with prameters for modifing XDS.INP
+    Parse input file with parameters for modifing XDS.INP
     
     @param inFile: File with XDS.INP-like parameters
     @type inFile: file
@@ -546,11 +687,11 @@ def ReadXDSParamFile(inFile):
     if not os.path.isfile(inFile):
         raise xdskappa.RuntimeErrorUser('File not found: ' + inFile)
 
-    fin = open(inFile, 'r')
-    outParList = []
-    for line in fin:
-        outParList.append(line.strip('\r\n\t '))
-    fin.close()
+    with open(inFile, 'r') as fin:
+        outParList = []
+        for line in fin:
+            outParList.append(line.strip('\r\n\t '))
+
     return outParList
 
 
