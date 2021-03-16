@@ -341,7 +341,11 @@ def xds_worker(path):
 
         xds.wait()
 
-    with open(path + '/xds.log', 'r') as log:
+    xdsinp = XDSINP(path)
+    xdsinp.read()
+    job = xdsinp['JOB'][0]
+
+    with open(os.path.join(path,job+'.LP'), 'r') as log:
         if '!!! ERROR !!!' in log.read():
             my_print(
                 path +": An error during data procesing using XDS. Check IDXREF.LP, INTEGRATE.LP, other *.LP or xds.log files fo further details.")
