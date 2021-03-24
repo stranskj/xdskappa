@@ -423,7 +423,7 @@ def RunXDS(Paths, job_control=None, force = False):
 
             xdskappa.my_print('\nRunning {job} in {par_job} parallel jobs...'.format(job=job, par_job=min(parallel_jobs,len(run_Paths))))
             if len(run_Paths) == 0:
-                raise xdskappa.RuntimeErrorUser('No XDS jobs to be run.')
+                raise xdskappa.RuntimeErrorUser('No XDS jobs to be run. All previous jobs finished with error? You can eforce XDS steps using parameter -f.')
 
             time_start = time.time()
             with concurrent.futures.ThreadPoolExecutor(max_workers=parallel_jobs) as ex:

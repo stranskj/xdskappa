@@ -58,7 +58,7 @@ def run(in_data):
         oldisa = common.ReadISa(names)
 
         xdskappa.my_print("Running XDS...")
-        common.RunXDS(names)
+        common.RunXDS(names,job_control=in_data.job_control, force=True)
 
         newisa = common.ReadISa(names)
         PrintISaOptimized(oldisa, newisa)
@@ -88,6 +88,12 @@ class OptimizeJob(xdskappa.Job):
                             help='Parameters to optimized in befor INTEGRATION. FIX - fix parameters in integration; BEAM '
                                  '- copy BEAM parameters from INTEGRATE.LP; GEOMETRY - copy GXPARM.XDS to XPARM.XDS. One '
                                  'keyword per parameter occurance. When given without a value, ALL is presumed.')
+        parser.add_argument('-J', dest='job_control', nargs='*', metavar='PHIL_FILE',
+                            help='Controlling of XDS parallelization. Takes PHIL arguments, '
+                                 'or PHIL file. If no argument is used, default values are used. '
+                                 'When no additional parameters are used, default values are '
+                                 'used, and a control file is written to "job_contol.param". Use '
+                                 '"-J help" for more details.')
         parser.add_argument('--backup', dest='BackupOpt', nargs='?', const='backup', default=None, metavar='NAME',
                             help='Backup datasets folders prior optimization to their subfolder ("backup" on empty value)'
                                  '. It will erase older backup of [NAME] if present. No backup by default.')
@@ -105,6 +111,15 @@ class OptimizeJob(xdskappa.Job):
         '''
         if self._args.OptIntegration == None:
             self._args.OptIntegration = ['ALL']
+
+        if self._args.job_control is not None:
+            import xdskappa.run_xds
+            if self._args.job_control is not None:
+                import xdskappa.run_xds
+                if 'help' in self._args.job_control:
+                    xdskappa.run_xds.phil_job_control.show(attributes_level=1)
+                    raise xdskappa.Exit
+            self._args.job_control = xdskappa.run_xds.parse_job_control(self._args.job_control)
 
     def __help_epilog__(self):
         '''
