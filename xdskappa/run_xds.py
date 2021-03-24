@@ -32,14 +32,14 @@ job_control
         .type = ints(size=1)
         init = 4
         .type = ints(size=1)
-        colspot = 4
+        colspot = 4 1
         .type = ints(size_min=1, size_max=2)
         .help = Second number specifies number of jobs to be spawned by XDS itself. Left on XDS, if empty.
         idxref = 2
         .type = ints(size=1)
         defpix = 1
         .type = ints(size=1)
-        integrate = 4
+        integrate = 4 1
         .type = ints(size_min=1, size_max=2)
         .help = Second number specifies number of jobs to be spawned by XDS itself. Left on XDS, if empty.
         correct = 4 
