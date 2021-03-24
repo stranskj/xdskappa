@@ -412,13 +412,16 @@ def RunXDS(Paths, job_control=None, force = False):
         for job in xds_jobs:
 
             job_pwr = job_control.job.__dict__[job.lower()]
-            job_cpu = job_pwr[0]
+            if len(job_pwr) == 2:
+                job_cpu = job_pwr[0] * job_pwr[1]
+            else:
+                job_cpu = job_pwr[0]
 
-            parallel_jobs = int(nproc/job_cpu) # +1 ?
+            parallel_jobs = max(int(nproc/job_cpu),1) # +1 ?
             if job_control.max_jobs is not None:
                 parallel_jobs = job_control.max_jobs#min(parallel_jobs,job_control.max_jobs)
 
-            xdskappa.my_print('\nRunning {job} in {par_job} parallel jobs...'.format(job=job, par_job=parallel_jobs))
+            xdskappa.my_print('\nRunning {job} in {par_job} parallel jobs...'.format(job=job, par_job=min(parallel_jobs,len(run_Paths))))
             if len(run_Paths) == 0:
                 raise xdskappa.RuntimeErrorUser('No XDS jobs to be run.')
 
@@ -429,7 +432,7 @@ def RunXDS(Paths, job_control=None, force = False):
                     xdsinp = XDSINP(pth)
                     xdsinp.read()
                     xdsinp['JOB'] = [job]
-                    xdsinp['MAXIMUM_NUMBER_OF_PROCESSORS'] = ["{}".format(job_cpu)]
+                    xdsinp['MAXIMUM_NUMBER_OF_PROCESSORS'] = ["{}".format(job_pwr[0])]
                     if len(job_pwr) == 2:
                         xdsinp['MAXIMUM_NUMBER_OF_JOBS'] = ["{}".format(job_pwr[1])]
                         #TODO: Maybe fix to 1, and do it on xdskappa level, to have CPU slightly oversaturated?
