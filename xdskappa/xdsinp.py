@@ -40,8 +40,8 @@ class XDSINP(dict):
 		Reads XDS.INP from self.path
 		"""
 		if not os.path.isfile(self.path):
-			raise IOError('File not found: ' + self.path)
-			return
+			raise xdskappa.RuntimeErrorUser('File not found: ' + self.path)
+
 		fin = open(self.path,'r')
 		for line in fin.read().split('\n'):
 			noncomment = line.split('!')[0]
