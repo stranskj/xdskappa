@@ -17,6 +17,8 @@ The package requires Python 3.6 or newer. There are no extra modules needed for 
 
 The package is heavily tested in Linux, it might work at macOS. 
 
+:warning: There is known issue, when system Python3 in older Ubuntu installation is used (Ubuntu 18.04 LTS, Python 3.6). That version is non-standard installation of end-of-life Python version, therefore it is not supported. Please, download and compile your own Python (don't worry, it is super easy :-))
+
 ## Installation
 *XDSkappa* is standard Python package, therefore standard Python procedures can be used for installation. 
 
