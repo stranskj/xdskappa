@@ -189,11 +189,17 @@ class XDataset():
         #self.geometry['PHI']['VECTOR'] = '0.21 -1 -0.34' #TODO, now irelevant for omega scans
         self.geometry['PHI']['ANGLE'] = axes['PHI']['_diffrn_scan_axis.angle_start']	#TODO, now irelevant for omega scans
         self.geometry['CHI']['VECTOR'] = '0 -1 0' #TODO, now irelevant for omega scans
-        self.geometry['CHI']['ANGLE'] = axes['CHI']['_diffrn_scan_axis.angle_start']	#TODO, now irelevant for omega scans
+        try:
+            self.geometry['CHI']['ANGLE'] = axes['CHI']['_diffrn_scan_axis.angle_start']	#TODO, now irelevant for omega scans
+        except KeyError:
+            logging.warning("WARNING: Data seems to be in Kappa notation, currently wont be able to process Phi-scans.")
         self.geometry['TWOTHETA']['VECTOR'] = '0 -1 0'
         self.geometry['TWOTHETA']['ANGLE'] = axes['TWOTHETA']['_diffrn_scan_axis.angle_start']
         self.SetOrigin()
-        self.geometry['PHI']['VECTOR'] = self.PhiVector(self.geometry['OMEGA']['ANGLE'], self.geometry['CHI']['ANGLE'])
+        try:
+            self.geometry['PHI']['VECTOR'] = self.PhiVector(self.geometry['OMEGA']['ANGLE'], self.geometry['CHI']['ANGLE'])
+        except KeyError:
+            logging.debug('Skipping settings of Phi-axis vector.')
         self.geometry['OSCILATION'],self.geometry[self.geometry['SCAN']]['VECTOR'] = self.SetOscilation(axes, self.geometry['SCAN'])
         self.geometry['X-DETECTOR'],self.geometry['Y-DETECTOR'] = self.TwothetaVector(self.geometry['TWOTHETA']['ANGLE'])
 
