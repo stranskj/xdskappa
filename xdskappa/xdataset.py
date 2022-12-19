@@ -54,7 +54,23 @@ class XDataset():
 
         #raise KeyError('No axis information found in image header')
 
-    def TwothetaVector(self,twotheta=None):
+    def AxesVector(self):
+        axis = {}
+        for loop in self.fheader["loop_"]:
+            if "_axis.id" in loop[0]:
+                for ax in loop[1]:
+                    axis[ax['_axis.id']]= ax
+
+                break
+        for id in axis.values():
+            id['_axis.vector'] = [float(id['_axis.vector[1]']),
+                                  float(id['_axis.vector[2]']),
+                                  float(id['_axis.vector[3]'])]
+            id['_axis.offset'] = [float(id['_axis.offset[1]']),
+                                  float(id['_axis.offset[2]']),
+                                  float(id['_axis.offset[3]'])]
+        return axis
+    def TwothetaVector(self,twotheta=None, vector=None):
         """
         Calculates dectector axes vectors
 
@@ -63,13 +79,21 @@ class XDataset():
 
         @return x-axis vector, y-axis vector as string
         """
+        if vector is None:
+            vector = [1, 0, 0]
+
         if twotheta == None:
             axes = self.GetAxes()
             twotheta = axes['TWOTHETA']['_diffrn_scan_axis.angle_start']
             self['TWOTHETA']['ANGLE'] = twotheta
 
+        vecX = [math.cos(math.radians(float(twotheta))),
+                0,
+                math.sin(math.radians(float(twotheta))) * vector[0]] #TODO: this is bad.... it is easy fix for the 2022-11
+
+
         #TODO dependent on twotheta axis vector
-        detectorX = "{:.5f}".format(math.cos(math.radians(float(twotheta)))) + " 0 " + "{:.5f}".format(math.sin(math.radians(float(twotheta))))
+        detectorX = "{:.5f} {:.5f} {:.5f}".format(*vecX)
         detectorY = '0 1 0'
 
         return detectorX, detectorY
@@ -154,16 +178,19 @@ class XDataset():
     def SetOscilation(self,axes,scan):
         oscil = float(axes[scan]['_diffrn_scan_axis.angle_increment'])
         #self.geometry['OSCILATION'] = axes[self.geometry['SCAN']]['_diffrn_scan_axis.angle_increment']
+        omega_vec = self.AxesVector()[scan]['_axis.vector']
+        scan_mult = omega_vec[0]
         if oscil < 0:
             oscil *= -1
             ax = self.geometry[scan]['VECTOR'].split()
             axCorr = ''
             for i in range(3):
-                coord = -1*float(ax[i])
+                coord = -1*float(ax[i])*scan_mult #TODO: Another dirty trick
                 axCorr += "{:.7f}".format(coord) + ' '
             axCorr.strip()
         else:
             axCorr = self.geometry[scan]['VECTOR']
+
 
         oscilStr = 	"{:.7f}".format(oscil)
 
@@ -200,8 +227,9 @@ class XDataset():
             self.geometry['PHI']['VECTOR'] = self.PhiVector(self.geometry['OMEGA']['ANGLE'], self.geometry['CHI']['ANGLE'])
         except KeyError:
             logging.debug('Skipping settings of Phi-axis vector.')
+        ax_vec = self.AxesVector()
         self.geometry['OSCILATION'],self.geometry[self.geometry['SCAN']]['VECTOR'] = self.SetOscilation(axes, self.geometry['SCAN'])
-        self.geometry['X-DETECTOR'],self.geometry['Y-DETECTOR'] = self.TwothetaVector(self.geometry['TWOTHETA']['ANGLE'])
+        self.geometry['X-DETECTOR'],self.geometry['Y-DETECTOR'] = self.TwothetaVector(self.geometry['TWOTHETA']['ANGLE'], ax_vec['TWOTHETA']['_axis.vector'])
 
 def Test():
     datset = XDataset('test/photon2_????.cbf',1)
