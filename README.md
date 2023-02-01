@@ -26,7 +26,7 @@ The package is heavily tested in Linux, it might work at macOS.
 When Python3 is installed, recommended installation is using `pip`: 
 
 ```
-pip3 install xdskappa-0.3.0.tar.gz
+pip3 install xdskappa-0.4.0-py3-none-any.whl
 ```
 
 This is Python's packaging system, so also installs any potentially missing modules. *XDSkappa* will be installed for everybody, so you will probably need a root access (e.g. use `sudo`).

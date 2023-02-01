@@ -1,10 +1,16 @@
-cff-version: 1.1.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
-  - family-names: Jan
-    given-names: Stransky
+  - family-names: Stransky
+    given-names: Jan
     orcid: https://orcid.org/0000-0001-5139-2567
-title: stranskj/xdskappa: 0.4.0
+title: XDSkappa
 version: 0.4.0
 doi: 10.5281/zenodo.7594959
 date-released: 2023-02-01
+license: GNU GPL3
+references:
+  - family-names: Kabsch
+    given-names: Wolfgang
+    title: XSD
+    type: software
