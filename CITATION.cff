@@ -5,12 +5,13 @@ authors:
     given-names: Jan
     orcid: https://orcid.org/0000-0001-5139-2567
 title: XDSkappa
-version: 0.4.0
+version: 0.4.1
 doi: 10.5281/zenodo.7594959
-date-released: 2023-02-01
-license: GNU GPL3
+date-released: 2023-02-27
+license: GPL-3
 references:
-  - family-names: Kabsch
-    given-names: Wolfgang
-    title: XSD
+  - authors
+    - family-names: Kabsch
+      given-names: Wolfgang
+    title: XDS
     type: software
