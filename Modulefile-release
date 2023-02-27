@@ -9,22 +9,22 @@ proc ModulesHelp { } {
         puts stderr "Loads module for XDSkappa"
 }
 
-set	version	0.2.4	
+set	version	0.4.0
 
 module-whatis	"Module for usage of XDSkappa. It loads xds module too, if needed."
 
-# for Tcl script use only
-#set	prefix		/usr/share/Modules
-#set	exec_prefix	/usr/share/Modules
-#set	datarootdir	${prefix}/share
-
-
-#setenv		MODULESHOME	$prefix
 
 if { ![is-loaded 'xds'] } {
     module load xds/default
 }
 
-prepend-path    PATH		/path/to/$version/xdskappa
+set	  prefix		     /path/to/xdskappa-$version
+set   prompt             "(xdskappa-$version) "
+set   VIRTUAL_ENV        $prefix
+set   VIRTUAL_ENV_PROMPT $prompt
+
+prepend-path    PATH   			$prefix/bin
+prepend-path    LD_LIBRARY_PATH 	$prefix/lib
+prepend-path    PYTHONPATH 	$prefix/lib/python3.11/site-packages
 
 
