@@ -10,7 +10,7 @@ doi: 10.5281/zenodo.7594959
 date-released: 2023-02-27
 license: GPL-3
 references:
-  - authors
+  - authors:
     - family-names: Kabsch
       given-names: Wolfgang
     title: XDS
