@@ -1,4 +1,7 @@
 # XDSkappa
+
+[![DOI](https://zenodo.org/badge/499473647.svg)](https://zenodo.org/badge/latestdoi/499473647)
+
 *XDSkappa* allows processing single crystal X-ray diffraction collected using multiaxis gonimeters with XDS. See `USAGE.md` for more details.
 
 ### Available jobs
@@ -25,7 +28,7 @@ The package is heavily tested in Linux, it might work at macOS.
 When Python3 is installed, recommended installation is using `pip`: 
 
 ```
-pip3 install xdskappa-0.3.0.tar.gz
+pip3 install xdskappa-0.4.1-py3-none-any.whl
 ```
 
 This is Python's packaging system, so also installs any potentially missing modules. *XDSkappa* will be installed for everybody, so you will probably need a root access (e.g. use `sudo`).

@@ -17,13 +17,12 @@ testing/
 .project
 .pydevproject
 *.spyderproject
-.spyderworkspace
-sdist
+.spyderworkspacesdist
 test_bin
 .eggs
 *.egg-info
 test*
 .tox
-.venv
+.venv*
 .idea
 *.log
