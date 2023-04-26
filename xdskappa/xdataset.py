@@ -231,8 +231,7 @@ class XDataset():
         self.geometry['OSCILATION'],self.geometry[self.geometry['SCAN']]['VECTOR'] = self.SetOscilation(axes, self.geometry['SCAN'])
         self.geometry['X-DETECTOR'],self.geometry['Y-DETECTOR'] = self.TwothetaVector(self.geometry['TWOTHETA']['ANGLE'], ax_vec['TWOTHETA']['_axis.vector'])
 
-@pytest.mark.parametrize()
-def test_XDataset(cf_file):
+
 
 def Test():
     datset = XDataset('test/photon2_????.cbf',1)
