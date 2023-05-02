@@ -1,7 +1,61 @@
 import xdskappa.detector.cbfphoton2 as cbfphoton2
 import xdskappa
+import numpy
 import logging
 import os,re,sys,math,glob
+
+def to_numeric(in_str, downcast=float):
+    try:
+        num = downcast(in_str)
+    except ValueError:
+        num = numpy.nan
+
+    return num
+class Axis():
+    """
+    Information on goniometer axis
+    """
+    def __init__(self,
+                 id = None,
+                 depends_on = None,
+                 equipment = None,
+                 ax_type = None,
+                 vector = None,
+                 offset = None,
+                 displacement = None,
+                 angle = None,
+                 axis = None,
+                 scan = None):
+        self.id = id
+        self.depends_on = depends_on
+        self.equipment = equipment
+        self.type = ax_type
+        self.vector = vector
+        self.offset = offset
+        self.displacement = displacement
+        self.angle = angle
+
+        if axis is not None:
+            self.id = axis['_axis.id']
+            self.depends_on = axis['_axis.depends_on']
+            self.equipment = axis['_axis.equipment']
+            self.type = axis['_axis.type']
+            self.vector = [to_numeric(axis['_axis.vector[1]']),
+                           to_numeric(axis['_axis.vector[2]']),
+                           to_numeric(axis['_axis.vector[3]'])]
+            self.offset = [to_numeric(axis['_axis.offset[1]']),
+                           to_numeric(axis['_axis.offset[2]']),
+                           to_numeric(axis['_axis.offset[3]'])]
+        if scan is not None:
+            self.displacement = [to_numeric(scan['_diffrn_scan_axis.displacement_start']),
+                                 to_numeric(scan['_diffrn_scan_axis.displacement_increment']),
+                                 to_numeric(scan['_diffrn_scan_axis.displacement_range'])]
+            self.angle = [to_numeric(scan['_diffrn_scan_axis.angle_start']),
+                          to_numeric(scan['_diffrn_scan_axis.angle_increment']),
+                          to_numeric(scan['_diffrn_scan_axis.angle_range'])]
+
+
+
 
 class XDataset():
     """
@@ -23,8 +77,27 @@ class XDataset():
         self.detector = {}
         self.SetDetector()
         self.geometry = {}
+        self._axes = {}
         self.SetGeometry()
 
+
+    @property
+    def axes(self):
+        if len(self._axes) == 0:
+            self.SetAxes()
+        return self._axes
+
+    def SetAxes(self):
+        ax = self.GetAxes()
+        vec = self.AxesVector()
+
+        for v in vec.keys():
+            try:
+                scan = ax[v]
+            except KeyError:
+                scan = None
+            self._axes[v] = Axis(axis=vec[v],
+                                 scan=scan)
 
     def GetFrameName(self,frame):
         """

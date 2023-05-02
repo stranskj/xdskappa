@@ -7,4 +7,7 @@ import xdskappa.xdataset
                                     '../data_test/221109_phi_????.cbf'])
 def test_XDataset(cbf_file):
     dts = xdskappa.xdataset.XDataset(cbf_file, 1)
+    ax_vec = dts.AxesVector()
+    ax = dts.GetAxes()
+    axes = dts.axes
     assert True
