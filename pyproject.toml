@@ -21,6 +21,7 @@ classifiers = [
 ]
 dependencies = [
   "freephil",
+  "numpy",
 ]
 
 [tool.setuptools]
