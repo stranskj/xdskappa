@@ -160,8 +160,7 @@ class XDSINP(dict):
 #	        axis = GetAxis(fheader)
 		data_range = self.dataset.frange
 		scan = self.dataset.geometry['SCAN']
-		#QX= TODO
-		#QY= TODO
+
 		self['JOB'] = ['XYCORR INIT COLSPOT IDXREF DEFPIX INTEGRATE CORRECT']
 		self['ORGX'] = [self.dataset.geometry['ORGX']]
 		self['ORGY'] = [self.dataset.geometry['ORGY']]
@@ -195,7 +194,7 @@ class XDSINP(dict):
 		self['ROTATION_AXIS'] = [self.dataset.geometry[scan]['VECTOR']]
 		self['DIRECTION_OF_DETECTOR_X-AXIS'] = [self.dataset.geometry['X-DETECTOR']]
 		self['DIRECTION_OF_DETECTOR_Y-AXIS'] = [self.dataset.geometry['Y-DETECTOR']]
-		self['INCIDENT_BEAM_DIRECTION'] = ['0 0 1']
+		self['INCIDENT_BEAM_DIRECTION'] = [self.dataset.geometry['BEAM']]
 		self['FRACTION_OF_POLARIZATION'] = ['0.98']#TODO: test fheader['_diffrn_radiation_wavelength.polarizn_source_ratio']
 		self['POLARIZATION_PLANE_NORMAL'] = ['0 1 0']
 		self['DELPHI'] = ['15']

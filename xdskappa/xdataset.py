@@ -366,6 +366,15 @@ class XDataset():
 
         return oscilStr, axCorr
 
+    def NormalizedOscilation(self):
+        oscil = self.oscilation
+        osc_vec = self.scan_axis_vector()
+
+        if oscil <0:
+            oscil *= -1
+            osc_vec *= -1
+        return oscil, osc_vec
+
     @property
     def oscilation(self):
         return self.axes[self.scan_axis].angle[1]
@@ -377,7 +386,7 @@ class XDataset():
             logging.debug(str(e), exc_info=True)
             raise xdskappa.RuntimeErrorUser('Error while reading data headers: \n' + str(e))
 
-        self.geometry['DISTANCE'] = self.axes['DX'].displacement[0]
+        self.geometry['DISTANCE'] = '{:.4f}'.format(self.axes['DX'].displacement[0])
         self.geometry['SCAN'] = self.scan_axis
 
         # self.geometry['OMEGA'] = {}
@@ -402,10 +411,12 @@ class XDataset():
         }
         self.SetOrigin()
 
-        self.geometry['OSCILATION'] = "{:.5f}".format(self.oscilation)
+        oscillation, rotation_vector = self.NormalizedOscilation()
+
+        self.geometry['OSCILATION'] = "{:.5f}".format(oscillation)
         self.geometry[self.scan_axis] = {
             'ANGLE' : self.axes[self.scan_axis].angle[0],
-            'VECTOR': vector_as_string(self.scan_axis_vector())
+            'VECTOR': vector_as_string(rotation_vector)
         }
 
         self.geometry['X-DETECTOR'], self.geometry['Y-DETECTOR'] = self.TwothetaVector()
