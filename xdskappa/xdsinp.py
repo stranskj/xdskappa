@@ -1,3 +1,5 @@
+import logging
+
 import xdskappa.detector.cbfphoton2 as cbfphoton2
 import re,os,sys,glob
 import xdskappa.xdataset as xdataset
@@ -155,6 +157,13 @@ class XDSINP(dict):
 		if self.dataset == None:
 			raise IOError('No dataset set')
 			return
+
+
+		logging.info('Creating {} based on following dataset geometry:'.format(self.path))
+		logging.info('\n'.join(['{k}:\t{v}'.format(k=k, v=v) for k,v in self.dataset.geometry.items()]))
+		logging.info('Axis settings:')
+		logging.info('\n'.join('{k}:\t{v}'.format(k=k, v=self.dataset.axes[k].angle[0]) for k in ['OMEGA', 'CHI', 'KAPPA', 'PHI','TWOTHETA'] if k in list(self.dataset.axes.keys())))
+		logging.info('Scan axis: {}\n'.format(self.dataset.scan_axis))
 		
 		fheader = self.dataset.fheader
 #	        axis = GetAxis(fheader)

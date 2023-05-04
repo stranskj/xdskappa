@@ -265,7 +265,7 @@ class XDataset():
         vecX, vecY = self.detector_vectors
 
         detectorX = vector_as_string(vecX)
-        detectorY = vector_as_string(vecY)
+        detectorY = vector_as_string(-1*vecY)
 
         return detectorX, detectorY
 

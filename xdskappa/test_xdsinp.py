@@ -3,7 +3,8 @@ import xdskappa.xdataset
 import xdskappa.xdsinp as xdsinp
 import os
 
-@pytest.mark.parametrize('cbf_file', ['../data_test/20190911_omega_????.cbf',
+@pytest.mark.parametrize('cbf_file', ['../testing/data_220805/220805lys_01_????.cbf',
+                                      '../data_test/20190911_omega_????.cbf',
                                     '../data_test/20190911_phi_????.cbf',
                                     '../data_test/221109_omega_????.cbf',
                                     '../data_test/221109_phi_????.cbf'])
