@@ -840,6 +840,8 @@ def GetDatasets(inData):
             if len(glob.glob(datapath + "/" + prefix + "*.cbf")) >= inData.minData:  # more than 1 frame = dataset
                 digits = len(setname) - len(prefix) - 4  # number of ? in template name
                 Datasets.append(datapath + "/" + prefix + '?' * digits + '.cbf')
+    if len(Datasets) == 0:
+        raise xdskappa.RuntimeErrorUser('No datasets were found.')
     Datasets.sort()
     DatasetsDict = {}
     names = []
