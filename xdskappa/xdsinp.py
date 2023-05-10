@@ -175,7 +175,7 @@ class XDSINP(dict):
 		self['ORGY'] = [self.dataset.geometry['ORGY']]
 		self['DETECTOR_DISTANCE'] = [self.dataset.geometry['DISTANCE']]
 		self['OSCILLATION_RANGE'] = [self.dataset.geometry['OSCILATION']]
-		self['X-RAY_WAVELENGTH'] = [self.dataset.geometry['BEAM']['WAVELENGHT']]
+		self['X-RAY_WAVELENGTH'] = ['{}'.format(self.dataset.wavelength)]
 		self['NAME_TEMPLATE_OF_DATA_FRAMES'] = [self.dataset.template]
 #       	self['REFERENCE_DATA_SET'] = ['']
 		self['DATA_RANGE'] = ['1 ' + str(data_range)]

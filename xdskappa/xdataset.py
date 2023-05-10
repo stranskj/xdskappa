@@ -140,8 +140,12 @@ class XDataset():
         return self._axes
 
     @property
-    def beam(selfs):
+    def beam(self):
         return numpy.array([0,0,-1])
+
+    @property
+    def wavelength(self):
+        return float(self.fheader['_diffrn_radiation_wavelength.wavelength'])
 
     @property
     def scan_axis(self):
