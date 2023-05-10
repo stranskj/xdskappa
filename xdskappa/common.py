@@ -9,6 +9,7 @@ Set of common functions for xdskappa tools
 import os, math, subprocess, re, glob, sys, shutil
 from xdskappa.xdsinp import XDSINP
 from xdskappa.xdataset import XDataset
+import xdskappa.parmxds
 import xdskappa.run_xds
 import xdskappa
 from xdskappa import my_print
@@ -18,6 +19,7 @@ import concurrent.futures
 import time
 import copy
 import multiprocessing
+import numpy
 
 
 __version__ = xdskappa.__version__
@@ -324,6 +326,39 @@ def PrintISa(Paths):
         my_print('\t' + isalist[dataset] + '\t' + dataset)
     return
 
+def report_indexing(Paths, source='XPARM.XDS'):
+    '''
+    Prints indexing results from XPARM.XDS
+    :param Paths:
+    :return: Printable table
+    '''
+
+    cells = []
+    for path in Paths:
+        xparm = xdskappa.parmxds.ParmXds(os.path.join(path,source))
+        xparm.read()
+        cells.append([xparm.unit_cell.spgr,
+                      xparm.unit_cell.a,
+                      xparm.unit_cell.b,
+                      xparm.unit_cell.c,
+                      xparm.unit_cell.alpha,
+                      xparm.unit_cell.beta,
+                      xparm.unit_cell.gamma,])
+
+    arr_cells = numpy.array(cells)
+    avr = numpy.average(arr_cells,axis=0)
+    std = numpy.std(arr_cells,axis=0)
+
+    lines = []
+    lines.append('Spgr {:^7s} {:^7s} {:^7s} {:^7s} {:^7s} {:^7s} Dataset'.format('a', 'b', 'c', 'alpha', 'beta', 'gamma'))
+    for path, cell in zip(Paths,cells):
+        lines.append('{:>4d} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {}'.format(*cell, path))
+    lines.append(' Avr {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {}'.format(*avr[1:], 'Average'))
+    lines.append(
+        ' Std {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {}'.format(*std[1:], 'Standard deviation'))
+
+    return '\n'.join(lines)
+
 def xds_worker(path):
 
     with open(path + '/xds.log', 'a') as log:
@@ -455,6 +490,17 @@ def RunXDS(Paths, job_control=None, force = False):
 
             el_time = time.time() - time_start
             my_print('Finished {} in {:.1f}s.'.format(job,el_time))
+
+            if job == 'IDXREF':
+
+                my_print('\nUnit cell parameters from indexing:')
+                my_print(report_indexing(Paths,'XPARM.XDS'))
+
+            if job == 'CORRECT':
+                my_print('\nUnit cell parameters determined by CORRECT:')
+                my_print(report_indexing(Paths,'GXPARM.XDS'))
+
+
     finally:
         for pth in Paths:
             shutil.copy(pth + '/XDS.INP_original_to_run', pth + '/XDS.INP')
