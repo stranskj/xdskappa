@@ -1,0 +1,38 @@
+[build-system]
+requires = [
+  "setuptools >= 40.9.0",
+  "setuptools-scm",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xdskappa"
+dynamic = ["version"]
+description = "Processing X-ray diffraction data produced using multiaxis diffractometers with XDS"
+readme = "README.md"
+requires-python = ">=3.6"
+keywords = ["xds", "data processing"]
+license = {text = "GNU GPL 3"}
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU GPL v3",
+  "Operating System :: Linux"
+]
+dependencies = [
+  "freephil",
+  "numpy",
+]
+
+[tool.setuptools]
+packages = ["xdskappa"]
+
+[tool.setuptools.dynamic]
+version = {attr = "xdskappa.VERSION"}
+
+[project.scripts]
+  xdskappa = "xdskappa.__main__:main"
+  "xdskappa.find" = "xdskappa.find:main"
+  "xdskappa.optimize" = "xdskappa.optimize:main"
+  "xdskappa.run_xds" = "xdskappa.run_xds:main"
+  "xdskappa.show_stat" = "xdskappa.show_stat:main"

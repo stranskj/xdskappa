@@ -1,0 +1,30 @@
+#%Module1.0#####################################################################
+##
+## XDSkappa example modulefile
+##
+##
+proc ModulesHelp { } {
+        global version prefix
+
+        puts stderr "Loads module for XDSkappa"
+}
+
+set	version	0.4.1
+
+module-whatis	"Module for usage of XDSkappa. It loads xds module too, if needed."
+
+
+if { ![is-loaded 'xds'] } {
+    module load xds/default
+}
+
+set	  prefix		     /path/to/xdskappa-$version
+set   prompt             "(xdskappa-$version) "
+set   VIRTUAL_ENV        $prefix
+set   VIRTUAL_ENV_PROMPT $prompt
+
+prepend-path    PATH   			$prefix/bin
+prepend-path    LD_LIBRARY_PATH 	$prefix/lib
+prepend-path    PYTHONPATH 	$prefix/lib/python3.11/site-packages
+
+
