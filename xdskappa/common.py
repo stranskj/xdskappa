@@ -336,18 +336,20 @@ def report_indexing(Paths, source='XPARM.XDS'):
     cells = []
     for path in Paths:
         xparm = xdskappa.parmxds.ParmXds(os.path.join(path,source))
-        xparm.read()
-        cells.append([xparm.unit_cell.spgr,
-                      xparm.unit_cell.a,
-                      xparm.unit_cell.b,
-                      xparm.unit_cell.c,
-                      xparm.unit_cell.alpha,
-                      xparm.unit_cell.beta,
-                      xparm.unit_cell.gamma,])
-
+        try:
+            xparm.read()
+            cells.append([xparm.unit_cell.spgr,
+                          xparm.unit_cell.a,
+                          xparm.unit_cell.b,
+                          xparm.unit_cell.c,
+                          xparm.unit_cell.alpha,
+                          xparm.unit_cell.beta,
+                          xparm.unit_cell.gamma,])
+        except FileNotFoundError:
+            cells.append([0,numpy.nan,numpy.nan,numpy.nan,numpy.nan,numpy.nan,numpy.nan])
     arr_cells = numpy.array(cells)
-    avr = numpy.average(arr_cells,axis=0)
-    std = numpy.std(arr_cells,axis=0)
+    avr = numpy.nanmean(arr_cells,axis=0)
+    std = numpy.nanstd(arr_cells,axis=0)
 
     lines = []
     lines.append('Spgr {:^7s} {:^7s} {:^7s} {:^7s} {:^7s} {:^7s} Dataset'.format('a', 'b', 'c', 'alpha', 'beta', 'gamma'))
