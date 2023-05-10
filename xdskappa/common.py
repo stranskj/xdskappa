@@ -93,6 +93,10 @@ def GetStatistics(inFile, outFile):
     return
 
 
+
+
+
+
 def GetWinSize():
     """
     Get size of screens
@@ -654,6 +658,56 @@ def OptimizeXDS(Paths, Optim):
 
     return True
 
+
+def scalling_correlation_table(path):
+    '''
+    Reads XSCALE.LP and extract correlation data inbetween the data sets
+    :param path:
+    :return:
+    '''
+
+    with open(path, 'r') as fin:
+        while 'CORRELATIONS BETWEEN INPUT DATA SETS AFTER CORRECTIONS' not in (
+        line := fin.readline()):
+            pass
+        for i in range(4):
+            line = fin.readline()
+
+        table_in = []
+        while (line := fin.readline()) != '\n':
+            table_in.append(line.split())
+
+        num_dts = int(table_in[-1][1])
+        correlation = numpy.empty((num_dts,num_dts))
+        correlation[:] = numpy.nan
+        b_fac = copy.copy(correlation)
+        ratio = copy.copy(correlation)
+
+        for row in table_in:
+            i = int(row[0]) -1
+            j = int(row[1]) - 1
+            correlation[j,i] = correlation[i,j] = float(row[3])
+            b_fac[j,i] = b_fac[i,j] = float(row[5])
+            ratio[j,i] = ratio[i,j] = float(row[4])
+
+    return correlation, b_fac, ratio
+
+def correlation_table_string(tab_in, average=True):
+    col_len = len(tab_in[0])
+    lines = [('   '+' {:^5d}'*col_len).format(*range(1,col_len+1))]
+    row_string = '{:>3d}' + ' {:5.3f}' * col_len
+    for i, row in enumerate(tab_in[:]):
+
+        lines.append(row_string.format(i+1, *row))
+
+    if average:
+        avr = numpy.nanmean(tab_in,axis=0)
+        std = numpy.nanstd(tab_in, axis=0)
+        row_string = ' {:5.3f}' * col_len
+        lines.append(('Avr' + row_string).format(*avr))
+        lines.append(('Std' + row_string).format(*std))
+
+    return '\n'.join(lines)
 
 def Scale(Paths, Outname):
     try:

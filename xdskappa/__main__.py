@@ -115,6 +115,12 @@ def run(in_data):
 
     common.Scale(names, in_data.OutputScale)
 
+    correlation, b_fac, ratio = common.scalling_correlation_table('scale/XSCALE.LP')
+    corr_str = common.correlation_table_string(correlation,average=True)
+
+    logging.info('\nCorrelation table between the datasets (from scale/XSCALE.LP):\n')
+    logging.info(corr_str+'\n')
+
     if in_data.ShowGraphs:
         common.ShowStatistics(names, ['scale'])
 
