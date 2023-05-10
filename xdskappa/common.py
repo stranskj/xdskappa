@@ -17,6 +17,7 @@ import logging
 import concurrent.futures
 import time
 import copy
+import multiprocessing
 
 
 __version__ = xdskappa.__version__
@@ -390,8 +391,11 @@ def RunXDS(Paths, job_control=None, force = False):
 
     # Fallback to old RunXDS
     if job_control is None: # or job_control.max_jobs == 1
-        RunXDS_old(Paths)
-        return
+        #RunXDS_old(Paths)
+        job_control = xdskappa.run_xds.phil_job_control.extract().job_control
+        nproc = multiprocessing.cpu_count()
+        for j in ['colspot', 'integrate', 'correct']:
+            job_control.job.__dict__[j] = [nproc/2]
 
     # Secure correct order of XDS jobs
     xds_jobs = [job for job in xdskappa.run_xds.XDS_JOBS if job in xds_jobs]
@@ -402,7 +406,7 @@ def RunXDS(Paths, job_control=None, force = False):
             log.write('Original XDS.INP copied to XDS.INP_original_to_run.\n')
 
     if job_control.nproc is None:
-        import multiprocessing
+
         nproc = multiprocessing.cpu_count()
     else:
         nproc = job_control.nproc
