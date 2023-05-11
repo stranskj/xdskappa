@@ -204,7 +204,7 @@ class XDSINP(dict):
 		self['DIRECTION_OF_DETECTOR_X-AXIS'] = [self.dataset.geometry['X-DETECTOR']]
 		self['DIRECTION_OF_DETECTOR_Y-AXIS'] = [self.dataset.geometry['Y-DETECTOR']]
 		self['INCIDENT_BEAM_DIRECTION'] = [self.dataset.geometry['BEAM']]
-		self['FRACTION_OF_POLARIZATION'] = ['0.98']#TODO: test fheader['_diffrn_radiation_wavelength.polarizn_source_ratio']
+		self['FRACTION_OF_POLARIZATION'] = ['0.5']#TODO: test fheader['_diffrn_radiation_wavelength.polarizn_source_ratio']
 		self['POLARIZATION_PLANE_NORMAL'] = ['0 1 0']
 		self['DELPHI'] = ['15']
 		self['SEPMIN'] = ['7.0']
