@@ -506,6 +506,12 @@ def RunXDS(Paths, job_control=None, force = False):
                 my_print('\nUnit cell parameters determined by CORRECT:')
                 my_print(report_indexing(Paths,'GXPARM.XDS'))
 
+                my_print('''
+Use following parameters to select correct space group and unit cell:
+SPACE_GROUP_NUMBER= 
+UNIT_CELL_CONSTANTS=
+                ''')
+
 
     finally:
         for pth in Paths:
