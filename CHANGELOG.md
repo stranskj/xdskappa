@@ -1,3 +1,19 @@
+v0.5.0
+======
+
+## New features
+* Indexing solution reported after IDXREF and CORRECT
+* New order of jobs and parallel XDS runs by default
+* Correlation table between datasets extracted to xdskappa.log
+
+
+## Improvements
+* The goniometer geometry is properly calculated regardless of axis naming in the headers
+* PEP517 compatible packaging
+
+## Fix
+* Nicer error when no dataset is found
+
 v0.4.0
 ======
 
