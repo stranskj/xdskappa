@@ -366,6 +366,20 @@ def report_indexing(Paths, source='XPARM.XDS'):
 
     return '\n'.join(lines)
 
+def report_xds_errors(job):
+    ''' Checks, if any XDS error happened'''
+
+    with open(os.path.join(job.result()[2],'xds.log')) as xds_log:
+        txt = xds_log.read()
+        if '!!! ERROR !!! ILLEGAL' in  txt:
+            lines = txt.split('\n')
+            raise xdskappa.RuntimeErrorUser('Error in XDS.INP: \n{}\n{}'.format(lines[-2], lines[-3]))
+
+        elif '!!! ERROR !!!' in txt and not job.result(1):
+            logging.warning('Issue in running XDS, please check xds.log')
+
+
+
 def xds_worker(path):
 
     with open(path + '/xds.log', 'a') as log:
@@ -397,7 +411,7 @@ def xds_worker(path):
         else:
             my_print(path +":Finished.")
             error = False
-    return xds.returncode, error
+    return xds.returncode, error, path
 
 def RunXDS(Paths, job_control=None, force = False):
     '''
@@ -489,7 +503,9 @@ def RunXDS(Paths, job_control=None, force = False):
                     if (job == 'CORRECT') and (pth == Paths[0]):
                         concurrent.futures.wait(running_jobs.values())
 
-                concurrent.futures.wait(running_jobs.values())
+                #concurrent.futures.wait(running_jobs.values())
+                for job in concurrent.futures.as_completed(running_jobs.values()):
+                    report_xds_errors(job)
                 for path, rj in running_jobs.items():
                     if rj.result()[1] and not force:
                         run_Paths.remove(path)
