@@ -322,12 +322,13 @@ def ReadISa(Paths):
 
 def PrintISa(Paths):
     my_print('\nISa for individual datasets:')
-    my_print('\tISa\tDataset')
+    my_print('\t{:>5}\t{}'.format('ISa','Dataset'))
 
     isalist = ReadISa(Paths)
 
     for dataset in sorted(isalist):
-        my_print('\t' + isalist[dataset] + '\t' + dataset)
+        #my_print('\t' + isalist[dataset] + '\t' + dataset)
+        my_print('\t{:>5}\t{}'.format(isalist[dataset], dataset))
     return
 
 def report_indexing(Paths, source='XPARM.XDS'):
@@ -356,12 +357,12 @@ def report_indexing(Paths, source='XPARM.XDS'):
     std = numpy.nanstd(arr_cells,axis=0)
 
     lines = []
-    lines.append('Spgr {:^7s} {:^7s} {:^7s} {:^7s} {:^7s} {:^7s} Dataset'.format('a', 'b', 'c', 'alpha', 'beta', 'gamma'))
+    lines.append('Spgr {:^7s} {:^7s} {:^7s} {:^7s} {:^7s} {:^7s}\tDataset'.format('a', 'b', 'c', 'alpha', 'beta', 'gamma'))
     for path, cell in zip(Paths,cells):
-        lines.append('{:>4d} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {}'.format(*cell, path))
-    lines.append(' Avr {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {}'.format(*avr[1:], 'Average'))
+        lines.append('{:>4d} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f}\t{}'.format(*cell, path))
+    lines.append(' Avr {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f}\t{}'.format(*avr[1:], 'Average'))
     lines.append(
-        ' Std {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {}'.format(*std[1:], 'Standard deviation'))
+        ' Std {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f} {:>7.3f}\t{}'.format(*std[1:], 'Standard deviation'))
 
     return '\n'.join(lines)
 
