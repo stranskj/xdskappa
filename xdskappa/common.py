@@ -504,8 +504,8 @@ def RunXDS(Paths, job_control=None, force = False):
                         concurrent.futures.wait(running_jobs.values())
 
                 #concurrent.futures.wait(running_jobs.values())
-                for job in concurrent.futures.as_completed(running_jobs.values()):
-                    report_xds_errors(job)
+                for compl_job in concurrent.futures.as_completed(running_jobs.values()):
+                    report_xds_errors(compl_job)
                 for path, rj in running_jobs.items():
                     if rj.result()[1] and not force:
                         run_Paths.remove(path)
