@@ -1,3 +1,11 @@
+v0.5.1
+======
+
+## Fixes
+
+* Dataset correlation table is not created, when only one run/dataset is processed
+* Small fixes in log outputs
+
 v0.5.0
 ======
 
