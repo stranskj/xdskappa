@@ -366,6 +366,20 @@ def report_indexing(Paths, source='XPARM.XDS'):
 
     return '\n'.join(lines)
 
+def report_xds_errors(job):
+    ''' Checks, if any XDS error happened'''
+
+    with open(os.path.join(job.result()[2],'xds.log')) as xds_log:
+        txt = xds_log.read()
+        if '!!! ERROR !!! ILLEGAL' in  txt:
+            lines = txt.split('\n')
+            raise xdskappa.RuntimeErrorUser('Error in XDS.INP: \n{}\n{}'.format(lines[-2], lines[-3]))
+
+        elif '!!! ERROR !!!' in txt and not job.result(1):
+            logging.warning('Issue in running XDS, please check xds.log')
+
+
+
 def xds_worker(path):
 
     with open(path + '/xds.log', 'a') as log:
@@ -397,7 +411,7 @@ def xds_worker(path):
         else:
             my_print(path +":Finished.")
             error = False
-    return xds.returncode, error
+    return xds.returncode, error, path
 
 def RunXDS(Paths, job_control=None, force = False):
     '''
@@ -489,7 +503,9 @@ def RunXDS(Paths, job_control=None, force = False):
                     if (job == 'CORRECT') and (pth == Paths[0]):
                         concurrent.futures.wait(running_jobs.values())
 
-                concurrent.futures.wait(running_jobs.values())
+                #concurrent.futures.wait(running_jobs.values())
+                for compl_job in concurrent.futures.as_completed(running_jobs.values()):
+                    report_xds_errors(compl_job)
                 for path, rj in running_jobs.items():
                     if rj.result()[1] and not force:
                         run_Paths.remove(path)
@@ -716,31 +732,45 @@ def correlation_table_string(tab_in, average=True):
 
     return '\n'.join(lines)
 
-def Scale(Paths, Outname):
+def Scale(Paths, Outname, scale_folder='scale'):
     try:
-        os.mkdir('scale')
+        os.mkdir(scale_folder)
     except FileExistsError:
-        my_print("\nDirectory already exists: scale")
+        my_print("\nDirectory already exists: {}".format(scale_folder))
 
-    with open('scale/XSCALE.INP', 'w') as xscaleinp:
+    num_scaled = 0
+    with open(os.path.join(scale_folder,'XSCALE.INP'), 'w') as xscaleinp:
         xscaleinp.write('OUTPUT_FILE= ' + Outname + '\n')
         for path in Paths:
             if os.path.isfile(path + '/XDS_ASCII.HKL'):
                 xscaleinp.write('   INPUT_FILE= ../' + path + '/XDS_ASCII.HKL\n')
+                num_scaled +=1
             else:
                 my_print('XDS_ASCII.HKL not available in ' + path)
                 my_print('Excluding from scaling')
 
+    if num_scaled == 0:
+        logging.warning('Nothing to scale.')
+        return
+
     my_print('\nScaling with xscale_par...')
     with open(os.devnull, 'w') as FNULL:
-        xscale = subprocess.Popen('xscale_par', cwd='scale', stdout=FNULL, stderr=subprocess.STDOUT)
+        xscale = subprocess.Popen('xscale_par', cwd=scale_folder, stdout=FNULL, stderr=subprocess.STDOUT)
         xscale.wait()
 
-    with open('scale/XSCALE.LP') as fout:
+    with open(os.path.join(scale_folder,'XSCALE.LP')) as fout:
         if '!!! ERROR !!!' in fout:
             my_print('Error in scaling. Please read: scale/XSCALE.LP')
         else:
-            my_print('Scaled. Output written in: scale/' + Outname)
+            my_print('Scaled. Output written in: {}'.format(os.path.join(scale_folder, Outname) ))
+
+    if num_scaled > 1:
+
+        correlation, b_fac, ratio = scalling_correlation_table(os.path.join(scale_folder,'XSCALE.LP'))
+        corr_str = correlation_table_string(correlation,average=True)
+
+        logging.info('\nCorrelation table between the datasets (from {}):\n'.format(os.path.join(scale_folder,'XSCALE.LP')))
+        logging.info(corr_str+'\n')
 
 
 def ReadDatasetListFile(inData):
