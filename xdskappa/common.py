@@ -13,7 +13,7 @@ import xdskappa.parmxds
 import xdskappa.run_xds
 import xdskappa
 from xdskappa import my_print
-from distutils import spawn
+#from distutils import spawn
 import logging
 import concurrent.futures
 import time
@@ -92,9 +92,13 @@ def GetStatistics(inFile, outFile):
             i += 1
     return
 
+def check_executable(*executable):
+    '''Checks, if executable exists. Raises IOError, if not.'''
 
-
-
+    if any([shutil.which(ex) is None for ex in executable]):
+        non_ex = [ex for ex in executable if shutil.which(ex) is None]
+        raise IOError('Cannot find executable: {}'.format(non_ex))
+    return True
 
 
 def GetWinSize():
@@ -105,7 +109,7 @@ def GetWinSize():
     @type return: list of tuples
     """
     winsize = []
-    if spawn.find_executable('xrandr'):  # TODO: nefunguje po ssh
+    if check_executable('xrandr'):  # TODO: nefunguje po ssh
         getwinsize = subprocess.Popen('xrandr', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         for line_b in getwinsize.stdout:
@@ -428,7 +432,7 @@ def RunXDS(Paths, job_control=None, force = False):
     :@return:
     '''
 
-    if spawn.find_executable('xds_par') == None:
+    if not check_executable('xds_par'):
         raise xdskappa.RuntimeErrorUser("Cannot find XDS executable.")
 
 
@@ -544,7 +548,7 @@ UNIT_CELL_CONSTANTS=
             my_print('\t'+path)
 
 def RunXDS_old(Paths):
-    if spawn.find_executable('xds_par') == None:
+    if not check_executable('xds_par'):
         raise xdskappa.RuntimeErrorUser("Cannot find XDS executable.")
 
     for path in Paths:
