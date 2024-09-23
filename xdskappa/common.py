@@ -403,14 +403,17 @@ def xds_worker(path):
     xdsinp.read()
     job = xdsinp['JOB'][0]
 
-    with open(os.path.join(path,job+'.LP'), 'r') as log:
-        if '!!! ERROR !!!' in log.read():
-            my_print(
-                path +": An error during data procesing using XDS. Check "+job+".LP or xds.log files fo further details.")
-            error = True
-        else:
-            my_print(path +":Finished.")
-            error = False
+    try:
+        with open(os.path.join(path,job+'.LP'), 'r') as log:
+            if '!!! ERROR !!!' in log.read():
+                my_print(
+                    path +": An error during data procesing using XDS. Check "+job+".LP or xds.log files fo further details.")
+                error = True
+            else:
+                my_print(path +":Finished.")
+                error = False
+    except FileNotFoundError:
+        raise xdskappa.RuntimeErrorUser('The log file from XDS step {job} does not exist. XDS probably stopped with an error, for hints try looking in:\n{xds_log}'.format(job=job, xds_log=os.path.join(path,'xds.log')))
     return xds.returncode, error, path
 
 def RunXDS(Paths, job_control=None, force = False):
