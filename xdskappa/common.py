@@ -97,7 +97,8 @@ def check_executable(*executable):
 
     if any([shutil.which(ex) is None for ex in executable]):
         non_ex = [ex for ex in executable if shutil.which(ex) is None]
-        raise IOError('Cannot find executable: {}'.format(non_ex))
+        return False
+        #raise IOError('Cannot find executable: {}'.format(non_ex))
     return True
 
 
