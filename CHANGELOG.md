@@ -1,3 +1,13 @@
+v0.5.2
+======
+
+## Fixes
+
+* Update for compatibility with recent XDS (20240712 and newer)
+  * STRONG_PIXEL changed to SIGNAL_PIXEL
+  * Won't work with older XDS versions
+* Handling an error, when no `xds.log` was produced
+
 v0.5.1
 ======
 
