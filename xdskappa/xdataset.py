@@ -267,9 +267,15 @@ class XDataset():
         # # TODO dependent on twotheta axis vector
 
         vecX, vecY = self.detector_vectors
+        logging.debug("OMEGA axis vector: {}".format(self.axes['OMEGA'].vector))
+        if self.axes['OMEGA'].vector[0] < 0:  # This is relatively dirty trick... Ultimately, all vectors should be rotated by 180 around Z
+            swapY= -1
+            logging.info("Dataset with old goniometer description detected (pre V2022.10-1), swapping detector Y-axis vector.")
+        else:
+            swapY = 1
 
         detectorX = vector_as_string(vecX)
-        detectorY = vector_as_string(vecY)     # by Diffrac Version V2022.10-1, it has to be multiplied by -1
+        detectorY = vector_as_string(swapY * vecY )     # by Diffrac Version V2022.10-1, it has to be multiplied by -1
 
         return detectorX, detectorY
 
