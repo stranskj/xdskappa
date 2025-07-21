@@ -598,8 +598,10 @@ def ForceXDS(paths, job_control=None):
             inp.SetParam('JOB= DEFPIX INTEGRATE CORRECT')
             inp.write()
             rerun.append(path)
-
-    RunXDS(rerun,job_control=job_control)
+    if len(rerun) > 0:
+        RunXDS(rerun,job_control=job_control)
+    else:
+        logging.info("No jobs failed to rerun.")
 
     return
 
