@@ -459,7 +459,7 @@ def RunXDS(Paths, job_control=None, force = False):
         job_control = xdskappa.run_xds.phil_job_control.extract().job_control
         nproc = multiprocessing.cpu_count()
         for j in ['colspot', 'integrate', 'correct']:
-            job_control.job.__dict__[j] = [nproc/2]
+            job_control.job.__dict__[j] = [int(nproc/2)]
 
     # Secure correct order of XDS jobs
     xds_jobs = [job for job in xdskappa.run_xds.XDS_JOBS if job in xds_jobs]
