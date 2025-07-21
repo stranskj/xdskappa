@@ -269,7 +269,7 @@ class XDataset():
         vecX, vecY = self.detector_vectors
 
         detectorX = vector_as_string(vecX)
-        detectorY = vector_as_string(-1*vecY)
+        detectorY = vector_as_string(vecY)     # by Diffrac Version V2022.10-1, it has to be multiplied by -1
 
         return detectorX, detectorY
 
