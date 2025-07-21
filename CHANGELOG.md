@@ -1,3 +1,14 @@
+v0.6.0
+======
+
+## Fixes
+* Properly working for both pre and after Diffrac v2022.10-1
+* Unsured, that maximum CPU number is integer
+* The pipeline does not fail, when integration is forced ("-f") but there is no failed indexing job.  
+
+## XDS version tested
+* VERSION Jan 19, 2025  BUILT=20250714
+
 v0.5.2
 ======
 
