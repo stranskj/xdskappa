@@ -1,3 +1,10 @@
+v0.6.1
+======
+
+## Fix
+* Diffrac version detected based on Two theta vector, rather than Omega
+
+
 v0.6.0
 ======
 

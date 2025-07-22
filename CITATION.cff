@@ -5,9 +5,9 @@ authors:
     given-names: Jan
     orcid: https://orcid.org/0000-0001-5139-2567
 title: XDSkappa
-version: 0.6.0
+version: 0.6.1
 doi: 10.5281/zenodo.7594959
-date-released: 2025-07-21
+date-released: 2025-07-22
 license: "GPL-3.0-or-later"
 references:
   - authors:
