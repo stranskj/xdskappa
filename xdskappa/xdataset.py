@@ -268,7 +268,8 @@ class XDataset():
 
         vecX, vecY = self.detector_vectors
         logging.debug("OMEGA axis vector: {}".format(self.axes['OMEGA'].vector))
-        if self.axes['OMEGA'].vector[0] < 0:  # This is relatively dirty trick... Ultimately, all vectors should be rotated by 180 around Z
+        logging.debug("TWOTHETA axis vector: {}".format(self.axes['TWOTHETA'].vector))
+        if self.axes['TWOTHETA'].vector[0] < 0:  # This is relatively dirty trick... Ultimately, all vectors should be rotated by 180 around Z
             swapY= -1
             logging.info("Dataset with old goniometer description detected (pre V2022.10-1), swapping detector Y-axis vector.")
         else:
